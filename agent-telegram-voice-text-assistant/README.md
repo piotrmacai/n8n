@@ -5,6 +5,7 @@ Telegram AI Personal Assistant (n8n Workflow)
 
 This n8n workflow is a powerful AI personal assistant connected to Telegram. It supports both text and voice input and text and voice output, making it a highly interactive and flexible chatbot. It utilizes OpenAI for transcription, response generation, and text-to-speech (TTS) synthesis.
 
+![Workflow Overview](agent-telegram-textvoice-assistant.png)
 
 🔥 Features
 
