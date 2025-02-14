@@ -1,12 +1,18 @@
 This n8n AI Agent is a powerful, ready-to-use automation template that enables a multimodal AI assistant with:
 
 ✅ Text Input & Output (via Telegram)
+
 ✅ Voice Input & Output (speech-to-text and text-to-speech processing)
+
 ✅ Image Recognition (AI-powered image analysis and response generation)
+
 ✅ Seamless Integration with OpenAI API
+
 ✅ Memory Buffer for Contextual Conversations
 
 ![Agent json](AgentTelegram_Personal_MultimodalAgent.png)
+
+
 
 🎯 Features
 
@@ -29,5 +35,3 @@ Uses OpenAI’s Vision API (or other providers) to analyze and describe images.
 Returns insightful AI-generated responses.
 
 Conversational Memory: Implements a buffer memory for contextual replies.
-
-🛠️ Workflow Architecture
