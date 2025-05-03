@@ -3,7 +3,7 @@
 This project demonstrates how to connect **OpenWebUI** with a **custom `n8n` Agent** using webhooks for both input and output handling. It includes a Python-based `Pipe` class for sending messages from OpenWebUI to an `n8n` workflow and returning structured responses.
 
 ---
-![n8n workflow image here](img/openwebUI-n8n.jpeg)  
+![n8n workflow image here](img/openwebUI-n8n.jpg)  
 *OpenWebUI interface*
 
 ---
@@ -19,7 +19,7 @@ This project demonstrates how to connect **OpenWebUI** with a **custom `n8n` Age
 ---
 
 
-![n8n workflow image here](img/n8n_workflow.jpeg)  
+![n8n workflow image here](img/n8nCustomUI.jpg)  
 *Example of n8n workflow that handles OpenWebUI input and returns output via webhook*
 
 ---
