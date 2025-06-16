@@ -2,7 +2,7 @@
 
 The SEO Audit AI Agent created in n8n workflow is an advanced, automated tool designed to perform in-depth SEO audits by leveraging multiple data sources, including Google Analytics (GA), SEMrush API, and direct HTML analysis. This AI-powered solution identifies technical SEO issues, content gaps, and optimization opportunities to help improve your website's search engine rankings and overall performance.
 
-![SEO Audit Report Preview](/img/n8n-seo.png)
+![SEO Audit Report Preview](/n8n-seo.png)
 
 🔍 Key Features
 📊 Multi-Source Data Integration
