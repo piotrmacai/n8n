@@ -1,0 +1,837 @@
+{
+  "name": "Website-SEO-Audit-v.1.1",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Conversion Rate Optimizer",
+        "formDescription": "Your Landing Page is Leaking Sales—Fix It Now",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Landing Page Url",
+              "placeholder": "https://yuzuu.co",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Business Type",
+              "placeholder": "https://pagespeed.web.dev/analysis/https-ainsider-pl/r35mnxw74c?hl=pl&form_factor=mobile"
+            },
+            {
+              "fieldLabel": "Location"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fd2202a6-0f7c-46c7-9ede-9699a1ab9565",
+      "name": "Landing Page Url",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        360,
+        140
+      ],
+      "webhookId": "5d28ee79-7bf4-4462-b33b-9e5e709b73e7",
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "url": "={{ $json['Landing Page Url'] }}",
+        "options": {}
+      },
+      "id": "68ed6605-eddb-4d41-bf90-88cd46f932af",
+      "name": "Scrape Website",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        620,
+        160
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "e6fd9241-4bd5-4f89-8d47-1b7579f1ae45",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        1040,
+        -20
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "A9Nk5auye7S4VJEq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "72e6ced4-2026-45c6-8012-7975e1522427",
+      "name": "OpenAI Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        1020,
+        240
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "A9Nk5auye7S4VJEq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 5
+      },
+      "id": "3db7078a-97f6-4191-916a-65c8552e5adb",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        1920,
+        200
+      ],
+      "typeVersion": 3,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "output"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b9f0ea5e-00cb-4978-9028-e6d49532d7e1",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        2080,
+        240
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "=# On-Page Technical Audit\n{{ $json.output[0] }}\n\n# On-Page SEO Content Audit\n{{ $json.output[1] }}\n\n#SemRushAudit\n\n#Improvments Audit",
+        "options": {}
+      },
+      "id": "0ff7969a-84fb-40e9-acf1-d4cee34ea701",
+      "name": "Markdown",
+      "type": "n8n-nodes-base.markdown",
+      "position": [
+        2600,
+        240
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Send Email \nConnect your credentials & Easily send emails from a Gmail address. ",
+        "height": 100,
+        "width": 360,
+        "color": 3
+      },
+      "id": "fd457240-0605-4fc9-8a45-cfe2bb8ffac1",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2600,
+        40
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Open AI Setup\n- Add your credentials\n- Select o1 model for (way) better results. \n- One run = one page audit = around $0.3 with o1",
+        "height": 140,
+        "width": 420,
+        "color": 3
+      },
+      "id": "1f3fe2cd-6956-45ac-9cad-461fc4288490",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1000,
+        -620
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "sendTo": "macaipiotr@gmail.com",
+        "subject": "=On-Page SEO Audit -  {{ $('Landing Page Url').item.json['Landing Page Url'] }}",
+        "message": "={{ $json.data }}",
+        "options": {}
+      },
+      "id": "420e5ed5-47fe-411a-a1f8-5d8fe2eaf846",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        2800,
+        240
+      ],
+      "webhookId": "b4d6ddaf-aaf5-4f20-a63a-113b701be9cc",
+      "typeVersion": 2.1,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Bxjgvbzb1EdBX1Kf",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        740
+      ],
+      "id": "cf33cd99-775f-4269-bea2-3f15bf34bb1b",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "SA4PJMPaBHiMJZCw",
+          "name": "ainsidercompany-GoogleGeminiAPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "propertyId": {
+          "__rl": true,
+          "value": "465944426",
+          "mode": "list",
+          "cachedResultName": "AinsiderPL",
+          "cachedResultUrl": "https://analytics.google.com/analytics/web/#/p465944426/"
+        },
+        "metricsGA4": {
+          "metricValues": [
+            {}
+          ]
+        },
+        "dimensionsGA4": {
+          "dimensionValues": [
+            {}
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleAnalyticsTool",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        720
+      ],
+      "id": "8b1e6327-cdf8-46e2-9d46-d00c6eaae59d",
+      "name": "Google Analytics",
+      "credentials": {
+        "googleAnalyticsOAuth2": {
+          "id": "fd5ZvvLIwp8CQtKl",
+          "name": "Google Analytics account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.data }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1460,
+        640
+      ],
+      "id": "8d9cbcd3-aec5-44f3-bd2f-6abeaef5eeb7",
+      "name": "Analytics Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1020,
+        -300
+      ],
+      "id": "077057b3-b730-48f6-9f28-1bf526fa1c28",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "SA4PJMPaBHiMJZCw",
+          "name": "ainsidercompany-GoogleGeminiAPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the main keyword data (Global Keyword Data)\nconst mainKeywordData = $input.first().json['Global Keyword Data']?.[0] || {};\n\n// Get the related keywords array\nconst relatedKeywords = $input.first().json['Related Keyword Data (Global)'] || [];\n\n// Create an output array that includes the main keyword data first\nconst output = [\n  {\n    keyword: mainKeywordData.keyword || 'N/A',\n    avg_monthly_searches: mainKeywordData.avg_monthly_searches || 'N/A',\n    competition_index: mainKeywordData.competition_index || 'N/A',\n    competition_value: mainKeywordData.competition_value || 'N/A',\n    high_cpc: mainKeywordData['High CPC'] || 'N/A',\n    low_cpc: mainKeywordData['Low CPC'] || 'N/A'\n  },\n  // Map up to 10 related keywords with selected fields\n  ...relatedKeywords.slice(0, 10).map(item => ({\n    keyword: item.keyword,\n    avg_monthly_searches: item.avg_monthly_searches,\n    competition_index: item.competition_index,\n    competition_value: item.competition_value,\n    high_cpc: item['High CPC'],\n    low_cpc: item['Low CPC']\n  }))\n];\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1480,
+        1420
+      ],
+      "id": "a4793801-999f-4a98-bf20-4322a2f02a4b",
+      "name": "Code",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        1420
+      ],
+      "id": "f6234e19-f8c2-4938-a3be-de82f3dcca10",
+      "name": "Aggregate1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "system_message:\n  description: |\n    Your role is to format and output the keyword data into a clean, readable text format. The input data consists of two main parts: **Main Keyword Data** and **Related Keywords Data**. Your task is to process and output this data in a way that is easy to read for the user. Each keyword and its associated details should be displayed clearly.\n\n  Data:\n    - **Main Keyword Data✨**:\n        - **Keyword**: \"{{ $json.data[0].keyword }}\"\n        - **Average Monthly Searches**: \"{{ $json.data[0].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[0].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[0].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[0].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[0].low_cpc }}\"\n\n    - **Related Keywords🧰**:\n              \n    \n        - **1. Keyword**: \"{{ $json.data[1].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[1].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[1].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[1].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[1].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[1].low_cpc }}\"\n        \n        - **2. Keyword**: \"{{ $json.data[2].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[2].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[2].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[2].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[2].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[2].low_cpc }}\"\n        \n        - **3. Keyword**: \"{{ $json.data[3].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[3].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[3].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[3].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[3].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[3].low_cpc }}\"\n        \n        - **4. Keyword**: \"{{ $json.data[4].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[4].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[4].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[4].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[4].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[4].low_cpc }}\"\n        \n        - **5. Keyword**: \"{{ $json.data[5].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[5].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[5].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[5].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[5].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[5].low_cpc }}\"\n        \n        - **6. Keyword**: \"{{ $json.data[6].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[6].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[6].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[6].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[6].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[6].low_cpc }}\"\n        \n        - **7. Keyword**: \"{{ $json.data[7].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[7].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[7].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[7].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[7].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[7].low_cpc }}\"\n        \n        - **8. Keyword**: \"{{ $json.data[8].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[8].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[8].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[8].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[8].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[8].low_cpc }}\"\n        \n        - **9. Keyword**: \"{{ $json.data[9].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[9].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[9].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[9].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[9].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[9].low_cpc }}\"\n\n        - **10. Keyword**: \"{{ $json.data[10].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[10].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[10].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[10].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[10].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[10].low_cpc }}\"\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1900,
+        1440
+      ],
+      "id": "a2a9ff17-c97c-491f-873a-ea9ad0c2204c",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.data }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1160,
+        -280
+      ],
+      "id": "4ffdc31b-95bc-465e-9a51-b53979cb7e08",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are the best SEO Manager in the country—a world-class expert in optimizing websites to rank on Google.\n\nYour task is to based on provided technical and content SEO reports:\n\ncreate your advanced professional report where you give all recommendations and next to each - solution - how to improve the each aspect which will need to be improved based on proved data.\n\nMake it beginner-friendly languange, professional technical but also that non-technical person after your report will be know, how to improve the SEO of website and make that SEO the best in the niche, "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        240
+      ],
+      "id": "bc958b45-c7bf-4ee4-adfb-1366358d0715",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2240,
+        440
+      ],
+      "id": "2a91c1f0-e5b3-42fa-9387-2cb9cbebd5b9",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "SA4PJMPaBHiMJZCw",
+          "name": "ainsidercompany-GoogleGeminiAPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Data from Semrush report: \nDomain: {{ $json.srDomain }}\nseRank: {{ $json.srRank }}\nsetraffic: {{ $json.srTraffic }}\nsrCosts: {{ $json.srCosts }}\nseUrlLinks:{{ $json.srUrlLinks }}\nseHostLinks:{{ $json.srHostLinks }}\nseDomainLinks:{{ $json.srDomainLinks }}\nseKeywords: {{ $json.srKeywords }}",
+        "options": {
+          "systemMessage": "=You are world class SEO Specialist. You job is to check provided Semrush report about domain:\n {{ $json.srDomain }}\n\nYour task is to analyze that report and create advance technical SEO report based on it for non-technical user, owner of domain which will tell with details and all insights about that report.\nUse data from Semrush report."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        420
+      ],
+      "id": "4b1473f3-b222-404b-989c-f91f111c05a5",
+      "name": "SemrushAgent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are the best SEO Manager in the country—a world-class expert in optimizing websites to rank on Google.\nIn this task, you will analyze the HTML code of a webpage and perform a detailed and structured On-Page Technical SEO Audit.\n\nAudit Structure\nYou will review all technical - including also advanced SEO, performance and optimization aspects of the page. Once completed, you will present your findings and recommendations in clear, organized bullet points, categorized into three sections:\n- Critical Issues – Must be fixed immediately.\n- Quick Wins – Easy fixes with a big impact.\n- Opportunities for Improvement – Require more effort but offer potential benefits.\n\nEnsure the output is properly formatted, clean, and highly readable. Do not include any introductory or explanatory text—only the audit findings.\nIt's important it must be world-class SEO raport.\n\nHere is the content of my landing page: {{ $json.data }}",
+        "options": {}
+      },
+      "id": "9381de4d-f9d1-4636-8df7-de6bc69cb73f",
+      "name": "TechnicalHTMLAudit",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1060,
+        -100
+      ],
+      "typeVersion": 1.7
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are the best SEO Manager in the country—a world-class expert in optimizing websites to rank on Google.\n\nIn this task, you will analyze the content of the webpage and perform a detailed and structured SEO Content Audit.\n\nAudit Structure\nYou will divide your audit in 2 parts:\n- The first part is the Analysis\n- The second is the Recommendations\n\nIn the Analysis, you will include:\n- Content Quality Assessment – Evaluate the content's overall quality, accuracy, and relevance to the target audience.\n- Keyword Research and Analysis – Identify primary and secondary keywords, keyword density, and keyword placement strategies.\n- Readability Analysis – Assess the content's readability score using metrics such as Flesch-Kincaid Grade Level, Flesch Reading Ease, and Gunning-Fog Index.\n\nIn the Recommendations, you will present your recommendations and actionable suggestions in clear, organized bullet points. Recommendations must improve the rankings in Google but also the user engagement. \n\nEnsure the output is properly formatted, clean, and highly readable. Do not include any introductory or explanatory text—only the audit findings.\n\nHere is the content of my landing page: {{ $json.data }}",
+        "options": {}
+      },
+      "id": "0cf59280-53c2-4038-a811-19f4fe79ee24",
+      "name": "ContentHTMLAudit",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1060,
+        140
+      ],
+      "typeVersion": 1.7
+    },
+    {
+      "parameters": {
+        "url": "https://semrush8.p.rapidapi.com/url_traffic",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{ $json['Landing Page Url'] }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-rapidapi-host",
+              "value": "semrush8.p.rapidapi.com"
+            },
+            {
+              "name": "x-rapidapi-key",
+              "value": "2b20c5cffamshe5d2225f47c2306p1f0aeajsnbaaa4d197812"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        420
+      ],
+      "id": "faf82d26-b79b-4dee-aae7-86786ae4a995",
+      "name": "SemRushAPI-Request"
+    },
+    {
+      "parameters": {
+        "url": "https://ahrefs-keyword-tool.p.rapidapi.com/global-volume",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "keyword",
+              "value": "={{ $json.output }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-rapidapi-host",
+              "value": "ahrefs-keyword-tool.p.rapidapi.com"
+            },
+            {
+              "name": "x-rapidapi-key",
+              "value": "2b20c5cffamshe5d2225f47c2306p1f0aeajsnbaaa4d197812"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1260,
+        1400
+      ],
+      "id": "28db1e15-1bb2-4ef6-b4fd-f8c0c74990e7",
+      "name": "Ahrefs API HTTP Request",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.data }}",
+        "options": {
+          "systemMessage": "You are world class SEO Specialist. You job is to check the message and pick out the SEO keywords based on the scraped website which will be the best for that website and output it. Make sure you output 5 SEO keyword. No commentary. Do not rephrase, just correct grammar if it has been misspelt."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1080,
+        -420
+      ],
+      "id": "221fa446-fbdd-4d44-bf16-cae26f08c687",
+      "name": "Keyword Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        520
+      ],
+      "id": "57ba38d4-a2ee-4562-82dd-6f9c8a69da38",
+      "name": "Google Gemini Chat Model3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "SA4PJMPaBHiMJZCw",
+          "name": "ainsidercompany-GoogleGeminiAPI"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Website": {
+      "main": [
+        [
+          {
+            "node": "TechnicalHTMLAudit",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ContentHTMLAudit",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Keyword Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Landing Page Url": {
+      "main": [
+        [
+          {
+            "node": "Scrape Website",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SemRushAPI-Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Analytics Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "TechnicalHTMLAudit",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "ContentHTMLAudit",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analytics Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Analytics": {
+      "ai_tool": [
+        [
+          {
+            "node": "Analytics Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analytics Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Keyword Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Keyword Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SemrushAgent": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "TechnicalHTMLAudit": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ContentHTMLAudit": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "SemRushAPI-Request": {
+      "main": [
+        [
+          {
+            "node": "SemrushAgent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ahrefs API HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Keyword Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "SemrushAgent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "468391ee-e7f8-4bac-b1c4-2a458ae2f22d",
+  "meta": {
+    "templateId": "3224",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c888959b38494396794b70188a19578baf88bb0b002f3a290fa504cabea4bfd5"
+  },
+  "id": "BZithOis58HXg6LK",
+  "tags": []
+}
