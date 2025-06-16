@@ -4,7 +4,7 @@ Overview
 
 The n8n Social Manager Agent is a sophisticated AI-powered tool meticulously designed to automate and optimize social media management workflows using the robust and versatile n8n automation platform. This agent empowers users to efficiently handle a wide range of tasks, including content creation, scheduling, multi-level approval processes, and seamless posting across various popular social media platforms such as Twitter, Facebook, Instagram, and LinkedIn. With its intuitive interface and powerful automation capabilities, it serves as an indispensable asset for social media managers, marketing teams, and small business owners aiming to enhance their online presence.
 
-![Social Media AI Agent](/n8n-socialmedia-agent/img/n8n-socialagent.png)
+![Social Media AI Agent](n8n-socialmedia-agent/img/n8n-socialagent.png)
 
 Features
 
