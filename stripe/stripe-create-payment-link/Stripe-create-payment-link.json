@@ -1,0 +1,252 @@
+{
+  "name": "Simplest way to create a Stripe Payment Link",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.stripe.com/v1/products",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "stripeApi",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{ $json.title }}"
+            },
+            {
+              "name": "default_price_data[unit_amount]",
+              "value": "={{ $json.price }}"
+            },
+            {
+              "name": "default_price_data[currency]",
+              "value": "={{ $json.currency }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4503cef2-4882-43c6-bdb9-b94c75da5776",
+      "name": "Create Stripe Product",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        780,
+        240
+      ],
+      "typeVersion": 4.1,
+      "credentials": {
+        "stripeApi": {
+          "id": "XnZFBemU0s0IhvzA",
+          "name": "StripeOktopus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.stripe.com/v1/payment_links",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "stripeApi",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "line_items[0][price]",
+              "value": "={{ $json.default_price }}"
+            },
+            {
+              "name": "line_items[0][quantity]",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "80306e70-b57f-4697-9a9f-1835d2525c2f",
+      "name": "Create payment link",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        980,
+        240
+      ],
+      "typeVersion": 4.1,
+      "credentials": {
+        "stripeApi": {
+          "id": "XnZFBemU0s0IhvzA",
+          "name": "StripeOktopus"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "038b54b7-9559-444e-8653-c5256a5b784e",
+              "name": "currency",
+              "type": "string",
+              "value": "EUR"
+            },
+            {
+              "id": "e86962bb-7af4-41be-94f6-6ee6b8569eef",
+              "name": "price",
+              "type": "number",
+              "value": "={{ $json.price * 100}}"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "include": "selected",
+        "includeFields": "title",
+        "options": {}
+      },
+      "id": "31d7450e-0f44-4c16-aec4-fe9213ff7c83",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        580,
+        240
+      ],
+      "notesInFlow": true,
+      "typeVersion": 3.3,
+      "notes": "Setup your flow"
+    },
+    {
+      "parameters": {
+        "path": "my-form-id",
+        "formTitle": "Create a payment link",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "title",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "price",
+              "fieldType": "number",
+              "requiredField": true
+            }
+          ]
+        },
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "10fb462a-8302-4281-9cd3-68bc00e69177",
+      "name": "Creation Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        380,
+        240
+      ],
+      "webhookId": "1c6fe52c-48ab-4688-b5ae-7e24361aa603",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "content": "# Setup\n### 1/ Add Your credentials\n[Stripe](https://docs.n8n.io/integrations/builtin/credentials/stripe/)\n\n### 2/ And fill the config node\n# 👇",
+        "height": 261.76027109756643,
+        "width": 275.01592825011585,
+        "color": 6
+      },
+      "id": "daf2d495-f31f-45e0-945a-a6e94be43b25",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        580,
+        -60
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "### Crafted by the\n## [🥷 n8n.ninja](https://n8n.ninja)",
+        "height": 85.79488430601403,
+        "width": 202.64787116404852,
+        "color": 7
+      },
+      "id": "9d298026-d858-4613-97c1-ac0cbd895ece",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        880,
+        100
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "respondWith": "redirect",
+        "redirectURL": "={{ $json.url }}",
+        "options": {}
+      },
+      "id": "5c8a17a3-7b2c-4760-a48a-02549f766967",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        1200,
+        240
+      ],
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Config": {
+      "main": [
+        [
+          {
+            "node": "Create Stripe Product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Creation Form": {
+      "main": [
+        [
+          {
+            "node": "Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create payment link": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Stripe Product": {
+      "main": [
+        [
+          {
+            "node": "Create payment link",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "85cc6833-41c5-4a4b-b87d-e6d3b56fee07",
+  "meta": {
+    "templateId": "2195",
+    "instanceId": "7f14179fd642a4f35fec2700bc319307123ae41971d7c658e15bb76db7491110"
+  },
+  "id": "G5aeVSsQQfqWIjRo",
+  "tags": []
+}
