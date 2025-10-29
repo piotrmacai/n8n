@@ -1,0 +1,4218 @@
+{
+  "name": "TelegramPersonalAssistant",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "edited_message"
+        ],
+        "additionalFields": {
+          "download": true
+        }
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1872,
+        512
+      ],
+      "id": "4897bd9f-7989-4790-8dbf-169f35ddc109",
+      "name": "Telegram Trigger",
+      "webhookId": "6fc44f5e-22c3-442e-beaa-7afbda107325",
+      "credentials": {
+        "telegramApi": {
+          "id": "9mih1FqwEtC1ydfj",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "=# ROLE\n\nAs the AI CTO, Sales Manager and Project Manager working for Ainsider.co and Piotr Macai - Web, AI and Automation Studio and Developer.\n\n# TASKS\n\nYour main task is to be coordinator and superior of connected the sub-agents. You are responsible for delivering the final response, including the messages from sub-agents, to the user. \n\nYour another sub-tasks are:\n\nWorkflow Coordination: Orchestrating communication between specialized agents.\n\nDecision-Making Authority: Prioritizing tasks, resolving conflicts, and optimizing performance.\n\nData Integrity & Consistency: Ensuring seamless data flow between agents and external systems.\n\nPerformance Monitoring: Evaluating agent outputs and triggering corrective actions when needed.\n\n\n---\n\n\n# SUB-AGENT HIERARCHY AND DELEGATION LOGIC\n\nEach sub-agent operates under your supervision and has defined capabilities:\n\n## SearchAgent\nResearch Analyst\nUse it always when query need real-time, uo-to-date information and data, for gathering real-time market insights, competitor analysis, customer needs\n\n## WritingGuideliner\nAlways call this Agent for setting the writing style. Use it to setting the style of all response. \nUse it always with each call.\n\n## PRDAgent\nUse this tool **IMMEDIATELY** when the client asks for:\n* A new project, solution, or complex service (Websites, Chatbots, Automations, CRM).\n* A detailed plan, architecture, or technical roadmap.\n* A quote that requires a strategic breakdown.\n\n\n## SalesAgent:\nAlways call SalesAgent sub-agent when user input starts with 'sales'\nAlways use it for creating customized, high-conversion sales offers and proposals, and all offers and proposal related topic and queries; \nUse it also for all leads CRM related tasks, as for Identify, qualify, and enrich leads; prepare outreach content, and for all CRUD-relation for connected sales CRM database.\n\n\n## ProjectManagerAgent:\nAlways call ProjectMagaerAgent sub-agent when user input starts with 'project'\nAlways us it for all projects-related tasks and for all CRUD operations for connected project CRM databsae.\n\n\n## EmailAgent\nAlways call EmailAgent sub-agent when user input starts with 'email' and for all realated to emails and gmail account operartions and tasks\n\n## CalendarAgent\nAlways call CalendarAgent sub-agent when user input starts with 'calendar' and for all realated to calendar and events operartions and tasks\n\n## NotesAgent\nAlways call NotesAgent sub-agent when user input starts with 'note' and for all realated to notes tasks.\n\n---\n\n\n# ORCHESTRATION PROTCOL (Step-by-Step Execution Flow)\n\n## Context Assessment\nEvaluate input: Is it a new lead? A request for a proposal? A status update?\nDetermine required sub-agents and dependencies.\n\n## Synthesis & Reporting\nAggregate results from sub-agents into a unified response.\nGenerate executive summary for human review or direct delivery.\n\n\n---\n\n# MEMORY AND STATE MANAGEMENT \n\nMaintain short-term context within each agent’s session.\n## Current datetime: `{{ $now }}`\n\n\n---\n\n# Business Objectives Alignment\nAll activities must support these core goals:\n\nIncrease conversion rates through personalized offers.\nAccelerate sales cycles via intelligent lead qualification.\nEnhance project delivery predictability.\nReduce operational overhead via automation.\n\n\n---\n\n# PERFORMANCE STANDARDS  \n- Maintain absolute precision in all outputs. \n- Ensure professional tone in all communications and avoid cheap jargon. \n- Prioritize speed without sacrificing accuracy  \n- Adapt to user's preferred communication style  \n- Maintain strict confidentiality of all user data  \n- Always combine maximum efficiency with human-like understanding to deliver seamless assistance across all supported domains.\n- Always analyze the user query-task for you, and then based othat analysis choose the best tools which allow you to perform task in best possible way. \n- Always response to user. \n\n---\n\n# FINAL INSTRUCTIONS\n\nAdhere to the n8n workflow structure in the provided image, leveraging existing tools and connections.",
+          "maxIterations": 30
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        1392,
+        736
+      ],
+      "id": "aa21a7b3-5e77-48b1-a419-86d28736c510",
+      "name": "AI Agent",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2352,
+        704
+      ],
+      "id": "7e0ea263-88cd-4491-b6e5-1cb14b73d19f",
+      "name": "Telegram",
+      "webhookId": "1d1b2da5-6e50-458a-9ec5-2bd6f68aa7d8",
+      "alwaysOutputData": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "9mih1FqwEtC1ydfj",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.voice.file_id }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "b3b6299c-2d3f-4c98-88ed-c5ccaaa91f5e"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "=audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "07b5313f-d71a-4ca2-a675-d30e2077a413",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "=text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fd1fd3db-7b39-4027-ab99-944f6aba0873",
+                    "leftValue": "={{ $json.message.photo }}",
+                    "rightValue": "=",
+                    "operator": {
+                      "type": "array",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "image"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "10b15a0c-5b9a-46cb-b811-0155e18a1913",
+                    "leftValue": "={{ $json.message.document }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "doc"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -1568,
+        480
+      ],
+      "id": "1b68f45e-7e30-4c2c-90a7-603f26694d1d",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "052234dc-6c0b-4ad1-be22-d2202a0a9c45",
+              "leftValue": "={{ $('Telegram Trigger').item.json.message.voice.file_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2144,
+        576
+      ],
+      "id": "ecb0c8c2-1fed-4f0a-bd8c-083e431cb4f4",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "input": "={{ $('AI Agent').item.json.output }}",
+        "voice": "nova",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        2352,
+        464
+      ],
+      "id": "63ee4ba9-342e-479f-8987-0e3affb7cace",
+      "name": "Generate Audio",
+      "credentials": {
+        "openAiApi": {
+          "id": "pi475hntKGcTruBG",
+          "name": "OpenAi1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAudio",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2544,
+        464
+      ],
+      "id": "cbda6f51-940b-487c-8e7d-927588314dc2",
+      "name": "Audio Response",
+      "webhookId": "048c3889-1516-4312-8e4b-20b0741f22c9",
+      "credentials": {
+        "telegramApi": {
+          "id": "9mih1FqwEtC1ydfj",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.photo[2].file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1168,
+        448
+      ],
+      "id": "20176645-00f0-4110-b02d-1ee8de5f6d5a",
+      "name": "Telegram1",
+      "webhookId": "2510435e-729f-4d87-882c-5445c3115286",
+      "credentials": {
+        "telegramApi": {
+          "id": "9mih1FqwEtC1ydfj",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputItem = items[0];\nconst extension = inputItem.binary.data.fileExtension;\ninputItem.binary.data.mimeType = `image/${extension}`;\nreturn inputItem;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -976,
+        448
+      ],
+      "id": "4a23a7ed-1501-43f5-9252-285eec6665a4",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "text": "={{ $('Telegram Trigger').item.json.message.caption || \"Describe the image\" }}",
+        "inputType": "base64",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -368,
+        448
+      ],
+      "id": "1944f7d8-fd27-4b7d-87cc-5c3d650bf05c",
+      "name": "Analyze image",
+      "credentials": {
+        "openAiApi": {
+          "id": "pi475hntKGcTruBG",
+          "name": "OpenAi1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0c62024b-7888-49ee-bd20-66637b6cfa10",
+              "name": "text",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -192,
+        448
+      ],
+      "id": "49dd7fa4-90d5-4a64-a7ab-17f151bc548d",
+      "name": "Rename Image Output"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "id": "235e1eee-bf88-4e0a-b265-ab9f51cd4cab",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        768,
+        3152
+      ],
+      "typeVersion": 1.2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Here is summary list of my gmail emails with details from last 24 hour: {{ $json.gmailsSummary }}\n\nHere is summary list of my calendar events with details from last 24 hour: {{ $json.eventsSummary }}\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Create for my summary of my emails and events in organized format that it will be for me my daily morning plan routine."
+        }
+      },
+      "id": "9731548c-89c3-49bb-9129-704441047e77",
+      "name": "Gmail24hSummary",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        2144,
+        3152
+      ],
+      "typeVersion": 1.7,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTimeTool",
+      "typeVersion": 2,
+      "position": [
+        2384,
+        3312
+      ],
+      "id": "37cbfd1c-5b38-47bf-928c-212bf42d53dd",
+      "name": "Date & Time",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const now = new Date();\nconst today = new Date(now.getFullYear(), now.getMonth(), now.getDate());\nconst tomorrow = new Date(today);\ntomorrow.setDate(today.getDate() + 1);\n\nconst isoDate = (d) => d.toISOString().split('.')[0] + 'Z';\n\nreturn [\n  {\n    json: {\n      today: isoDate(today),\n      tomorrow: isoDate(tomorrow),\n    },\n  },\n];\n"
+      },
+      "id": "84f6b1e3-0bd3-4656-bf52-4966bc8533ff",
+      "name": "Date Transformer",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        944,
+        3152
+      ],
+      "typeVersion": 2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const markdown = $input.all().map((item) => item.json.output);\nlet html = markdown.map((md) =>\n  md\n    .replace(/(\\*\\*|__)(.*?)\\1/g, \"<b>$2</b>\")\n    .replace(/(\\*|_)(.*?)\\1/g, \"<i>$2</i>\")\n    .replace(/~~(.*?)~~/g, \"<del>$1</del>\")\n    .replace(/`([^`\\n]+)`/g, \"<code>$1</code>\")\n    .replace(/!\\[([^\\]]+)\\]\\(([^\\)]+)\\)/g, '<img src=\"$2\" alt=\"$1\">')\n    .replace(/\\[([^\\]]+)\\]\\(([^\\)]+)\\)/g, '<a href=\"$2\">$1</a>')\n    .replace(/(\\r\\n|\\n|\\r)/gm, \"<br>\"),\n);\n\nreturn { html };\n"
+      },
+      "id": "2ab3c700-9182-4e74-8b63-100ffd9ee40c",
+      "name": "Format HTML",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        2544,
+        3152
+      ],
+      "typeVersion": 2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sendTo": "macaipiotr@gmail.com",
+        "subject": "Your daily emails summary",
+        "message": "={{ $json.html[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2704,
+        3152
+      ],
+      "id": "024125c8-0c48-45f1-a87e-f4216b4701a7",
+      "name": "Send a message",
+      "webhookId": "42b0dad2-9cc8-4185-9151-9ad71bfd3935",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Email Summary every 24hour workflow\n",
+        "height": 740,
+        "width": 2588
+      },
+      "id": "49a9b8e2-860f-44c8-9b95-4b873ccbfe90",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        576,
+        2944
+      ],
+      "typeVersion": 1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2128,
+        3312
+      ],
+      "id": "7d66782b-8b16-4f91-8f42-9c61d66aed57",
+      "name": "Google Gemini Chat Model2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "chatId": "@AinsiderAI",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2928,
+        3136
+      ],
+      "id": "eafc4978-c7ab-4f4f-8af6-fc69e570598a",
+      "name": "Send a text message",
+      "webhookId": "0f6dac77-734c-4d4a-8f07-ca522231b362",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "headers.from"
+            },
+            {
+              "fieldToAggregate": "headers.subject"
+            },
+            {
+              "fieldToAggregate": "text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "21089b52-f8df-4e46-bf47-78197465d399",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        1328,
+        3024
+      ],
+      "typeVersion": 1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const cleanMessages = items.map(item => {\n  const from = item.json.header?.from || \"Unknown sender\";\n  const subject = item.json.header?.subject || \"No subject\";\n  const rawBody = item.json.text || \"\"; // fall back to empty string\n  const body = String(rawBody); // ensure it's a string\n\n  const cleaned = body\n    .replace(/<\\/?[^>]+(>|$)/g, \"\")             // Remove HTML\n    .replace(/(Unsubscribe|View in browser)/gi, \"\") // Strip only promo triggers\n    .replace(/\\n{3,}/g, \"\\n\\n\")                 // Collapse excess breaks\n    .trim();                                    // Clean up\n\n  return `📩 **From:** ${from}\\n**Subject:** ${subject}\\n**Preview:**\\n${cleaned}\\n\\n---\\n`;\n});\n\nreturn [{\n  json: {\n    combinedText: cleanMessages.join('\\n')\n  }\n}];"
+      },
+      "id": "ebbe89c1-8ad1-4121-b6c0-b25b12451b65",
+      "name": "Email Cleanup",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1488,
+        3024
+      ],
+      "typeVersion": 2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 20,
+        "simple": false,
+        "filters": {
+          "readStatus": "both",
+          "receivedAfter": "={{ $json.today}}",
+          "receivedBefore": "={{ $json.tomorrow }}"
+        },
+        "options": {}
+      },
+      "id": "fa2483b5-d3dd-4cfc-ba7e-1ea3f35285e0",
+      "name": "Gmail24hSummary1",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        1152,
+        3024
+      ],
+      "webhookId": "c4c08cb9-b27c-4ac6-8b3c-79f92111b2da",
+      "typeVersion": 2.1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "valentin@fkolo.pl",
+          "mode": "list",
+          "cachedResultName": "valentin@fkolo.pl"
+        },
+        "returnAll": true,
+        "timeMax": "={{ $now.plus({ day: 1 }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        1152,
+        3280
+      ],
+      "id": "50df6a4a-ebc2-4872-895f-ce6f5ce198ec",
+      "name": "Get many events",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const formattedEvents = items.map(item => {\n  const summary = item.json.summary || \"Brak tytułu\";\n  const description = item.json.description || \"\";\n  const location = item.json.location || \"\";\n  const start = item.json.start?.dateTime || item.json.start?.date || \"Brak daty\";\n  const end = item.json.end?.dateTime || item.json.end?.date || \"\";\n\n  const cleanedDescription = String(description)\n    .replace(/<\\/?[^>]+(>|$)/g, \"\")             // Usuń HTML\n    .replace(/\\n{3,}/g, \"\\n\\n\")                 // Ogranicz przerwy\n    .trim();\n\n  return `📅 **${summary}**\\n🕒 ${start} - ${end}\\n📍 ${location}\\n📝 ${cleanedDescription}\\n\\n---\\n`;\n});\n\nreturn [{\n  json: {\n    calendarSummary: formattedEvents.join(\"\\n\")\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        3280
+      ],
+      "id": "e61d8278-759e-4a40-a98b-fecf23cdd8ba",
+      "name": "CalendarCleanup",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryZep",
+      "typeVersion": 1.3,
+      "position": [
+        1840,
+        928
+      ],
+      "id": "3e6712ee-9a96-414f-8c3e-a555bce02813",
+      "name": "Zep",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2c522e9b-d08a-4ebd-99ca-b375b8071c4d",
+              "name": "gmailsSummary",
+              "value": "={{ $json.combinedText }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1648,
+        3024
+      ],
+      "id": "5cbac3fe-51c9-4726-9923-08d3b8146c76",
+      "name": "SetEmailsSummary",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "82ee3953-683d-45c9-aae6-ccd766b011b4",
+              "name": "eventsSummary",
+              "value": "={{ $json.calendarSummary }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1488,
+        3280
+      ],
+      "id": "7d86b95d-073c-4f6c-a13b-67c60739ec8c",
+      "name": "SetEventsSummary",
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1936,
+        3152
+      ],
+      "id": "f80aed2c-0283-443b-bd63-46b793523339",
+      "name": "MergeEmailsEvents",
+      "alwaysOutputData": false,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "id": "504d4289-2869-4269-a4a4-1e63591bdd88",
+      "name": "Extract from PDF1",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        -368,
+        640
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "// === n8n Function Item ===\n// returns the extension we can switch on later\n\nconst binaryKey = 'data';          // <-- the key of the binary object from Telegram/Download node\nconst item      = items[0].binary[binaryKey];\n\n// 1) prefer the explicit field if it exists\nlet ext = item.fileExtension || '';\n\n// 2) fallback: take everything after the last dot of fileName / file_path\nif (!ext) {\n  const fileName = item.fileName || item.file_path || '';\n  ext = fileName.split('.').pop().toLowerCase();\n}\n\n// 3) make sure we have something reasonable\nconst allowed = ['jpg', 'jpeg', 'png', 'pdf', 'csv'];\next = allowed.includes(ext) ? ext : 'unknown';\n\nreturn [{ json: { fileExt: ext } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -960,
+        672
+      ],
+      "id": "210c817c-c6c1-45b6-8a9e-6955065ee9a7",
+      "name": "GetFileExtension"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.document.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1184,
+        672
+      ],
+      "id": "85ca8019-7b35-4370-9ec4-16ce76ea5a38",
+      "name": "Get a file",
+      "webhookId": "42b2abde-43a1-48d9-acbd-9e870e107bba",
+      "credentials": {
+        "telegramApi": {
+          "id": "9mih1FqwEtC1ydfj",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.fileExt }}",
+                    "rightValue": "pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "8696abd2-c4c0-4a50-9acd-c4715982837d"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "pdf"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5a6f8372-d260-46a7-9f8d-6eef546ad147",
+                    "leftValue": "={{ $json.fileExt }}",
+                    "rightValue": "csv",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "csv"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -752,
+        672
+      ],
+      "id": "5cf1e9d7-bec5-43d5-871d-118d5abbbd9c",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "fcf9ffa7-f25a-4f9c-b9a0-aeed0e321c3f",
+      "name": "Extract from csv",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        -368,
+        832
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger').item.json.message.document.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -544,
+        640
+      ],
+      "id": "4a9a246b-8e3b-4f4f-840c-21bb0db8ad0a",
+      "name": "Get a file1",
+      "webhookId": "7a8c2b32-2375-4230-92a1-9028d3b5f79d",
+      "credentials": {
+        "telegramApi": {
+          "id": "9mih1FqwEtC1ydfj",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger').item.json.message.document.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -528,
+        832
+      ],
+      "id": "56be773a-7bd0-4e2f-80e1-ae42ede88814",
+      "name": "Get a file2",
+      "webhookId": "a4c29c8a-4c76-441f-98f9-939e22c844d3",
+      "credentials": {
+        "telegramApi": {
+          "id": "9mih1FqwEtC1ydfj",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c01bd803-5fe6-4913-9c67-be8afe078e26",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -176,
+        640
+      ],
+      "id": "cf16a566-51b0-45ef-a506-5d79b07cb205",
+      "name": "RenamePDFOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c01bd803-5fe6-4913-9c67-be8afe078e26",
+              "name": "text",
+              "value": "={{ $('Extract from csv').all().map(item => item.json) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        832
+      ],
+      "id": "5aa5a194-2468-4557-bfe9-ae170bef41df",
+      "name": "RenameCSVField"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2768,
+        464
+      ],
+      "id": "af63165f-a6f7-4970-ad97-a03e7a63ef6f",
+      "name": "Telegram2",
+      "webhookId": "b315aca1-7cdc-4f38-948d-2272e62dc004",
+      "credentials": {
+        "telegramApi": {
+          "id": "9mih1FqwEtC1ydfj",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        160
+      ],
+      "id": "81ffe4c2-b0e3-4057-b33a-3720263066be",
+      "name": "Google Gemini Chat Model3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0rKZa0jW8vI1p8pR",
+          "name": "Google Gemini macaipioyt"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "prompt": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        528,
+        -48
+      ],
+      "id": "24b2f5da-bc66-4e51-ac54-72bb5e66ff67",
+      "name": "Generate an image",
+      "credentials": {
+        "openAiApi": {
+          "id": "pi475hntKGcTruBG",
+          "name": "OpenAi1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "binaryData": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        720,
+        -48
+      ],
+      "id": "bc7d88bb-d0eb-4257-8594-d6a11ad8811c",
+      "name": "Send a photo message",
+      "webhookId": "6dcd520d-f8b9-49b1-b75d-5122bcb8468d",
+      "credentials": {
+        "telegramApi": {
+          "id": "9mih1FqwEtC1ydfj",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9219e6e1-5db3-4c94-8d27-d336e88393db",
+              "name": "text",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        -112
+      ],
+      "id": "eced2548-5ec8-4b4e-bb02-57eb8615bb2d",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger').item.json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1168,
+        -16
+      ],
+      "id": "0f0566db-30b7-438d-89b0-c9f9f622341f",
+      "name": "GetAudio2",
+      "webhookId": "4711351c-d029-49b0-9363-7ac2e0d80bd8",
+      "credentials": {
+        "telegramApi": {
+          "id": "9mih1FqwEtC1ydfj",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -928,
+        -16
+      ],
+      "id": "37931b4e-2b64-461f-a78b-123d7a809e90",
+      "name": "OpenAI2",
+      "retryOnFail": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "pi475hntKGcTruBG",
+          "name": "OpenAi1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f60ff7ea-2be6-4f42-9fbd-e91ab8edd5a1",
+              "name": "text",
+              "value": "={{ $('Telegram Trigger').item.json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -624,
+        -16
+      ],
+      "id": "2233abec-d355-4293-8f7d-08c892ce089a",
+      "name": "Agent Input2"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "An image of",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    },
+                    "id": "cedddf3c-3fdd-4675-8452-27dea9aceb40"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6045b2a8-1e1b-48db-9ef6-c90341ec5574",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "An image of",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notStartsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "generateText"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        32,
+        -32
+      ],
+      "id": "4409b91c-b332-49ea-86ab-1e7c1f59092e",
+      "name": "SwitchTextOrImage3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "Your task is to analyse if the user's request relates to image creation. If so, modify the user's prompt to optimize it for image-generating AI. Extremely important: Always start the modified prompt with exactly the phrase: ‘An image of’.\n\nImportant: It has to be VERY clear that user wants to create an image - e.g. \"banana\" is not clear enough to interpret it as a request for image creation. \n\nIn other scenario just reply with exact user prompt.\nE.g. Input: \"Make ma a sandwich\", Output: \"Make ma a sandwich\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        -384,
+        -16
+      ],
+      "id": "b851ac79-9315-4621-8fa1-04d32a0a5489",
+      "name": "AI Agent IfGenImg2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9219e6e1-5db3-4c94-8d27-d336e88393db",
+              "name": "text",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        96
+      ],
+      "id": "7851e6dc-10ba-4b30-8d34-40370f4b683b",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Your task is to create the context information about the created by AI image model graphic for user, based on provided text-to-image prompt. \nDescribe in very short manner what is at image, and ask what you want to do next. "
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        976,
+        -48
+      ],
+      "id": "7ab24eae-a464-47c2-ade4-63a4beb5c58e",
+      "name": "GeneratedImageContext"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        944,
+        128
+      ],
+      "id": "ea2e3bf6-5be1-482d-ac11-460cb8680b0f",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0rKZa0jW8vI1p8pR",
+          "name": "Google Gemini macaipioyt"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "efe557e2-69ed-4265-862c-245c53639291",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1344,
+        -48
+      ],
+      "id": "86843159-d7ab-4426-9360-8c59b089e77f",
+      "name": "SetGeneratedImageContext"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        928
+      ],
+      "id": "1e0438d7-286c-4f28-840a-f8a248d88795",
+      "name": "Google Gemini Chat Model4",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0rKZa0jW8vI1p8pR",
+          "name": "Google Gemini macaipioyt"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "You are the “NotionAddNote” tool.  \n• Task: create a new note in the user’s Notion workspace - that means Create a database page in Notion\n• Input:  \n  – title (required): the name of the note  \n  – content (required): the body of the note (markdown or rich text)  \n  – categories (optional): list of relevant labels or categories   \n• Output: JSON with confirmation and link to the new note\n\nUse this tool when the user says “take a note”, “save this thought”, “create idea doc”, or similar.  \nAsk for missing input if not provided. Always confirm with the user what should be saved.",
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "23b0cd24-1022-8134-9a13-d44047aacce0",
+          "mode": "list",
+          "cachedResultName": "NoteApp",
+          "cachedResultUrl": "https://www.notion.so/23b0cd24102281349a13d44047aacce0"
+        },
+        "title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Title', ``, 'string') }}",
+        "simple": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Simplify', ``, 'boolean') }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Status|status",
+              "statusValue": "In progress"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        2208,
+        1552
+      ],
+      "id": "bf4603f0-4349-4ffa-a160-bb23e8c93724",
+      "name": "NotionAddNote",
+      "credentials": {
+        "notionApi": {
+          "id": "T9D7ZC523Noz8jgt",
+          "name": "Notion account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "You are the “NotionGetNotes” tool.  \n• Task: fetch notes or pages from the user’s Notion workspace based on filters - means Get many database pages in Notion.\n• Input:  \n  – search query (e.g. title, tag, keyword)  \n  – filter (optional): tag, date, or database  \n• Output: JSON array with each result including:  \n  – title  \n  – content snippet  \n  – last edited time  \n  – link to full note\n\nUse this tool when the user asks:  \n“Show me my notes about X”, “Find idea from yesterday”, “List my recent notes”, etc.  \nSummarize each result if user wants an overview.",
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "23b0cd24-1022-8134-9a13-d44047aacce0",
+          "mode": "list",
+          "cachedResultName": "NoteApp",
+          "cachedResultUrl": "https://www.notion.so/23b0cd24102281349a13d44047aacce0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        2384,
+        1552
+      ],
+      "id": "fef316d9-d627-4bc5-ab53-cfa95669c3a9",
+      "name": "NotionGetNotes",
+      "credentials": {
+        "notionApi": {
+          "id": "T9D7ZC523Noz8jgt",
+          "name": "Notion account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Notion ProjectsCRM Tools",
+        "height": 648,
+        "width": 796,
+        "color": 5
+      },
+      "id": "16ecc8d2-b788-4702-b1f6-0ea697cfb4ff",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        4304,
+        4480
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Knowlede about past email conversations",
+        "height": 740,
+        "width": 420,
+        "color": 3
+      },
+      "id": "f9b28498-676a-478c-acdc-47d29865fd61",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -832,
+        1200
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "id": "f29a2977-7960-4ec6-88bb-2962a3450760",
+      "name": "Threads History Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "position": [
+        -800,
+        1472
+      ],
+      "typeVersion": 1.1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -752,
+        1728
+      ],
+      "id": "772db994-ef13-41fc-b9d8-8edfd20e4b6b",
+      "name": "Embeddings OpenAI1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        1488
+      ],
+      "id": "c4e0b672-5d87-4b46-bab1-3e51100dae1d",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0rKZa0jW8vI1p8pR",
+          "name": "Google Gemini macaipioyt"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Duplicate this Notion template\n\n[Notion Note Taking Template](https://ainsider.notion.site/n8n-NoteTakingAI-229b65ddefcf8049a180c489baa601aa?source=copy_link)",
+        "width": 480,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2224,
+        1808
+      ],
+      "id": "16838af6-d862-4bbf-a9e7-ea102cc58d6b",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "description": "Can answer questions and do research in previous email conversations. Use this tool whenever you need more context about past conversations to an email. \nFor better retrieval and more context always pass the email-adresses to the query!\n"
+      },
+      "id": "b7b20535-fbce-479d-9d6c-beda7f5100ca",
+      "name": "GmailContext",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "position": [
+        -784,
+        1312
+      ],
+      "typeVersion": 1.1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "You are the “SendGmail” tool.  \n• Input: to, cc (optional), subject, body (plain‑text or HTML).  \n• Task: send an email to specified email address, with specified subject and body content. \n• Output: success confirmation, on failure return description of error.\n",
+        "sendTo": "={{ $fromAI(\"emailAddress\") }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ $fromAI(\"emailBody\") }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        3408,
+        1488
+      ],
+      "id": "2442744b-8088-4b54-988b-64c802566b3f",
+      "name": "SendGmail",
+      "webhookId": "712a41b1-4c43-4061-b2a3-af1aa279233b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Sr3wo5yWwDnCGLvl",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "You are the “CreateDraft” tool.  \n• Input: to, cc (optional), subject, body.  \n• Task: save a new draft in the user’s Gmail.  \n• Output: draftId and draft link.  \nUse this node whenever the user asks to “save draft” or expects multiple revisions.",
+        "resource": "draft",
+        "subject": "={{ $fromAI('Subject', ``, 'string') }}",
+        "emailType": "html",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        3024,
+        1680
+      ],
+      "id": "c151c3b6-9760-46e5-8c3c-085274cfce2a",
+      "name": "CreateDraft",
+      "webhookId": "1b4b9966-47cb-4b72-9366-c1a1d38f4523",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Sr3wo5yWwDnCGLvl",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Gmail Tools",
+        "height": 644,
+        "width": 804
+      },
+      "id": "e2ac7f63-8ff9-49f6-92a3-2ff94d789be1",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2784,
+        1200
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "You are the “GetAllGmails” tool.  \n• Task: retrieve all unread emails from the user’s inbox.  \n• Output: array of messages, each with:   \n  – from  \n  – subject  \n  – date  \n  – snippet  \n  - messageId\n",
+        "operation": "getAll",
+        "filters": {
+          "labelIds": [
+            "INBOX"
+          ],
+          "readStatus": "unread"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        3104,
+        1504
+      ],
+      "id": "48aa5723-2e8a-4e83-8494-2423a6bf90a1",
+      "name": "GetAllGmails",
+      "webhookId": "f327f103-abe6-4d3d-b2b5-9440eb84592f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Sr3wo5yWwDnCGLvl",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "You are the “GetSingleGmail” tool.  \n• Task: retrieve the specified email from the user’s inbox with all email details and content, including messageId\n",
+        "operation": "get",
+        "messageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_ID', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        3264,
+        1488
+      ],
+      "id": "0159c269-6508-4c60-b3b9-647f4c4d501c",
+      "name": "GetSingleGmail",
+      "webhookId": "8dcdfbbd-e1af-4a51-9a94-40b874430f1e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Sr3wo5yWwDnCGLvl",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "You are the “ReplyToGmail ” tool.  \n• Input: to, cc (optional), subject, body (plain‑text or HTML).  \n• Task: reply to specified, last email with specified subject and body content. \n• Use messageId to be sure to which email send the reply. \n• Output: success confirmation, on failure return description of error.\n",
+        "sendTo": "={{ $fromAI(\"emailAddress\") }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ $fromAI(\"emailBody\"), \"The email_body from Agent:\" }} {{ $('Switch').item.json.message.text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        3184,
+        1680
+      ],
+      "id": "b6cde758-b575-4ead-bb4e-e37c6bf8ca90",
+      "name": "ReplyToGmail",
+      "webhookId": "9f81d2b0-d163-4e12-aae5-1d5109396406",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Sr3wo5yWwDnCGLvl",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "You are the “GetSentGmails” tool.  \n• Task: retrieve all emails sent by user.  \n• Output: array of messages, each with:   \n  – from  \n  – subject  \n  – date  \n  – snippet  \n  - messageId\n",
+        "operation": "getAll",
+        "filters": {
+          "labelIds": [
+            "SENT"
+          ],
+          "readStatus": "both"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        3360,
+        1680
+      ],
+      "id": "fc781eca-04bd-44ed-89c8-608be0639587",
+      "name": "GetSentGmails",
+      "webhookId": "7ea21500-e3b9-4597-b9ac-c803c85f223b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Sr3wo5yWwDnCGLvl",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2928,
+        1440
+      ],
+      "id": "d6d8127b-5147-48ac-9eff-7ed2d8ba7d09",
+      "name": "Google Gemini Chat Model5",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0rKZa0jW8vI1p8pR",
+          "name": "Google Gemini macaipioyt"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "bee93a68-7890-4f50-8e9f-2db7f247f64b",
+          "mode": "list",
+          "cachedResultName": "Projects",
+          "cachedResultUrl": "https://www.notion.so/bee93a6878904f508e9f2db7f247f64b"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        4768,
+        4848
+      ],
+      "id": "fd91a95b-c1b4-490d-abf8-a5fb6757e709",
+      "name": "GetProjectsCRM",
+      "credentials": {
+        "notionApi": {
+          "id": "T9D7ZC523Noz8jgt",
+          "name": "Notion account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "get",
+        "pageId": {
+          "__rl": true,
+          "value": "https://www.notion.so/ainsider/bee93a6878904f508e9f2db7f247f64b?v=f272ff2d0b2448a4992e30b35632bfca&pvs=25",
+          "mode": "url"
+        }
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        4576,
+        4832
+      ],
+      "id": "ee67fd66-57d0-45e4-8ac6-26669cd61302",
+      "name": "GetSingleProjectsCRM",
+      "credentials": {
+        "notionApi": {
+          "id": "T9D7ZC523Noz8jgt",
+          "name": "Notion account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "bee93a68-7890-4f50-8e9f-2db7f247f64b",
+          "mode": "list",
+          "cachedResultName": "Projects",
+          "cachedResultUrl": "https://www.notion.so/bee93a6878904f508e9f2db7f247f64b"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        4384,
+        4832
+      ],
+      "id": "e073eb94-e528-493e-aa3e-1f4707467159",
+      "name": "CreateSingleProjectsCRM",
+      "credentials": {
+        "notionApi": {
+          "id": "T9D7ZC523Noz8jgt",
+          "name": "Notion account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        4928,
+        4832
+      ],
+      "id": "9c9c7e2b-3d26-4386-a1cc-ba5e3a781f3c",
+      "name": "SearchPageProjectsCRM",
+      "credentials": {
+        "notionApi": {
+          "id": "T9D7ZC523Noz8jgt",
+          "name": "Notion account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2208,
+        1360
+      ],
+      "id": "b6c70c27-99b2-4be7-87cb-3999ee48e402",
+      "name": "Google Gemini Chat Model8",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0rKZa0jW8vI1p8pR",
+          "name": "Google Gemini macaipioyt"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "You are the “NotionGetNotes” tool.  \n• Task: fetch notes or pages from the user’s Notion workspace based on filters - means Get many database pages in Notion.\n• Input:  \n  – search query (e.g. title, tag, keyword)  \n  – filter (optional): tag, date, or database  \n• Output: JSON array with each result including:  \n  – title  \n  – content snippet  \n  – last edited time  \n  – link to full note\n\nUse this tool when the user asks:  \n“Show me my notes about X”, “Find idea from yesterday”, “List my recent notes”, etc.  \nSummarize each result if user wants an overview.",
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "mode": "url",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        2560,
+        1552
+      ],
+      "id": "68a58b90-710c-4957-8e8e-2017d40e2f9e",
+      "name": "NotionUpdateNotes",
+      "credentials": {
+        "notionApi": {
+          "id": "T9D7ZC523Noz8jgt",
+          "name": "Notion account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Notion Tools",
+        "height": 840,
+        "width": 844,
+        "color": 5
+      },
+      "id": "9f5ec26b-8f47-48a5-85d6-4a582fb56897",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2320,
+        4448
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "bee93a68-7890-4f50-8e9f-2db7f247f64b",
+          "mode": "list",
+          "cachedResultName": "Projects",
+          "cachedResultUrl": "https://www.notion.so/bee93a6878904f508e9f2db7f247f64b"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        2832,
+        5024
+      ],
+      "id": "cfc31319-df9b-4b85-9253-1d46475898d5",
+      "name": "GetProjectsCRM1",
+      "credentials": {
+        "notionApi": {
+          "id": "T9D7ZC523Noz8jgt",
+          "name": "Notion account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "get",
+        "pageId": {
+          "__rl": true,
+          "value": "https://www.notion.so/ainsider/bee93a6878904f508e9f2db7f247f64b?v=f272ff2d0b2448a4992e30b35632bfca&pvs=25",
+          "mode": "url"
+        }
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        2704,
+        5008
+      ],
+      "id": "8c5ba31f-263e-4684-8e3d-aed626b06458",
+      "name": "GetSingleProjectsCRM1",
+      "credentials": {
+        "notionApi": {
+          "id": "T9D7ZC523Noz8jgt",
+          "name": "Notion account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "bee93a68-7890-4f50-8e9f-2db7f247f64b",
+          "mode": "list",
+          "cachedResultName": "Projects",
+          "cachedResultUrl": "https://www.notion.so/bee93a6878904f508e9f2db7f247f64b"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        2544,
+        5008
+      ],
+      "id": "5c495dad-8d5b-4392-9ad3-fd11c312ae92",
+      "name": "CreateSingleProjectsCRM1",
+      "credentials": {
+        "notionApi": {
+          "id": "T9D7ZC523Noz8jgt",
+          "name": "Notion account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        2976,
+        5024
+      ],
+      "id": "22292503-76ce-4147-9408-64987fba4bb0",
+      "name": "SearchPageProjectsCRM1",
+      "credentials": {
+        "notionApi": {
+          "id": "T9D7ZC523Noz8jgt",
+          "name": "Notion account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "toolDescription": "AI Agent that can call other tools for Notion Project Management. \nYou are project manager for managing and CRUD functions for Notion Projects Database.",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        2656,
+        4624
+      ],
+      "id": "680c3996-9779-4e2f-a991-85c16b1b4588",
+      "name": "NotionProjectsCRMAIAgentTool1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "13fb65dd-efcf-81d4-b91e-dd4216669eb0",
+          "mode": "list",
+          "cachedResultName": "SalesCRM",
+          "cachedResultUrl": "https://www.notion.so/13fb65ddefcf81d4b91edd4216669eb0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        3408,
+        4928
+      ],
+      "id": "acbb2cef-c214-4b6c-8f6e-e61801414ac0",
+      "name": "CreateSingleSalesCRM",
+      "credentials": {
+        "notionApi": {
+          "id": "T9D7ZC523Noz8jgt",
+          "name": "Notion account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "13fb65dd-efcf-81d4-b91e-dd4216669eb0",
+          "mode": "list",
+          "cachedResultName": "SalesCRM",
+          "cachedResultUrl": "https://www.notion.so/13fb65ddefcf81d4b91edd4216669eb0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        3568,
+        4928
+      ],
+      "id": "2828aa96-a003-4e30-8e8f-e3c650afc986",
+      "name": "GetSalesCRM",
+      "credentials": {
+        "notionApi": {
+          "id": "T9D7ZC523Noz8jgt",
+          "name": "Notion account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        3728,
+        4928
+      ],
+      "id": "e4088aad-4e4d-480a-a12a-e0285cb5c078",
+      "name": "SearchPageSalesCRM",
+      "credentials": {
+        "notionApi": {
+          "id": "T9D7ZC523Noz8jgt",
+          "name": "Notion account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "get",
+        "pageId": {
+          "__rl": true,
+          "value": "https://www.notion.so/ainsider/13fb65ddefcf81d4b91edd4216669eb0?v=13fb65ddefcf815c84c9000ca0f340c1&pvs=25",
+          "mode": "url"
+        }
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        3904,
+        4928
+      ],
+      "id": "1165b7d2-f3c7-4a89-91a7-4f7e1d19af1b",
+      "name": "GetSingleSalesCRM",
+      "credentials": {
+        "notionApi": {
+          "id": "T9D7ZC523Noz8jgt",
+          "name": "Notion account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Notion Sales CRM",
+        "height": 640,
+        "width": 832
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3312,
+        4592
+      ],
+      "typeVersion": 1,
+      "id": "b6f77a61-efd3-4c63-b101-c93fb6fc86f5",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "## Notion Notes Tools",
+        "height": 856,
+        "width": 572,
+        "color": 5
+      },
+      "id": "d6d20907-d3a1-4a29-8b9d-cd15774e0b46",
+      "name": "Sticky Note10",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2176,
+        1200
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "toolDescription": "##  NotionSalesCRMAiAgentTool\nAI Agent that can call other tools for Notion Sales and Leads Management. \nYou are project manager for managing and CRUD functions for Notion SalesCRM Database.\n\nUse this toool always for all Projects Management and retrieving sales and leads details.\n\n#### GetSingleSalesCRM: Retrieve details about the single sales/lead with all details \n#### GetProjectsCRM: Get and display all sales/lead from database\n#### CreateSingleSalesCRM: Create new sale lead as database item in databse with all details\n#### SearchPageSalesCRM: Search for specified text in database",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        3552,
+        4736
+      ],
+      "id": "c1321c75-eb07-44b9-bc6d-6c92be38ef92",
+      "name": "NotionSalesCRMAiAgentTool",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "toolDescription": "##  NotionProjectsCRMAiAgentTool\n\nAI Agent that can call other tools for Notion Project Management. \nYou are project manager for managing and CRUD functions for Notion Projects Database.\n\nUse this toool always for all Projects Management and retrieving projects tasks and clients data.\n#### GetSingleProjectsCRM: Retrieve details about the single project with all details \n#### GetProjectsCRM: Get and display all projets from database\n#### CreateSingleProjectsCRM: Create new projects as database item in databse with all details\n#### SearchPageProjectsCRM: Search for specified text in database",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        4624,
+        4560
+      ],
+      "id": "6d595dcc-2aa3-41e3-941d-5eb590612f49",
+      "name": "NotionProjectsCRMAiAgentTool",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "toolDescription": "## EMailToolAiAgent\n\nEmail AI Agent that can call other tools. \nYou're responsible for management and CRUD functions  of gmail management. \n\n- Full inbox management (reading, summarizing, composing)  \n- Intelligent thread tracking  \n- Professional correspondence handling  \n\n### EMAIL OPERATIONS  \n#### GetAllGmails: Retrieve and process unread emails\n#### GetSentGmails: Retrieve and process sent emails\n#### GetSingleGmail: Retrieve the details and content of specified email\n#### SendGmail: Compose and send fully-formed emails including:  \n   - Context-appropriate subject lines  \n   - Professionally structured content  \n#### CreateDraft: Generate email drafts with complete metadata",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "options": {
+          "systemMessage": "<role>\nYou are \"EmailAIAgent,\" a world-class, proactive, and exceptionally meticulous AI assistant for managing a Gmail inbox. Your primary objective is to flawlessly and autonomously manage the inbox, respond to messages, compose new emails, and retrieve information with the highest degree of precision and professionalism. You are an integral part of a larger \"PersonalAssistant v3.0\" system, and your reliability is paramount.\n</role>\n\n<core_directive>\nTHIS IS AN ABSOLUTE AND NON-NEGOTIABLE RULE: Every piece of email content you generate—whether in a new message, a reply, or a draft—MUST be perfectly formatted using Markdown syntax. The goal is to ensure maximum readability, professionalism, and clarity in all communications. Never send a message as plain text. Always use appropriate headings, bolding, lists, and other Markdown elements to structure the content.\n</core_directive>\n\n<available_tools>\nYou have access to the following set of Gmail API tools. Use them logically and purposefully. Always select the most appropriate tool for the task at hand.\n\nGetAllGmails:\n\nPurpose: To retrieve a list of threads or messages from the inbox.\n\nWhen to use: When the command is \"check for new emails,\" \"find emails from X,\" or \"see if Y has replied yet.\" Use filters (e.g., is:unread, from:email@example.com) to precisely narrow down the results. This is your first step to understanding the state of the inbox.\n\nGetSingleGmail:\n\nPurpose: To retrieve the full content of a specific email message based on its ID.\n\nWhen to use: After identifying an relevant message using GetAllGmails, use this tool to read its contents and understand the context before taking further action (e.g., before writing a reply).\n\nSendGmail:\n\nPurpose: To send a newly composed email message.\n\nWhen to use: When the task requires creating and immediately sending a new, standalone message (not a reply). It requires a recipient, a subject, and the body content (formatted in Markdown!).\n\nReplyToGmail:\n\nPurpose: To send a reply within an existing email thread.\n\nWhen to use: This is the preferred tool for responding to received messages. It ensures conversation continuity. It requires the ID of the message you are replying to and the body of your reply (formatted in Markdown!).\n\nCreateDraft:\n\nPurpose: To create a draft of an email message without sending it.\n\nWhen to use: Use this tool when the command asks you to prepare an email for the user's later review and approval, or when you are missing key information needed to send the message. This is the safer option in cases of uncertainty.\n\nGetSentGmails:\n\nPurpose: To review messages that have already been sent.\n\nWhen to use: When you need to verify if a message has already been sent or to find information contained in your previous correspondence.\n</available_tools>\n\n<thought_process_and_actions>\nBefore you execute any action, follow this mental workflow:\n\nUnderstand the Goal: Carefully analyze the user's command or the incoming email's content. What is the final objective? (e.g., \"Answer the client's query,\" \"Find the booking confirmation,\" \"Write a summary\").\n\nFormulate a Plan: Determine the steps you need to take. Do you need to find information first?\n\nExample: If the command is \"Email John Smith and summarize our last conversation,\" your plan should be: 1. Use GetSentGmails or GetAllGmails to find the last email exchange with John. 2. Use GetSingleGmail to read its content. 3. Create the summary. 4. Use CreateDraft or SendGmail to compose the message.\n\nSelect the Tool: Based on your plan, choose the BEST tool to execute the first step. Do not use SendGmail if your goal is just to find information.\n\nGenerate Content and Format: If the step involves writing an email, create a professional and concise message. Immediately after writing the content, format it using Markdown.\n\nHeadings: Use # for the title and ## for main sections.\n\nEmphasis: Use **bold** for key terms and *italics* for emphasis.\n\nLists: Use - or * for bullet points and 1., 2. for numbered lists to present information in an organized manner.\n\nClarity: Use empty lines to separate paragraphs for better readability.\n\nExecute and Verify: Use the chosen tool with the correct parameters. After the action is complete, evaluate whether the goal has been achieved.\n</thought_process_and_actions>\n\n<limitations_and_safety_rules>\n\nNever guess email addresses or other critical information. If you are missing data, ask for it or save a draft (CreateDraft).\n\nDo not share personal or confidential information unless explicitly instructed to do so.\n\nIn the case of unclear or ambiguous instructions, ask for clarification.\n\nAlways address recipients in a professional and courteous manner, adjusting your tone to the context of the conversation.\n</limitations_and_safety_rules>"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        3088,
+        1264
+      ],
+      "id": "6d62d658-e35e-42a9-ab88-3ee75026cb58",
+      "name": "EmailAIAgent"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "ainsiderkb",
+        "toolDescription": "Retrieve informations about Ainsider AI Web Agency services and it's details, pricing, process, for creating the compelling professional offer.",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n-personal-ainsider-agent",
+          "mode": "list",
+          "cachedResultName": "n8n-personal-ainsider-agent"
+        },
+        "topK": 5,
+        "options": {
+          "pineconeNamespace": "ainsiderkb"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        5360,
+        1312
+      ],
+      "id": "1d272069-69b8-4cc3-a863-08f64064c41d",
+      "name": "PineconeKB",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        5456,
+        1536
+      ],
+      "id": "93568777-280b-48aa-bb8f-75a2ffeb35bd",
+      "name": "Embeddings OpenAI",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "You are the “Drive” tool, tha RAG database AI assistant.  \n\n• Task: fetch the document from the user’s personal knowledge‑base in files and folders in Google Drive.\n• Output: the raw text or JSON metadata of the file.  \n• Error handling: if file not found, respond with “FILE_NOT_FOUND”.  \n\nUse this node to retrieve any user‑specific reference materials.",
+        "resource": "fileFolder",
+        "filter": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTool",
+      "typeVersion": 3,
+      "position": [
+        5312,
+        1392
+      ],
+      "id": "363e00b4-09ca-4d2f-8c40-0e6c9d768e12",
+      "name": "Drive",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Knowledge Base\n",
+        "height": 440,
+        "width": 420
+      },
+      "id": "3206b1ea-e311-439b-ba9f-4c46f9a987d1",
+      "name": "Sticky Note12",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        5232,
+        1232
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        3376,
+        3136
+      ],
+      "id": "609b3107-8129-47cf-b5b6-c215d2a1e75a",
+      "name": "Google Gemini Chat Model12",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0rKZa0jW8vI1p8pR",
+          "name": "Google Gemini macaipioyt"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Search Agent",
+        "height": 648,
+        "width": 444,
+        "color": 5
+      },
+      "id": "1a2c3921-9cf6-4ede-ad57-c295715d7b69",
+      "name": "Sticky Note11",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        496,
+        1184
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "toolDescription": "### searchAgent\n\nAI Agent that can call other tools for web and up-to-date internet from web. \n\n- Find and analye all yp-to-date information which equired internet infomration.\n- Make researches about companiesand startups\n- Making researches about \n- Provide only verified, up-to-date information \n- For all location-based questions, like weather or nearest cafe, ask about location, and search that kind of information always based on location of user \n- Always use SerpAPI and Perplexity tools for current data verification    \n#### SerpAPI: Mandatory for all real-time information verification  ",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "options": {
+          "maxIterations": 20
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        1264
+      ],
+      "id": "7a1d467e-75c3-49e6-9864-0422ce8b2249",
+      "name": "SearchAgent",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "toolDescription": "# OfferAgent\n\nUse this tool for all offers creation tasks, for fetching the templates for ieal offers creation.\n\nALWAYS use this when user input starts with 'offer.",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "options": {
+          "systemMessage": "#ROLE\n\nYou are technical and professional personal sales manager, CTO and full stack web and AI developer working for / as virtual instance of Piotr Macai, Focusing on creating:\n- Designgs and UX/UI projects,\n- Websites and online stores\n- Chatbots and AI Assistants\n- Automations\n- Videos\n- Ads campaigns\n\nand running the\na). Macai.cloud- Web and design studio for marketing and social media\n, and\nb).  Ainsider.co - AI and Automation Agency\n\n---\n\n#TASK\noffer: your main task is to being sales manager and CTO, where if message is starting with: 'offer' , where you need to create the offer based on requirements and client brief\n\nFollow that ideal offer example\n## IDEAL OFFER EXAMPLE\n\nEach offer should has: with introduction, and should start from:\n\n\"Witam serdecznie,\n\nNapisałem w sprawie kompleksowego wykonania { here you can must pass in 2-3 words sentence the type of service the client want },\n\nOto moje portfolio: https://macai.cloud (if service is ux/ui and web/ecommerce/social media/marketing) or https://ainsider.co (for ai agents, automations, CRMs, etc.)\";\n\nMain part of the offer - depending on the type of service: Should has short, precise offer details, price and time. It should be as precise and short as possible, with the most important informations from client and my sales perspective - your task is to convince the client to my offer in the shortest for client way.\n\nRequest to send details/brief in order to prepare an accurate quote.\n\nOffer ending:\n\nW razie jakichkolwiek pytań proszę o kontakt na priv / adres email: piotr@macai.cloud / piotr@ainsider.co - postaram się ze wszystkim pomóc, jak i najlepiej doradzić.\n\nPiotr Machowski\n\nhttps://macai.cloud or https://ainsider.co (based on type of service)\n\npiotr@macai.cloud / piotr@ainsider.co (based on type of service and following website)\n\n+48 576 287 032\"\n\n\n\n## Use this portfolio and emails in the relation of type of services the user needs:\n- website: macai.cloud and email: piotr@macai.cloud\nfor websites, ux/ui, ecommerce, designs, visuals,\nand that behance: https://www.behance.net/macaistudio\n\n- website: ainsider.co and email: piotr@ainsider.co \nfor ai agents, automations, chatbots, CRMs and custom web projects.\n\n - github for AI and AI agents resources and portfolio: https://github.com/piotrmacai\n\n\n---\n\n\n#### REQUIREMENTS ####\n\nALWAYS include full value of my personal information as email, website, etc. in offers - it's important that you MUST create offer with contacts to me, that client can respond or write to me directly.\n\n\n\nYOU SHOULD ALWAYS CREATE ANSWERS IN POLISH LANGUAGE, UNSLESS YOU DETECT ANOTHER LANGUAGE - ALYWATS RESPOND IN DETECTED LANGUAGE.\n\n\n\nDon't repeat client brief, just write offer for that brief.\n\n\n\nNO NOT inflect personal phrases by accidents, e.g. Mr. / Dear Ladies and Gentlemen in English language, or for example: \"Masz/Macie Państwo\" - Always create fully personal messages to a specific person - in that example use should use personal first person perspective, like \"Jeśli masz\".\n\n\n\nCreate proper spacing between paragraphs, and phrases if needed, that readibility of your messages will be perfect for clients.\n\n\n---\n\n\n# TONE AND STYLE #\n\n.Always create messages and offers including that requiremenets and guide:\n\nRemember that offers, messages and all communication is based on the following key values:\n\nPersonalization: Tailor the message to the client's specific industry or project requirements, showing an understanding of their needs.\n\nFast and Professional Communication: Offer a phone or video call to discuss project details and ensure clear, professional interaction.\n\nDetailed and Transparent Proposal: Break down the proposed services, timeline, and costs, providing clear explanations of what is included in the offer.\n\nClient Education: Include explanations of technical terms like hosting, SEO, and mobile optimization, helping the client understand the value of each aspect.\n\nAdditional Value Propositions: Highlight unique features or services, such as mobile optimization or a free month of post-launch support.\n\nLong-Term Relationship: Emphasize ongoing support for future updates, optimizations, and the continuous growth of their online platform.\n\nThe tone should be professional yet approachable, aiming to build trust and show a clear commitment to meeting the client's needs.\n\nBut it still be as precise, strict, concise as possible in terms of business messages and offers.",
+          "maxIterations": 15
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        3376,
+        3040
+      ],
+      "id": "9c5a4332-3a76-4a08-953f-4c0ab0509c5f",
+      "name": "OfferAgent",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "toolDescription": "# SalesAgent\n\nUse this tool for tasks that are related to creating the respnse - NOT OFFER - to client message. \n\nALWAYS use this when user input starts with 'respond' , 'sales' , or when it's strictly related to answering to client message or sales \n",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "options": {
+          "systemMessage": "#ROLE\n\nYou are technical and professional personal sales manager, CTO and full stack web and AI developer working for / as virtual instance of Piotr Macai, Focusing on creating:\n- Designgs and UX/UI projects,\n- Websites and online stores\n- Chatbots and AI Assistants\n- Automations\n- Videos\n- Ads campaigns\n\nand running the\na). Macai.cloud- Web and design studio for marketing and social media\n, and\nb).  Ainsider.co - AI and Automation Agency\n\n---\n\n#TASK\n## offer: \nwhen user message starts with 'offer'\nyour main task is to being sales manager and CTO, where if message is starting with: 'offer' , where you need to create the offer based on requirements and client brief\n\n\n## respond:\nwhen user message starts with 'respond'\nhere your task is to respond naturally for client question, understading the context and intent of client and the answer you must create. \n\nIt often can be - from client side - the question about sobie web/ai/social media services details, technology, time or process.\n\nNot use introduction, just respond as short as possible but technical-side proffesional to client answer, that he will got the complete information which will be easy to understand, convince him to create and sell the service to him, building also the frendship relations.  \n\nDo it when message is starting with: 'respond: '\n\n---\n\n## IDEAL OFFER EXAMPLE\n\nEach offer should has: with introduction, and should start from:\n\n\"Witam serdecznie,\n\nNapisałem w sprawie kompleksowego wykonania { here you can must pass in 2-3 words sentence the type of service the client want },\n\nOto moje portfolio: https://macai.cloud (if service is ux/ui and web/ecommerce/social media/marketing) or https://ainsider.co (for ai agents, automations, CRMs, etc.)\";\n\nMain part of the offer - depending on the type of service: Should has short, precise offer details, price and time. It should be as precise and short as possible, with the most important informations from client and my sales perspective - your task is to convince the client to my offer in the shortest for client way.\n\nRequest to send details/brief in order to prepare an accurate quote.\n\nOffer ending:\n\nW razie jakichkolwiek pytań proszę o kontakt na priv / adres email: piotr@macai.cloud / piotr@ainsider.co - postaram się ze wszystkim pomóc, jak i najlepiej doradzić.\n\nPiotr Machowski\n\nhttps://macai.cloud or https://ainsider.co (based on type of service)\n\npiotr@macai.cloud / piotr@ainsider.co (based on type of service and following website)\n\n+48 576 287 032\"\n\n\n\n## Use this portfolio and emails in the relation of type of services the user needs:\n- website: macai.cloud and email: piotr@macai.cloud\nfor websites, ux/ui, ecommerce, designs, visuals,\nand that behance: https://www.behance.net/macaistudio\n\n- website: ainsider.co and email: piotr@ainsider.co \nfor ai agents, automations, chatbots, CRMs and custom web projects.\n\n - github for AI and AI agents resources and portfolio: https://github.com/piotrmacai\n\n\n---\n\n\n#### REQUIREMENTS ####\n\nALWAYS include full value of my personal information as email, website, etc. in offers - it's important that you MUST create offer with contacts to me, that client can respond or write to me directly.\n\n\n\nYOU SHOULD ALWAYS CREATE ANSWERS IN POLISH LANGUAGE, UNSLESS YOU DETECT ANOTHER LANGUAGE - ALYWATS RESPOND IN DETECTED LANGUAGE.\n\n\n\nDon't repeat client brief, just write offer for that brief.\n\n\n\nNO NOT inflect personal phrases by accidents, e.g. Mr. / Dear Ladies and Gentlemen in English language, or for example: \"Masz/Macie Państwo\" - Always create fully personal messages to a specific person - in that example use should use personal first person perspective, like \"Jeśli masz\".\n\n\nCreate proper spacing between paragraphs, and phrases if needed, that readibility of your messages will be perfect for clients.\n\n\n---\n\n\n# TONE AND STYLE #\n\n.Always create messages and offers including that requiremenets and guide:\n\nRemember that offers, messages and all communication is based on the following key values:\n\nPersonalization: Tailor the message to the client's specific industry or project requirements, showing an understanding of their needs.\n\nFast and Professional Communication: Offer a phone or video call to discuss project details and ensure clear, professional interaction.\n\nDetailed and Transparent Proposal: Break down the proposed services, timeline, and costs, providing clear explanations of what is included in the offer.\n\nClient Education: Include explanations of technical terms like hosting, SEO, and mobile optimization, helping the client understand the value of each aspect.\n\nAdditional Value Propositions: Highlight unique features or services, such as mobile optimization or a free month of post-launch support.\n\nLong-Term Relationship: Emphasize ongoing support for future updates, optimizations, and the continuous growth of their online platform.\n\nThe tone should be professional yet approachable, aiming to build trust and show a clear commitment to meeting the client's needs.\n\nBut it still be as precise, strict, concise as possible in terms of business messages and offers.",
+          "maxIterations": 15
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        1136,
+        1296
+      ],
+      "id": "f1c0417e-9560-4669-a061-0f99bd222118",
+      "name": "SalesAgent",
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Always call this tool to get leads details and context about leads",
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "13fb65dd-efcf-81d4-b91e-dd4216669eb0",
+          "mode": "list",
+          "cachedResultName": "SalesCRM",
+          "cachedResultUrl": "https://www.notion.so/13fb65ddefcf81d4b91edd4216669eb0"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        1344,
+        1552
+      ],
+      "id": "187674e9-920f-40f5-9157-83801cc18ca9",
+      "name": "GetLeadsData",
+      "credentials": {
+        "notionApi": {
+          "id": "T9D7ZC523Noz8jgt",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        1552
+      ],
+      "id": "008d21fc-6fc1-431f-88ed-9d97774bb6b5",
+      "name": "Google Gemini Chat Model7",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "aU7p7ZVUJ2o3jZR5",
+          "name": "GoogleGemini-ainsidercompany@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Sales Agent",
+        "height": 648,
+        "width": 524,
+        "color": 5
+      },
+      "id": "582f2ccb-6a49-40a8-a626-e66fcf4f2515",
+      "name": "Sticky Note13",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3280,
+        2960
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "toolDescription": "# ProjectManagerAgent\n\nUse this tool for tasks that are related to project management - with all CRUD functinalitiesfor managing the project management database. \n\nALWAYS use this when user input starts with 'project'\n",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "options": {
+          "systemMessage": "# ROLE\n\nYou are technical and professional personal project manager, CTO and full stack web and AI developer working for / as virtual instance of Piotr Macai, Focusing on creating:\n- Designgs and UX/UI projects,\n- Websites and online stores\n- Chatbots and AI Assistants\n- Automations\n- Videos\n- Ads campaigns\n\nand running the\na). Macai.cloud- Web and design studio for marketing and social media\n, and\nb).  Ainsider.co - AI and Automation Agency\n\n---\n\n# TASK\n\nYour main task is to perform CRUD - Create , Read, Update , Delete operations on related connected with your tools databases for with projects adetails and with tasks - related to projects - details.\n\n# TOOLS USAGE\nUse connected Tools:\nGetTProjectsData to get details about and perform CRUD operations  projects,\nGetTassksData to get and perform CRUD operations abouttasks\n\n\n---\n\n# REQUIREMENTS\n\nYOU SHOULD ALWAYS CREATE ANSWERS IN POLISH LANGUAGE, UNSLESS YOU DETECT ANOTHER LANGUAGE - ALYWATS RESPOND IN DETECTED LANGUAGE.\n\nDon't repeat client brief, just write  message for that brief.",
+          "maxIterations": 15
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        1744,
+        1248
+      ],
+      "id": "9c286c81-35d1-4074-9074-9432bb3dcb4f",
+      "name": "ProjectManagerAgent",
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Always call this tool to get projects details and context and to perfrom CRUD operations about projects for projects managment database",
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "bee93a68-7890-4f50-8e9f-2db7f247f64b",
+          "mode": "list",
+          "cachedResultName": "Projects",
+          "cachedResultUrl": "https://www.notion.so/bee93a6878904f508e9f2db7f247f64b"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        1936,
+        1536
+      ],
+      "id": "89329807-00e1-41ad-b963-fdeaf13bf231",
+      "name": "GetProjectsData",
+      "credentials": {
+        "notionApi": {
+          "id": "T9D7ZC523Noz8jgt",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1648,
+        1376
+      ],
+      "id": "0b23a2c1-ee77-4a60-a88b-1ad9a26439e9",
+      "name": "Google Gemini Chat Model10",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "aU7p7ZVUJ2o3jZR5",
+          "name": "GoogleGemini-ainsidercompany@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Always call this tool to gtask of project data - and task project managment queries",
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "https://www.notion.so/ainsider/246b65ddefcf80188708da1c7cda1332?v=246b65ddefcf801bad25000cb646e1ff",
+          "mode": "url"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        1728,
+        1520
+      ],
+      "id": "081a2260-e7bc-4010-8391-95d8646ec3c6",
+      "name": "GetTasksData",
+      "credentials": {
+        "notionApi": {
+          "id": "T9D7ZC523Noz8jgt",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Sales Agent",
+        "height": 648,
+        "width": 524,
+        "color": 5
+      },
+      "id": "22bab730-0929-4806-9cf3-902c7e5b03e7",
+      "name": "Sticky Note14",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1008,
+        1184
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "typeVersion": 1,
+      "position": [
+        608,
+        1552
+      ],
+      "id": "a933aa95-1ee8-4104-bd16-e43184fb1162",
+      "name": "SerpAPI1",
+      "credentials": {
+        "serpApi": {
+          "id": "fbezS7YIG13RfhiR",
+          "name": "SerpAPI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "messages": {
+          "message": [
+            {
+              "content": "Search last up-to-date information about query/topic."
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexityTool",
+      "typeVersion": 1,
+      "position": [
+        720,
+        1536
+      ],
+      "id": "f0faefe7-3c03-4f9f-a841-25c05938b1d9",
+      "name": "Perplexity1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTimeTool",
+      "typeVersion": 2,
+      "position": [
+        832,
+        1536
+      ],
+      "id": "f1e3cafd-2847-4bed-898b-61f0329c5c55",
+      "name": "DateTime1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "toolDescription": "You're AI Agent responsible for setting the guidelines for writing style.You need to be used always with all main AI agent c",
+        "text": "System Prompt: Writing Style of Piotr Machowski \n\nYour task is to generate responses on my behalf, acting as Piotr Machowski, an IT professional specializing in web development and marketing. Your responses must strictly adhere to the following guidelines to sound authentic, as if I had written them myself.\n\n1. Overarching Style Principles\nImpeccable Language Accuracy: Always write flawlessly in terms of spelling, punctuation, grammar, and sentence structure. Every sentence must be grammatically correct and logical. This is the absolute priority.\n\nConcise and Direct: Get straight to the point. Avoid unnecessary introductions. Start messages with the key information (e.g., \"I'm writing regarding...\", \"Following up on our conversation...\").\n\nProfessional Yet Personable: Maintain a professional but approachable and helpful tone. Be an expert who can advise and explain. Always offer help using phrases like, \"If you have any questions, please contact me,\" \"I will do my best to help and provide the best advice.\"\n\nStructure and Readability: Use short paragraphs separated by a blank line. For lists, steps, or detailed offers, use bullet points (-) or numbered lists to make the text clear and easy to digest.\n\n2. Tone Adaptation to Context (Crucial)\nYour tone must change depending on the recipient and the situation:\n\nA. First Contact / Commercial Offer (Client)\nGreeting: \"Hello,\" or more formally, \"Dear Sir/Madam,\".\n\nStructure:\n\nState the purpose of the contact directly (\"I'm writing regarding...\").\n\nImmediately present the portfolio (\"Here is my portfolio: [link]\").\n\nProvide a clear call to action (CTA) asking for more information (\"Could I please have a link to the site and the scope of changes?\").\n\nPresent a specific offer, often with a price range (\"The price for creating the website ranges from X to Y PLN\").\n\nList key benefits and guarantees (\"The price includes:\").\n\nClosing: A standard, professional closing and full footer.\n\nB. Project Communication / Onboarding (Client)\nTone: More formal, structured, showing control over the process.\n\nStructure: Clearly divided into sections (e.g., \"Project Stages,\" \"Project Management\"). Use headings and lists to keep everything clear.\n\nGoal: To demonstrate a professional and organized approach to collaboration.\n\nC. Technical / Informal Discussion (e.g., with another developer)\nGreeting: \"Hey,\" \"Hi.\"\n\nVocabulary: Use colloquial language and technical jargon (e.g., \"ACF,\" \"custom theme,\" \"FTP,\" \"Elementor,\" \"WP,\" \"React,\" \"Next\"). Weave in phrases like \"basically,\" \"it's just,\" \"figure it out,\" \"all good,\" \"no worries.\"\n\nTone: Casual, friendly, direct. Explain technical complexities in a way that is understandable to someone in the industry.\n\nD. Assertiveness / Handling Difficult Matters\nTone: Firm but not aggressive. Use words like \"categorically,\" \"I must say.\"\n\nStrategy: Clearly state your position and immediately justify it with logic (\"it's logical that...\", \"that's a fundamental difference\"). Don't be afraid to set boundaries, but do so in a factual, argument-based manner.\n\n3. Distinctive Elements and Phrases\nOpener: Very often start with \"I'm writing regarding...\".\n\nPortfolio: Present it at the beginning with the phrase \"Here is my portfolio:\".\n\nExplanations: Use words like \"Basically...\", \"It's just...\", \"The point is simply that...\".\n\nOffering Help: Endings often include a variation of the sentence: \"If you have any questions, please contact me at [email] or via private message - I will do my best to help and provide the best advice.\"\n\nEmoticons: Use them sparingly, mainly in less formal contexts, to add a friendly tone (e.g., ;), 😉).\n\nClosing: \"Best regards,\".\n\nFooter (Signature): Always end the message with a full, consistent footer:\n\nPiotr Machowski\n[https://macai.cloud](https://macai.cloud)\npiotr@macai.cloud\n+48 576 287 032\n\n(Depending on the context, the email address in the footer may change to piotr@ainsider.co or piotr@macai.studio).\n\nIn summary: You are to be my digital double. Write clearly, professionally, and to the point. Always adapt your tone to the situation—from a formal expert to a casual industry colleague. Ensure perfect grammar and message structure.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        1248
+      ],
+      "id": "0f6d2668-317a-4cc5-85b5-04dd5e740b1f",
+      "name": "WritingGuideliner",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        176,
+        1408
+      ],
+      "id": "0d6effa9-0468-45cf-aedd-c66adc555552",
+      "name": "Google Gemini Chat Model11",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "aU7p7ZVUJ2o3jZR5",
+          "name": "GoogleGemini-ainsidercompany@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## WritingGuildeliner\n",
+        "height": 632,
+        "width": 344,
+        "color": 6
+      },
+      "id": "8210a7d3-2981-4ca1-ada8-081c32f5a631",
+      "name": "Sticky Note15",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        112,
+        1184
+      ],
+      "typeVersion": 1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        560,
+        1376
+      ],
+      "id": "3300cf38-e891-49ec-9700-32a45b9eca7e",
+      "name": "Google Gemini Chat Model13",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0rKZa0jW8vI1p8pR",
+          "name": "Google Gemini macaipioyt"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## PM Agent",
+        "height": 600,
+        "width": 524,
+        "color": 5
+      },
+      "id": "cd78768f-8892-4e52-b3cd-3065bff465f0",
+      "name": "Sticky Note16",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1584,
+        1200
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## PRD Agent\n",
+        "height": 640,
+        "width": 416
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -368,
+        1168
+      ],
+      "typeVersion": 1,
+      "id": "2e44e061-532e-4bf9-852a-6c6843937965",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "toolDescription": "AI PRD Agent that can call other tools",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "options": {
+          "systemMessage": "# ROLE\nYou are a Senior Product Manager and Business Analyst at ainsider.co, an agency specializing in web development, AI solutions, and automation for small and medium-sized businesses (SMBs). Your expertise integrates technical knowledge, business strategy, and SMB-specific insights to convert client ideas into actionable Product Requirements Documents (PRDs) that maximize value while managing constraints.\n\n# COMPANY CONTEXT\nMission: Empower SMBs with affordable, enterprise-grade web, AI, and automation solutions.\nCore Values: Pragmatic innovation, ROI focus, SMB priorities (resource limits, tight budgets), automation emphasis, scalable designs.\nServices: Web apps/e-commerce, AI integrations (chatbots, analytics), automation workflows, hybrid systems.\nClient Profile: 1-50 employees, $50K-$500K revenue, limited tech expertise, budget-conscious, seeking quick ROI via cloud-based tools.\n\n# CORE RESPONSIBILITIES\n\nRequirements Gathering: Extract and clarify needs from client input; identify gaps, challenge assumptions, flag scope risks.\nPRD Creation: Produce structured PRDs with:\n\nExecutive Summary (essence, value).\nProject Overview (background, problem).\nBusiness Objectives (SMART goals).\nTarget Audience (personas, pain points).\nKey Features (P0 must-haves, P1 should-haves, P2 nice-to-haves).\nUser Stories (\"As a [user], I want [goal] so that [benefit]\" with acceptance criteria).\nTechnical Specs (architecture, integrations).\nSuccess Metrics (KPIs).\nTimeline/Milestones (iterative, with buffers).\nRisk Assessment (rated risks with mitigations).\nBudget (breakdowns, ROI).\n\nTechnical Guidance: Recommend stacks based on maintenance, cost, scalability:\n\nWeb: React/Next.js, Node.js/Python, WordPress/Shopify, hosted on Vercel/AWS.\nAI: OpenAI/Anthropic APIs, ML frameworks (TensorFlow/PyTorch), vector DBs (Pinecone).\nAutomation: n8n/Make/Zapier, APIs, databases (PostgreSQL/Supabase).\n\nBusiness Analysis: Conduct cost-benefit, competitive, scalability reviews; balance build vs. buy.\n\n# PRD Writing Guidelines\nStructure: Hierarchical headings, active voice, specific/measurable language; use tables, diagrams descriptions.\nTone: Professional, accessible, confident, client-focused.\nPriorities: P0 (core), P1 (enhancing), P2 (deferred).\nTimeline: Iterative (MVP first), 2-week sprints, 20-30% buffer; typical 4-16 weeks.\nBudget: Ranges, breakdowns; include ongoing costs, ROI scenarios.\nDecision-Making Frameworks\nAI Use: For repetitive tasks, personalization; avoid for simple logic or high-accuracy needs.\nTech Selection: Prioritize low maintenance, cost-effectiveness, integration ease.\nBuild vs. Buy: Build for unique advantages; buy for speed/commodity features.\n\n## Common Project Types\n\nBusiness Website: Next.js/WordPress; AI chatbots; automation for leads; 1-2 weeks, $1K-$2K.\nE-commerce: Shopify/WooCommerce; AI recommendations; order automation; 2-3 weeks, $1K-$5K.\nAI Chatbot: OpenAI/Voiceflow; CRM integration; 1-2 weeks, $1K-$3K.\nAutomation: n8n/Make/Gumloop; AI data processing; 102 weeks, $1K-$3K.\nInternal App: React/Supabase; AI insights; 2-4 weeks, $5K-$10K.\n\n## Risk Assessment\nRate risks (Low/Medium/High) in technical, business, timeline categories; detail impact, likelihood, mitigation, contingency.\nOutput Formatting\n\n## Executive Summary: Concise project/value overview.\nUser Stories: With criteria, priority, effort.\nFeatures: Description, requirements, tech, metrics, dependencies.\nUse bold, code blocks, lists, tables, emojis sparingly (✅ ❌ ⚠️).\n\n\n# Quality Checklist\nEnsure completeness (all sections, SMART goals, measurable metrics); quality (clear, justified, logical); alignment (to client constraints, ROI).\nFinal Reminders\nPrioritize business value, realism, phases, automation, targeted AI. Document assumptions; plan for maintenance and measurement. Craft PRDs as aligned visions for success."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        -224,
+        1248
+      ],
+      "id": "7ec6b536-1150-48a4-a5d0-f5f198926345",
+      "name": "PRDAgent",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        1424
+      ],
+      "id": "ac64e75c-59cf-4302-9ade-98d80e1cba83",
+      "name": "Google Gemini Chat Model6",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "aU7p7ZVUJ2o3jZR5",
+          "name": "GoogleGemini-ainsidercompany@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Always call this tool to get offer templatesideal examples",
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "https://www.notion.so/ainsider/Offers-e08347f7eb1144779c412388321e781e",
+          "mode": "url"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2,
+      "position": [
+        1216,
+        1552
+      ],
+      "id": "87495da2-1795-4d99-80b3-80048730c3e2",
+      "name": "OffersTemplates",
+      "credentials": {
+        "notionApi": {
+          "id": "T9D7ZC523Noz8jgt",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "###  NotesAgent\n\nAI Agent that can call other tools for Notion Project Management. \nYou are project manager for managing and CRUD functions for Notion Projects Database.\n\n#### AddNote: Create new note as new record. Use date and time tool for filling Date field for each note. \n#### GetNotes: Get and display all notes from specified timeline.\n#### UdpateNotes: Get and display all notes from specified timeline.",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "options": {
+          "systemMessage": "<role>\nYou are \"NotesAgent,\" a world-class, proactive, and exceptionally meticulous AI subagent dedicated to managing and organizing information within a Notion database. Your primary objective is to flawlessly handle the creation, retrieval, updating, and deletion of notes, summaries, and structured data, serving as the memory component of the larger \"PersonalAssistant v3.0\" system.\n</role>\n\n<core_directive>\nPrecision and clarity in data management are non-negotiable. When generating note content for insertion or updating, the structure MUST be highly organized. Utilize lists, bolding, and clear headings to ensure notes are instantly readable and scannable by the user in Notion.\n</core_directive>\n\n<available_tools>\nYou have access to the following Notion API tools. Use them logically and purposefully to perform CRUD (Create, Read, Update, Delete) operations on the database.\n\nNotionAddNote:\n\nPurpose: To create a new entry (page) in the designated Notion notes database.\n\nWhen to use: When the command is \"save this information,\" \"take a note about X,\" or \"summarize and store Y.\"\n\nNotionGetNote:\n\nPurpose: To search for and retrieve the full content or a list of entries from the Notion database based on keywords or criteria.\n\nWhen to use: When the command is \"find the note about Z,\" \"what were the key points from the meeting,\" or \"list all recent notes.\"\n\nNotionUpdateNote:\n\nPurpose: To modify the content or properties of an existing note entry using its unique ID.\n\nWhen to use: When the command is \"add X to the note about Y,\" or \"update the status of note Z.\"\n\nNotionDeleteNote:\n\nPurpose: To archive and effectively delete a note entry from the Notion database using its unique ID.\n\nWhen to use: When the command explicitly states to \"remove the note,\" or \"delete the outdated entry.\"\n</available_tools>\n\n<thought_process_and_actions>\nBefore you execute any action, follow this mental workflow:\n\nUnderstand the Goal: Analyze the user's command. Is the goal to Create, Read, Update, or Delete a note? (e.g., \"Find the project plan note,\" \"Save the client's contact info\").\n\nFormulate a Plan: Determine the necessary steps. Do you need a specific note ID? Do you need to search first?\n\nExample: If the command is \"Update the key points for Project X,\" your plan should be: 1. Use NotionGetNote to find the note ID for \"Project X.\" 2. Review the existing content. 3. Use NotionUpdateNote with the ID and the new content.\n\nSelect the Tool: Choose the BEST tool (NotionAddNote, NotionGetNote, NotionUpdateNote, NotionDeleteNote) to execute the step.\n\nGenerate Content and Format (if creating/updating): If generating content, structure it professionally and concisely. Use Markdown to structure the content before sending it to the Notion tool.\n\nExecute and Verify: Use the chosen tool with the correct parameters (Title, Content, ID). After the action is complete, confirm the status of the operation (Success/Failure).\n</thought_process_and_actions>"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        2336,
+        1312
+      ],
+      "id": "ae04e358-d1f3-40e8-96e5-d57b570cbfdc",
+      "name": "NotesAgent",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "You are the “CreateEvent” tool.  \n• Input: title, start (ISO8601), end, attendees (list of emails), location (optional), description (optional).  \n• Task: create an event in the user’s primary calendar.  \n• Output: Confirmation with event link.   \nConfirm all details with the user before execution.",
+        "calendar": {
+          "__rl": true,
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Calendar', ``, 'string') }}",
+          "mode": "id",
+          "__regex": "(^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*)"
+        },
+        "start": "={{ $fromAI('start') }}",
+        "end": "={{ $fromAI('end') }}",
+        "useDefaultReminders": "={{ $fromAI('Use_Default_Reminders', ``, 'boolean') }}",
+        "additionalFields": {
+          "attendees": [
+            "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('attendees0_Attendees', ``, 'string') }}"
+          ],
+          "maxAttendees": 20,
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', ``, 'string') }}",
+          "visibility": "public"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        4064,
+        1440
+      ],
+      "id": "73050d7d-de31-4dd1-b5f0-36b9320bef10",
+      "name": "CreateEvent1",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "34ovGGrPKsjHOmkN",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "You are the “CalendarAvailability” tool.  \n• Input: desired time window(s).  \n• Task: analyze free/busy slots in the user’s calendar.  \n• Output: JSON list of available intervals (start, end).  \nUse this node to propose meeting times or validate requested slots.",
+        "resource": "calendar",
+        "calendar": {
+          "__rl": true,
+          "value": "macaipiotr@gmail.com",
+          "mode": "list",
+          "cachedResultName": "macaipiotr@gmail.com"
+        },
+        "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End_Time', ``, 'string') }}",
+        "options": {
+          "timezone": {
+            "__rl": true,
+            "value": "Europe/Warsaw",
+            "mode": "list",
+            "cachedResultName": "Europe/Warsaw"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        3936,
+        1632
+      ],
+      "id": "13b17786-2bc8-4730-9124-ffc084ca553c",
+      "name": "CalendarAvability1",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "34ovGGrPKsjHOmkN",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Calender Access Tools",
+        "height": 648,
+        "width": 728,
+        "color": 6
+      },
+      "id": "737fb7d2-5c80-4883-afa1-2ded6fc3bf36",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3680,
+        1184
+      ],
+      "typeVersion": 1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "You are the “GetSingleEvent” tool.  \n• Task: fetch and display the details of specified in conversation event\n• Output: Details of event with event link.   \n\nUse eventId to be sure which event details to fetch.\n",
+        "operation": "get",
+        "calendar": {
+          "__rl": true,
+          "value": "macaipiotr@gmail.com",
+          "mode": "list",
+          "cachedResultName": "macaipiotr@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {
+          "timeZone": {
+            "__rl": true,
+            "value": "Europe/Warsaw",
+            "mode": "list",
+            "cachedResultName": "Europe/Warsaw"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        4096,
+        1632
+      ],
+      "id": "ccfb70cf-19a3-41e2-afdd-c7df5767ff22",
+      "name": "GetSingleEvent1",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "34ovGGrPKsjHOmkN",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "You are the “GetEvents” tool.  \n• Input: date range (start, end).\n• Task: list all matching events.  \n• Output: JSON array of events, each with:  \n  – title  \n  – start (ISO8601)  \n  – end (ISO8601)  \n  – attendees  \n  – description / location  \nUse this node to show upcoming meetings or check existing bookings.",
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Calendar', ``, 'string') }}",
+          "mode": "id",
+          "__regex": "(^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*)"
+        },
+        "limit": 10,
+        "options": {
+          "timeZone": {
+            "__rl": true,
+            "value": "Europe/Warsaw",
+            "mode": "list",
+            "cachedResultName": "Europe/Warsaw"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        3936,
+        1440
+      ],
+      "id": "2b636924-7894-4de3-a071-31088d5a16a4",
+      "name": "GetEvents1",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "34ovGGrPKsjHOmkN",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "You are the “DeleteSingleEvent” tool.  \n• Task: delete Google Calendar event\n\nUse eventId to be sure which event details to delete.\n",
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "macaipiotr@gmail.com",
+          "mode": "list",
+          "cachedResultName": "macaipiotr@gmail.com"
+        },
+        "eventId": "={{ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        4256,
+        1440
+      ],
+      "id": "e191fe44-3f97-4a40-836d-fc014be28e57",
+      "name": "DeteleSingleEvent1",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "34ovGGrPKsjHOmkN",
+          "name": "Google Calendar account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "You are the “EditEvent” tool.\n• Task: edit an event in the user’s primary calendar.  \n• Output: Confirmation with event link.   \nConfirm all details with the user before execution.\n\nMore information about\nGoogle Calendar API: Events.update Parameters\n\nKey Body Fields (Partial Update):\nsummary: string. Event title.\n\ndescription: string. Event details (HTML allowed).\n\nlocation: string. Physical/virtual location.\n\nstart: object. Required. Start time with timezone.\n\nend: object. Required. End time with timezone.\n\nattendees[]: array. List of participants (email + responseStatus).\n\nreminders: object. Override default alerts.\n\ncolorId: string. Event color (1-11).\n\nvisibility: string. Values: \"default\", \"public\", \"private\".\n\nextendedProperties.private: object. Custom key-value metadata.\n\nrecurrence[]: array. Modify recurrence rules.\n\nCritical Query Parameters:\n\nsendUpdates: Values: \"all\", \"externalOnly\", \"none\". Controls attendee notifications.\n\nconferenceDataVersion: Values: 0 or 1. 1 forces Google Meet refresh.\n\nsupportsAttachments: true/false. Enable file attachments (Google Workspace only).\n\nSpecial Rules:\n\nFor recurring events: Use originalStartTime to target specific occurrences.\n\nAll-day events: Use \"start\": {\"date\": \"YYYY-MM-DD\"} format (no time/timezone).\n\nTo remove fields: Set to null (e.g., \"location\": null).\n\nOverride defaults: Set reminders.useDefault: false to disable calendar-level reminders.\n\nResource bookings: Use \"attendees[].resource\": true for rooms/equipment.\n\nNote: Unspecified fields retain original values. Use DELETE for full event deletion.",
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "macaipiotr@gmail.com",
+          "mode": "list",
+          "cachedResultName": "macaipiotr@gmail.com"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "useDefaultReminders": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Use_Default_Reminders', ``, 'boolean') }}",
+        "updateFields": {
+          "attendeesUi": {
+            "values": {
+              "attendees": [
+                "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('attendees0_Attendees', ``, 'string') }}"
+              ]
+            }
+          },
+          "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+          "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        4240,
+        1632
+      ],
+      "id": "3c1565ca-78cc-4d6f-bb02-f0d4e25725dd",
+      "name": "EditEvent1",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "34ovGGrPKsjHOmkN",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        3776,
+        1360
+      ],
+      "id": "eed52eb6-88f2-4f64-aa21-cbc244ae88c1",
+      "name": "Google Gemini Chat Model14",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0rKZa0jW8vI1p8pR",
+          "name": "Google Gemini macaipioyt"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "## CalendarAiAgentTool\nCalendar AI Agent that can call other tools. \nYou're responsible for management and CRUD functions for calendar managment.\n\nAlways use that tool for all calendar related tools and tasks\n- Smart scheduling and availability coordination  \n- Event creation and management  \n- Proactive time management support\n### CALENDAR OPERATIONS  \n#### GetEvents: Retrieve and analyze calendar events \n#### GetSingleEvent: Retrieve details about specified event\n#### CreateEvent: Create event in calendar with proper titling and metadata\n#### CalendarAvailability: Perform smart time slot analysis  ",
+        "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+        "options": {
+          "systemMessage": "<role>\nYou are \"CalendarAgent,\" a proactive, precise, and highly reliable AI subagent dedicated to managing the user's Google Calendar. Your primary objective is to flawlessly handle scheduling, event creation, retrieval, updates, and most importantly, checking for availability. You are an integral planning component of the larger \"PersonalAssistant v3.0\" system.\n</role>\n\n<core_directive>\nPrecision in time and date management is non-negotiable. Always confirm dates, times, time zones, and attendees before creating or updating an event. Use a structured, Markdown-based summary to confirm the details of any new or modified event before final execution.\n</core_directive>\n\n<available_tools>\nYou have access to the following Google Calendar API tools. Use them logically and purposefully.\n\nGetEvents:\nPurpose: To retrieve a list of events from the calendar, typically within a specified time range or matching a query.\nWhen to use: When the command is \"what is my schedule today/this week,\" or \"find my next meeting.\"\n\nGetSpecificEvent:\nPurpose: To retrieve the full details of a single event based on its unique ID.\nWhen to use: After identifying an event in a list, use this to get all details before modifying or summarizing it.\n\nCreateEvent:\nPurpose: To add a new event to the calendar.\nWhen to use: When the command is \"schedule a meeting with X,\" or \"block out time for deep work.\"\n\nUpdateEvent:\nPurpose: To modify the details (time, date, attendees, description) of an existing event.\nWhen to use: When the command is \"move the meeting to next Tuesday,\" or \"add John to the client call.\"\n\nDeleteEvent:\nPurpose: To permanently remove an event from the calendar using its unique ID.\nWhen to use: When the command explicitly states to \"cancel the event\" or \"remove the event.\"\n\nCheckAvailability:\nPurpose: To determine if a specific time slot is free or if attendees are available.\nWhen to use: This is the initial step before any CreateEvent or most UpdateEvent operations involving external attendees.\n\n</available_tools>\n\n<thought_process_and_actions>\nBefore you execute any action, follow this mental workflow:\n\nUnderstand the Goal: Analyze the command. Is the user querying, creating, modifying, or deleting an event? (e.g., \"Find an open slot,\" \"Schedule lunch,\" \"Change the time\").\n\nFormulate a Plan: For creation/update, the plan must include a check for necessary data (Date, Time, Attendees) and availability.\n\nExample: If the command is \"Schedule a 1-hour call with Alice tomorrow at 2 PM,\" your plan should be: 1. Use CheckAvailability for tomorrow at 2 PM. 2. If available, use CreateEvent with all details. 3. If unavailable, use GetEvents to propose alternatives.\n\nSelect the Tool: Choose the BEST tool. Prioritize CheckAvailability before creating.\n\nConfirm Details (if creating/updating): Before using the tool, compile the event details (Title, Date, Start/End Time, Attendees, Location).\n\nExecute and Verify: Use the chosen tool with the correct parameters. After the action is complete, confirm the successful execution of the schedule change.\n</thought_process_and_actions>\n\n<limitations_and_safety_rules>\n\nNever assume time zones. If the time zone is not explicitly mentioned, ask for clarification.\n\nNever create or modify an event without all critical information (Date, Time, Event Title). If any part is missing, ask the user.\n\nDo not proceed with any scheduling operation if CheckAvailability returns a conflict unless explicitly instructed by the user to override.\n\nFor updates/deletions, always confirm the correct Event ID first.\n</limitations_and_safety_rules>"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        4000,
+        1248
+      ],
+      "id": "2071d4fb-b69b-4c42-8f16-f59271197be4",
+      "name": "CalendarAiAgent1",
+      "retryOnFail": true,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "GetAudio2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agent Input2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Generate Audio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Audio": {
+      "main": [
+        [
+          {
+            "node": "Audio Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Analyze image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image": {
+      "main": [
+        [
+          {
+            "node": "Rename Image Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rename Image Output": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Date Transformer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail24hSummary": {
+      "main": [
+        [
+          {
+            "node": "Format HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "ai_tool": [
+        [
+          {
+            "node": "Gmail24hSummary",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date Transformer": {
+      "main": [
+        [
+          {
+            "node": "Gmail24hSummary1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get many events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format HTML": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Gmail24hSummary",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Email Cleanup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Cleanup": {
+      "main": [
+        [
+          {
+            "node": "SetEmailsSummary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail24hSummary1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events": {
+      "main": [
+        [
+          {
+            "node": "CalendarCleanup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CalendarCleanup": {
+      "main": [
+        [
+          {
+            "node": "SetEventsSummary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Zep": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetEmailsSummary": {
+      "main": [
+        [
+          {
+            "node": "MergeEmailsEvents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetEventsSummary": {
+      "main": [
+        [
+          {
+            "node": "MergeEmailsEvents",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "MergeEmailsEvents": {
+      "main": [
+        [
+          {
+            "node": "Gmail24hSummary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from PDF1": {
+      "main": [
+        [
+          {
+            "node": "RenamePDFOutput",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetFileExtension": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "GetFileExtension",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Get a file1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a file2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from csv": {
+      "main": [
+        [
+          {
+            "node": "RenameCSVField",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file1": {
+      "main": [
+        [
+          {
+            "node": "Extract from PDF1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file2": {
+      "main": [
+        [
+          {
+            "node": "Extract from csv",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RenamePDFOutput": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RenameCSVField": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Audio Response": {
+      "main": [
+        [
+          {
+            "node": "Telegram2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent IfGenImg2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate an image": {
+      "main": [
+        [
+          {
+            "node": "Send a photo message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a photo message": {
+      "main": [
+        [
+          {
+            "node": "GeneratedImageContext",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Generate an image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetAudio2": {
+      "main": [
+        [
+          {
+            "node": "OpenAI2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI2": {
+      "main": [
+        [
+          {
+            "node": "Agent Input2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent Input2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent IfGenImg2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SwitchTextOrImage3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent IfGenImg2": {
+      "main": [
+        [
+          {
+            "node": "SwitchTextOrImage3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GeneratedImageContext": {
+      "main": [
+        [
+          {
+            "node": "SetGeneratedImageContext",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "GeneratedImageContext",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetGeneratedImageContext": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NotionAddNote": {
+      "ai_tool": [
+        [
+          {
+            "node": "NotesAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NotionGetNotes": {
+      "ai_tool": [
+        [
+          {
+            "node": "NotesAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Threads History Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "GmailContext",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Threads History Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "GmailContext",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendGmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "EmailAIAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CreateDraft": {
+      "ai_tool": [
+        [
+          {
+            "node": "EmailAIAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetAllGmails": {
+      "ai_tool": [
+        [
+          {
+            "node": "EmailAIAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetSingleGmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "EmailAIAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ReplyToGmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "EmailAIAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetSentGmails": {
+      "ai_tool": [
+        [
+          {
+            "node": "EmailAIAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "EmailAIAgent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetProjectsCRM": {
+      "ai_tool": [
+        [
+          {
+            "node": "NotionProjectsCRMAiAgentTool",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetSingleProjectsCRM": {
+      "ai_tool": [
+        [
+          {
+            "node": "NotionProjectsCRMAiAgentTool",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CreateSingleProjectsCRM": {
+      "ai_tool": [
+        [
+          {
+            "node": "NotionProjectsCRMAiAgentTool",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SearchPageProjectsCRM": {
+      "ai_tool": [
+        [
+          {
+            "node": "NotionProjectsCRMAiAgentTool",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model8": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "NotesAgent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NotionUpdateNotes": {
+      "ai_tool": [
+        [
+          {
+            "node": "NotesAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetProjectsCRM1": {
+      "ai_tool": [
+        [
+          {
+            "node": "NotionProjectsCRMAIAgentTool1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetSingleProjectsCRM1": {
+      "ai_tool": [
+        [
+          {
+            "node": "NotionProjectsCRMAIAgentTool1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CreateSingleProjectsCRM1": {
+      "ai_tool": [
+        [
+          {
+            "node": "NotionProjectsCRMAIAgentTool1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SearchPageProjectsCRM1": {
+      "ai_tool": [
+        [
+          {
+            "node": "NotionProjectsCRMAIAgentTool1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CreateSingleSalesCRM": {
+      "ai_tool": [
+        [
+          {
+            "node": "NotionSalesCRMAiAgentTool",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetSalesCRM": {
+      "ai_tool": [
+        [
+          {
+            "node": "NotionSalesCRMAiAgentTool",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SearchPageSalesCRM": {
+      "ai_tool": [
+        [
+          {
+            "node": "NotionSalesCRMAiAgentTool",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetSingleSalesCRM": {
+      "ai_tool": [
+        [
+          {
+            "node": "NotionSalesCRMAiAgentTool",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NotionSalesCRMAiAgentTool": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "NotionProjectsCRMAiAgentTool": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "GmailContext": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "EmailAIAgent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "PineconeKB",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model12": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "OfferAgent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetLeadsData": {
+      "ai_tool": [
+        [
+          {
+            "node": "SalesAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model7": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "SalesAgent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetProjectsData": {
+      "ai_tool": [
+        [
+          {
+            "node": "ProjectManagerAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model10": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "ProjectManagerAgent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetTasksData": {
+      "ai_tool": [
+        [
+          {
+            "node": "ProjectManagerAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpAPI1": {
+      "ai_tool": [
+        [
+          {
+            "node": "SearchAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Perplexity1": {
+      "ai_tool": [
+        [
+          {
+            "node": "SearchAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DateTime1": {
+      "ai_tool": [
+        [
+          {
+            "node": "SearchAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model11": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "WritingGuideliner",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model13": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "SearchAgent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WritingGuideliner": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SearchAgent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OfferAgent": {
+      "ai_tool": [
+        []
+      ]
+    },
+    "SalesAgent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ProjectManagerAgent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PRDAgent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model6": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "PRDAgent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OffersTemplates": {
+      "ai_tool": [
+        [
+          {
+            "node": "SalesAgent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NotesAgent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CreateEvent1": {
+      "ai_tool": [
+        [
+          {
+            "node": "CalendarAiAgent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CalendarAvability1": {
+      "ai_tool": [
+        [
+          {
+            "node": "CalendarAiAgent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetSingleEvent1": {
+      "ai_tool": [
+        [
+          {
+            "node": "CalendarAiAgent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetEvents1": {
+      "ai_tool": [
+        [
+          {
+            "node": "CalendarAiAgent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeteleSingleEvent1": {
+      "ai_tool": [
+        [
+          {
+            "node": "CalendarAiAgent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EditEvent1": {
+      "ai_tool": [
+        [
+          {
+            "node": "CalendarAiAgent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model14": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "CalendarAiAgent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CalendarAiAgent1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9065bbf1-8bea-4cba-b38f-f266f6cf470a",
+  "meta": {
+    "instanceId": "35c3bab04ab87ea2ca6bbe49bcb1b2cc8ce415fb68f8cad2aadfb099f67b8237"
+  },
+  "id": "SEK0o0n5Oi6PAymG",
+  "tags": [
+    {
+      "createdAt": "2025-08-28T23:01:51.787Z",
+      "updatedAt": "2025-08-28T23:02:26.729Z",
+      "id": "2W13l4yWVeLL0wvJ",
+      "name": "assistants"
+    }
+  ]
+}
