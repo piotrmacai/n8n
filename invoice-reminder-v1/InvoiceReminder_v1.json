@@ -1,0 +1,1870 @@
+{
+  "name": "InvoiceReminder_v1",
+  "nodes": [
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"invoice_number\": \"\",\n  \"invoice_date\": \"\",\n  \"due_date\": \"\",\n  \"vendor_name\": \"\",\n  \"total_amount\": \"\",\n  \"currency\": \"\",\n  \"items\": [\n    {\n      \"description\": \"\",\n      \"amount\": \"\"\n    }\n  ],\n  \"tax\": \"\",\n  \"category\": \"\"\n}"
+      },
+      "id": "17d14371-3cfc-4fc0-8193-5c480f9ab3a4",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        864,
+        -448
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "mode": "id",
+          "value": "1KJ4fvXcKVMGJunsKvPYf8PkX5K9SVwFk"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "d650e29e-9c0e-4421-82a4-8da0539fe4d9",
+      "name": "Invoice Folder Monitor",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "position": [
+        -128,
+        -864
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "SsdDXXKrltw3TeYf",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "options": {}
+      },
+      "id": "eb4fa4d7-c848-4989-a75b-d06aa34b3d7b",
+      "name": "Download Invoice PDF",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        64,
+        -864
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "SsdDXXKrltw3TeYf",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an intelligent invoice parser. I will give you raw text extracted from a PDF invoice. \n\n========================\nSTART OF RAW INVOICE TEXT\n\n{{ $json.text }}\n\nEND OF RAW INVOICE TEXT\n========================\n\nYour job is to:\n\n1. Extract key information from the invoice such as:\n   - invoice_number\n   - invoice_date\n   - due_date (if available)\n   - vendor_name\n   - vender_nip_number\n   - total_amount\n   - currency (e.g., USD, IDR, etc.)\n   - items (as a list of item descriptions and their amounts)\n   - tax (if available)\n\n2. Detect the invoice **category**, such as:\n   - Utilities\n   - Office Supplies\n   - Travel\n   - Software\n   - Food & Beverage\n   - Others (if unknown)\n\n3. Return the result in this exact JSON format:\n\n```json\n{\n  \"invoice_number\": \"\",\n  \"invoice_date\": \"\",\n  \"due_date\": \"\",\n  \"vendor_name\": \"\",\n  \"vender_nip_number\":\"\",\n  \"total_amount\": \"\",\n  \"currency\": \"\",\n  \"items\": [\n    {\n      \"description\": \"\",\n      \"amount\": \"\"\n    }\n  ],\n  \"tax\": \"\",\n  \"category\": \"\"\n}\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "id": "76c03652-2442-4a70-ba2a-64ee2e301380",
+      "name": "Invoice Parser AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        704,
+        -672
+      ],
+      "typeVersion": 1.9,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1tyKJTl-VzQOOgLMgR0e6iL1Y_MjmUayuML3XsYwCzyE",
+          "mode": "list",
+          "cachedResultName": "InvoiceDatabase",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tyKJTl-VzQOOgLMgR0e6iL1Y_MjmUayuML3XsYwCzyE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ueJfN5dFTXY3_AdvnYUL5_RjV9YwSFvbxwA_ivtqnJk/edit#gid=0",
+          "cachedResultName": "Invoices"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nr": "={{ $('Invoice Parser AI Agent').item.json.output.invoice_number }}",
+            "Date": "={{ $('Invoice Parser AI Agent').item.json.output.invoice_date }}",
+            "PaymentDate": "={{ $('Invoice Parser AI Agent').item.json.output.due_date }}",
+            "Client": "={{ $('Invoice Parser AI Agent').item.json.output.vendor_name }}",
+            "Value": "={{ $('Invoice Parser AI Agent').item.json.output.total_amount }}",
+            "TaxValue": "={{ $('Invoice Parser AI Agent').item.json.output.tax }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Id",
+              "displayName": "Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Nr",
+              "displayName": "Nr",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "PaymentDate",
+              "displayName": "PaymentDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Client",
+              "displayName": "Client",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ClientNIP",
+              "displayName": "ClientNIP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Value",
+              "displayName": "Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TaxValue",
+              "displayName": "TaxValue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "f11b11a9-1bae-4593-aa87-7da4861dbe28",
+      "name": "Insert Invoice Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1808,
+        -768
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VaMa1WnIQ2Z9Kr8E",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {
+          "dataPropertyAttachmentsPrefixName": "attachment_",
+          "downloadAttachments": true
+        }
+      },
+      "id": "8bc127e9-8569-4dfa-9892-dfc6c0cde451",
+      "name": "Monitor Email Attachments",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "position": [
+        96,
+        -512
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Sr3wo5yWwDnCGLvl",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Upload Invoice (PDF)",
+        "formDescription": "Upload your invoice PDF using this form.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Upload",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "acceptFileTypes": ".pdf",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d7b95512-2a6c-43eb-9033-57b5e5055e5d",
+      "name": "Upload Invoice (PDF) Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        96,
+        -336
+      ],
+      "webhookId": "e033bea9-70e8-41e2-aea4-1b95714ea257",
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "id": "46e28966-b7d3-491d-9bff-433170fdbfaa",
+      "name": "Extract Text from Drive PDF",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        320,
+        -864
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "attachment_0",
+        "options": {}
+      },
+      "id": "74321b3e-8f47-40de-b2e3-218c98a641ef",
+      "name": "Extract Text from Email PDF",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        336,
+        -512
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "Upload",
+        "options": {}
+      },
+      "id": "d1fa1317-a982-4d7f-ac6d-e3709a99b0bd",
+      "name": "Extract Text from Form PDF",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        336,
+        -336
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        656,
+        -432
+      ],
+      "id": "1ece8149-0413-4efe-8cb4-02fa57ea9a4a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0rKZa0jW8vI1p8pR",
+          "name": "Google Gemini macaipioyt"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1tyKJTl-VzQOOgLMgR0e6iL1Y_MjmUayuML3XsYwCzyE",
+          "mode": "list",
+          "cachedResultName": "InvoiceDatabase",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tyKJTl-VzQOOgLMgR0e6iL1Y_MjmUayuML3XsYwCzyE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Arkusz1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tyKJTl-VzQOOgLMgR0e6iL1Y_MjmUayuML3XsYwCzyE/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1136,
+        -784
+      ],
+      "id": "c32a675c-4e4f-468b-bd17-e7b130f711a7",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VaMa1WnIQ2Z9Kr8E",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9e7dc5ec-5818-42b9-8c6c-2823d7634143",
+              "leftValue": "={{ $json.Nr }}",
+              "rightValue": "={{ $json.Nr }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1360,
+        -784
+      ],
+      "id": "8601f9ae-77be-4c6e-86d3-03c4bdd41e65",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "sendTo": "macaipiotr@gmaill.com ",
+        "subject": "=InvoiceReminder: Faktura {{ $json.Nr }} już istnieje ",
+        "message": "=Witaj, tu Twój InvoiceReminder! \n\nFaktura {{ $json.Nr }} już istnieje - co z tym zrobić? \n\nKlient: {{ $json.Client }}\nNr faktury: {{ $json.Nr }}\nData wystawienia: {{ $json.Date }}\nData płatności: {{ $json.PaymentDate }}\n\nSprawdź w swojej bazie danych: https://docs.google.com/spreadsheets/d/1tyKJTl-VzQOOgLMgR0e6iL1Y_MjmUayuML3XsYwCzyE ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1696,
+        -336
+      ],
+      "id": "ca02b61a-c95f-43aa-8a76-512ed30e0c30",
+      "name": "Send a messagecwith invoice check request1",
+      "webhookId": "4c9a48ee-2202-488f-855b-88bb5c7cc8ce",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Sr3wo5yWwDnCGLvl",
+          "name": "Gmail account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sendTo": "macaipiotr@gmaill.com ",
+        "subject": "hi",
+        "message": "=Witaj, tu Twój InvoiceReminder! \n\nPrzy przetwarzaniu faktury nr: {{ $json.Nr }} wystąpił błąd.\n\nSprawdź w swojej bazie danych: https://docs.google.com/spreadsheets/d/1tyKJTl-VzQOOgLMgR0e6iL1Y_MjmUayuML3XsYwCzyE",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1440,
+        -352
+      ],
+      "id": "86b95d7e-3896-4424-9f4b-2b3788fc47f4",
+      "name": "Send a messagecwith invoice check request2",
+      "webhookId": "4c9a48ee-2202-488f-855b-88bb5c7cc8ce",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Sr3wo5yWwDnCGLvl",
+          "name": "Gmail account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eeed86d1-a66d-408b-b944-208b761926c4",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        528,
+        -672
+      ],
+      "id": "055cdcd1-2610-417c-b3e1-72d30d638628",
+      "name": "SetInvoiceData"
+    },
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "hour": 6
+            }
+          ]
+        }
+      },
+      "id": "28e46b0b-c20d-4867-81f8-4e180f2f4dc7",
+      "name": "Daily Trigger4",
+      "type": "n8n-nodes-base.cron",
+      "position": [
+        0,
+        128
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# Reminder after payment deadline\n",
+        "height": 816,
+        "width": 2404
+      },
+      "id": "dd9ccb27-11d1-4eb9-bcba-96c7fbfa5014",
+      "name": "Sticky Note9",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -400,
+        -64
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1tyKJTl-VzQOOgLMgR0e6iL1Y_MjmUayuML3XsYwCzyE",
+          "mode": "list",
+          "cachedResultName": "InvoiceDatabase",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tyKJTl-VzQOOgLMgR0e6iL1Y_MjmUayuML3XsYwCzyE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Arkusz1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tyKJTl-VzQOOgLMgR0e6iL1Y_MjmUayuML3XsYwCzyE/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "waiting"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        608,
+        128
+      ],
+      "id": "03c2b9bf-24d8-4f9e-bd70-479dd6948dca",
+      "name": "Get row(s) in sheet3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VaMa1WnIQ2Z9Kr8E",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "macaipiotr@gmail.com",
+        "subject": "Invoice reminder",
+        "message": "=Prosimy o zapłacenie faktury nr:  {{ $('Loop Over Items1').item.json.Nr }} , której termin płatności minął {{ $('Loop Over Items1').item.json.PaymentDate }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1744,
+        96
+      ],
+      "id": "476e2f02-bde2-417a-8fb3-f494fd1d3f7c",
+      "name": "SendGmail_7DaysBefore",
+      "webhookId": "84863a94-69e6-4bc1-ad4b-a111f2540079",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Sr3wo5yWwDnCGLvl",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "to": "=+ {{ $json.phone_number }}",
+        "message": "={{ $json.message }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        400
+      ],
+      "id": "8dfa9d76-b6dc-4adf-b0bb-a6c8bee01452",
+      "name": "Send an SMS/MMS/WhatsApp message7",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Set the Sheet\n\nYour Google Sheet must have the following columns:\n\nclient\temail\tdue_date\tinvoice_number\tinvoice_value\tpaid\tphone_number\n\n\n'due_date' must be in YYYY-MM-DD ISO8061 format.\n\n'paid' status field has values: 'paid' and 'notpaid. Workflow filter only \"notpaid\" for reminders to be sent.\n\nphone_number should include country code (e.g. 48 for Poland)",
+        "height": 272,
+        "width": 640
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -32,
+        336
+      ],
+      "typeVersion": 1,
+      "id": "4dca636a-2e14-4014-a5b3-78d8f2908c2f",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        432
+      ],
+      "id": "8b23ffd1-5b34-4d25-a9c6-75e66109ccd5",
+      "name": "Google Gemini Chat Model3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "aU7p7ZVUJ2o3jZR5",
+          "name": "GoogleGemini-ainsidercompany@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=This is invoice data: \nInvoice number: {{ $('Get row(s) in sheet3').item.json.Nr }}\nPayment Date:  {{ $('Get row(s) in sheet3').item.json.PaymentDate }}",
+        "options": {
+          "systemMessage": "Your task is to write email with invoice reminder to client, that with 1 day is payment time deadline for invoice. \n\nKindly remind him to pay the invoice. Use the invoice data from input. "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1392,
+        208
+      ],
+      "id": "a3698d70-05d8-4f4d-9b51-80633b148ec1",
+      "name": "AI Agent4"
+    },
+    {
+      "parameters": {
+        "batchSize": 10,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        832,
+        128
+      ],
+      "id": "5b733bc2-eb9c-4c30-a727-8b5f67f20384",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "content": "# Add invoice to Sheets\n",
+        "height": 944,
+        "width": 2308,
+        "color": 4
+      },
+      "id": "674bafac-0f2d-4881-9747-49b96584d434",
+      "name": "Sticky Note14",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -352,
+        -1088
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9e2ce341-aca6-4d90-b2e9-0a902d9af874",
+              "name": "currentDate",
+              "value": "={{ $json.currentDate }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        128
+      ],
+      "id": "a83a1bfe-14ee-4f4d-a44a-2ad17602b469",
+      "name": "SetCurrentDate"
+    },
+    {
+      "parameters": {
+        "content": "## Sheets Template\nJust import .csv file from pack.\nWorking with Airtable, Notion, and other databases",
+        "height": 240,
+        "width": 576
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1024,
+        -1072
+      ],
+      "typeVersion": 1,
+      "id": "7e41293e-430d-436f-838d-52981f37afc9",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "hour": 6
+            }
+          ]
+        }
+      },
+      "id": "9cb2cbd4-a673-4430-8faa-8b171065f553",
+      "name": "Daily Trigger",
+      "type": "n8n-nodes-base.cron",
+      "position": [
+        -32,
+        1056
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# Reminder 3 days after payment deadline\n",
+        "height": 704,
+        "width": 2404
+      },
+      "id": "e98eff44-cf29-4381-b898-261e5ed09919",
+      "name": "Sticky Note10",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -400,
+        896
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1tyKJTl-VzQOOgLMgR0e6iL1Y_MjmUayuML3XsYwCzyE",
+          "mode": "list",
+          "cachedResultName": "InvoiceDatabase",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tyKJTl-VzQOOgLMgR0e6iL1Y_MjmUayuML3XsYwCzyE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Arkusz1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tyKJTl-VzQOOgLMgR0e6iL1Y_MjmUayuML3XsYwCzyE/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "waiting"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        576,
+        1056
+      ],
+      "id": "57717b80-be98-4220-8d96-d28bdc1e4950",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VaMa1WnIQ2Z9Kr8E",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "macaipiotr@gmail.com",
+        "subject": "Invoice reminder",
+        "message": "=Prosimy o zapłacenie faktury nr:  {{ $('Loop Over Items').item.json.Nr }} , której termin płatności minął {{ $('Loop Over Items').item.json.PaymentDate }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1712,
+        1024
+      ],
+      "id": "20ff42d8-d356-4491-934a-ec8155a9ab36",
+      "name": "SendGmail_7DaysBefore2",
+      "webhookId": "84863a94-69e6-4bc1-ad4b-a111f2540079",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Sr3wo5yWwDnCGLvl",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "to": "=+ {{ $json.phone_number }}",
+        "message": "={{ $json.message }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1728,
+        1328
+      ],
+      "id": "448136ce-cc7a-4d6e-b4cd-2557d80d8cc4",
+      "name": "Send an SMS/MMS/WhatsApp message",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Set the Sheet\n\nYour Google Sheet must have the following columns:\n\nclient\temail\tdue_date\tinvoice_number\tinvoice_value\tpaid\tphone_number\n\n\n'due_date' must be in YYYY-MM-DD ISO8061 format.\n\n'paid' status field has values: 'paid' and 'notpaid. Workflow filter only \"notpaid\" for reminders to be sent.\n\nphone_number should include country code (e.g. 48 for Poland)",
+        "height": 272,
+        "width": 640
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -64,
+        1264
+      ],
+      "typeVersion": 1,
+      "id": "1cb37dfe-655d-44a4-9eed-ca838000dbb4",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        1376
+      ],
+      "id": "63df69ee-da29-403b-b8b9-38edb9537d97",
+      "name": "Google Gemini Chat Model4",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "aU7p7ZVUJ2o3jZR5",
+          "name": "GoogleGemini-ainsidercompany@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=This is invoice data: \nInvoice number: {{ $('Get row(s) in sheet').item.json.Nr }}\nPayment Date:  {{ $('Get row(s) in sheet').item.json.PaymentDate }}",
+        "options": {
+          "systemMessage": "Your task is to write email with invoice reminder to client, that with 1 day is payment time deadline for invoice. \n\nKindly remind him to pay the invoice. Use the invoice data from input. "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1360,
+        1136
+      ],
+      "id": "9d9f17e5-b50d-451a-b2c7-da77f7ac06d2",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "batchSize": 10,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        800,
+        1056
+      ],
+      "id": "56d99ff9-e076-41f1-9c95-8e48d8351832",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "includeTime": false,
+        "outputFieldName": "={{DateTime.now().plus({days: 3}).toFormat('yyyy-MM-dd')}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        160,
+        1056
+      ],
+      "id": "484d3282-2d98-4fe2-93f1-87ffacb84780",
+      "name": "CurrentDate+3Days"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9e2ce341-aca6-4d90-b2e9-0a902d9af874",
+              "name": "currentDatePlus3Days",
+              "value": "={{ $json['2025-09-25'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        368,
+        1056
+      ],
+      "id": "11d8a475-0c76-4a94-9a4b-6cd6348df273",
+      "name": "SetDate+3DaysFromNow"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2eb0fae5-d1a2-496a-8559-34aa1f475256",
+              "leftValue": "={{ $('CurrentDate+3Days').item.json.currentDate }}",
+              "rightValue": "={{ $json.PaymentDate }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "after"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1056,
+        1152
+      ],
+      "id": "f2c0ba89-384a-443d-82b0-e811bb5ee686",
+      "name": "If_3DaysAfterPayment"
+    },
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "hour": 6
+            }
+          ]
+        }
+      },
+      "id": "df502532-ded0-41a1-b4fb-e72ec8888755",
+      "name": "Daily Trigger2",
+      "type": "n8n-nodes-base.cron",
+      "position": [
+        16,
+        1904
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# Reminder 3 days after payment deadline\n",
+        "height": 704,
+        "width": 2404
+      },
+      "id": "e61d6ba5-591e-4377-8993-92545dd292f3",
+      "name": "Sticky Note11",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -384,
+        1712
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1tyKJTl-VzQOOgLMgR0e6iL1Y_MjmUayuML3XsYwCzyE",
+          "mode": "list",
+          "cachedResultName": "InvoiceDatabase",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tyKJTl-VzQOOgLMgR0e6iL1Y_MjmUayuML3XsYwCzyE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Arkusz1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tyKJTl-VzQOOgLMgR0e6iL1Y_MjmUayuML3XsYwCzyE/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "waiting"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        624,
+        1904
+      ],
+      "id": "a9cfd8dc-955e-4263-a396-19e0a91b055d",
+      "name": "Get row(s) in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VaMa1WnIQ2Z9Kr8E",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "macaipiotr@gmail.com",
+        "subject": "Invoice reminder",
+        "message": "=Prosimy o zapłacenie faktury nr:  {{ $('Loop Over Items2').item.json.Nr }} , której termin płatności minął {{ $('Loop Over Items2').item.json.PaymentDate }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1760,
+        1872
+      ],
+      "id": "ac3a0964-db9e-4c90-baa0-f025d38c1d5c",
+      "name": "SendGmail_7DaysBefore3",
+      "webhookId": "84863a94-69e6-4bc1-ad4b-a111f2540079",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Sr3wo5yWwDnCGLvl",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "to": "=+ {{ $json.phone_number }}",
+        "message": "={{ $json.message }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1776,
+        2176
+      ],
+      "id": "c5eb1654-1ac7-4a81-8cdb-253260cbeeb4",
+      "name": "Send an SMS/MMS/WhatsApp message1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Set the Sheet\n\nYour Google Sheet must have the following columns:\n\nclient\temail\tdue_date\tinvoice_number\tinvoice_value\tpaid\tphone_number\n\n\n'due_date' must be in YYYY-MM-DD ISO8061 format.\n\n'paid' status field has values: 'paid' and 'notpaid. Workflow filter only \"notpaid\" for reminders to be sent.\n\nphone_number should include country code (e.g. 48 for Poland)",
+        "height": 272,
+        "width": 640
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -16,
+        2112
+      ],
+      "typeVersion": 1,
+      "id": "a3c75431-ca9e-4bf2-a385-e2a60e6002a1",
+      "name": "Sticky Note15"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        2224
+      ],
+      "id": "cb9795de-8e93-424c-9109-b0baea72e923",
+      "name": "Google Gemini Chat Model5",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "aU7p7ZVUJ2o3jZR5",
+          "name": "GoogleGemini-ainsidercompany@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=This is invoice data: \nInvoice number: {{ $('Get row(s) in sheet2').item.json.Nr }}\nPayment Date:  {{ $('Get row(s) in sheet2').item.json.PaymentDate }}",
+        "options": {
+          "systemMessage": "Your task is to write email with invoice reminder to client, that with 1 day is payment time deadline for invoice. \n\nKindly remind him to pay the invoice. Use the invoice data from input. "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1408,
+        1984
+      ],
+      "id": "6a1dfff7-cb7d-4d23-ba09-0c4dc1386a5b",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "batchSize": 10,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        848,
+        1904
+      ],
+      "id": "d02f98e6-6f94-45cb-b6fe-97f5546bd000",
+      "name": "Loop Over Items2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        192,
+        128
+      ],
+      "id": "f5dbaecf-b1a1-49a9-ac94-af3ac29fa085",
+      "name": "CurrentDate"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2eb0fae5-d1a2-496a-8559-34aa1f475256",
+              "leftValue": "={{ $('CurrentDate').item.json.currentDate }}",
+              "rightValue": "={{ $json.PaymentDate }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "after"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1072,
+        224
+      ],
+      "id": "7b8dafb4-37fc-4b6b-adaa-8a3aa79d2440",
+      "name": "If_PaymentDateIsAfter"
+    },
+    {
+      "parameters": {
+        "includeTime": false,
+        "outputFieldName": "={{DateTime.now().minus({days: 1}).toFormat('yyyy-MM-dd')}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        208,
+        1904
+      ],
+      "id": "36885c7f-9ec1-4043-b054-2103b96c61c5",
+      "name": "CurrentDateDayBefore"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9e2ce341-aca6-4d90-b2e9-0a902d9af874",
+              "name": "currentDatePlus3Days",
+              "value": "={{ $json['2025-09-21'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        1904
+      ],
+      "id": "bf219d5c-b629-48a5-a7a2-1cb7a10379cd",
+      "name": "SetDate1DayBeforeNow"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2eb0fae5-d1a2-496a-8559-34aa1f475256",
+              "leftValue": "={{ $('CurrentDateDayBefore').item.json.currentDate }}",
+              "rightValue": "={{ $json.PaymentDate }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "after"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1104,
+        2000
+      ],
+      "id": "762a5c82-9d64-45de-b559-d7b593af7548",
+      "name": "If_1DaysBeforePayment"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "macaipiotr@gmail.com",
+        "subject": "Duplicated invoice",
+        "message": "Seems that all invoices are paid. Please check it in onvoice database ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1232,
+        512
+      ],
+      "id": "4e04295c-76b7-4317-ad1d-bb3abcd5046b",
+      "name": "Send a message1",
+      "webhookId": "0d475039-0ddc-46de-a0c0-74f8ac3516a3",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Sr3wo5yWwDnCGLvl",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "macaipiotr@gmail.com",
+        "subject": "Duplicated invoice",
+        "message": "There's dudplicated invoice in database. Please check details",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1584,
+        -928
+      ],
+      "id": "953787db-4e4d-49cd-9971-f428eabc8a4a",
+      "name": "Gmail_HumanInTheLoop",
+      "webhookId": "0d475039-0ddc-46de-a0c0-74f8ac3516a3",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Sr3wo5yWwDnCGLvl",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "macaipiotr@gmail.com",
+        "subject": "Duplicated invoice",
+        "message": "Seems that all invoices are paid. Please check it in onvoice database ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1104,
+        1376
+      ],
+      "id": "655887eb-8f34-42d5-99d8-c9721671b863",
+      "name": "Send a message",
+      "webhookId": "0d475039-0ddc-46de-a0c0-74f8ac3516a3",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Sr3wo5yWwDnCGLvl",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "macaipiotr@gmail.com",
+        "subject": "Duplicated invoice",
+        "message": "Seems that all invoices are paid. Please check it in onvoice database ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1184,
+        2208
+      ],
+      "id": "43a8fc32-e164-4294-b600-3e571d2a2fda",
+      "name": "Send a message2",
+      "webhookId": "0d475039-0ddc-46de-a0c0-74f8ac3516a3",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Sr3wo5yWwDnCGLvl",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Invoice Parser AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Invoice Folder Monitor": {
+      "main": [
+        [
+          {
+            "node": "Download Invoice PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Invoice PDF": {
+      "main": [
+        [
+          {
+            "node": "Extract Text from Drive PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Invoice Parser AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Monitor Email Attachments": {
+      "main": [
+        [
+          {
+            "node": "Extract Text from Email PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Invoice (PDF) Form": {
+      "main": [
+        [
+          {
+            "node": "Extract Text from Form PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text from Drive PDF": {
+      "main": [
+        [
+          {
+            "node": "SetInvoiceData",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text from Email PDF": {
+      "main": [
+        [
+          {
+            "node": "SetInvoiceData",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text from Form PDF": {
+      "main": [
+        [
+          {
+            "node": "SetInvoiceData",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Invoice Parser AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Gmail_HumanInTheLoop",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Insert Invoice Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetInvoiceData": {
+      "main": [
+        [
+          {
+            "node": "Invoice Parser AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Trigger4": {
+      "main": [
+        [
+          {
+            "node": "CurrentDate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet3": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent4",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent4": {
+      "main": [
+        [
+          {
+            "node": "SendGmail_7DaysBefore",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send an SMS/MMS/WhatsApp message7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "If_PaymentDateIsAfter",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetCurrentDate": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Trigger": {
+      "main": [
+        [
+          {
+            "node": "CurrentDate+3Days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "SendGmail_7DaysBefore2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send an SMS/MMS/WhatsApp message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "If_3DaysAfterPayment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CurrentDate+3Days": {
+      "main": [
+        [
+          {
+            "node": "SetDate+3DaysFromNow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetDate+3DaysFromNow": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If_3DaysAfterPayment": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Trigger2": {
+      "main": [
+        [
+          {
+            "node": "CurrentDateDayBefore",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "SendGmail_7DaysBefore3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send an SMS/MMS/WhatsApp message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items2": {
+      "main": [
+        [
+          {
+            "node": "If_1DaysBeforePayment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CurrentDate": {
+      "main": [
+        [
+          {
+            "node": "SetCurrentDate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If_PaymentDateIsAfter": {
+      "main": [
+        [
+          {
+            "node": "AI Agent4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CurrentDateDayBefore": {
+      "main": [
+        [
+          {
+            "node": "SetDate1DayBeforeNow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetDate1DayBeforeNow": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If_1DaysBeforePayment": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail_HumanInTheLoop": {
+      "main": [
+        [
+          {
+            "node": "Insert Invoice Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d2fe2816-a563-442c-a901-0e155af685bf",
+  "meta": {
+    "instanceId": "35c3bab04ab87ea2ca6bbe49bcb1b2cc8ce415fb68f8cad2aadfb099f67b8237"
+  },
+  "id": "2lIWvGtdPLK8dqIG",
+  "tags": [
+    {
+      "createdAt": "2025-07-30T18:07:19.322Z",
+      "updatedAt": "2025-07-30T18:07:19.322Z",
+      "id": "XXWLgvnFIDSOCN7Z",
+      "name": "Invoice Automation"
+    }
+  ]
+}
