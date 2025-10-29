@@ -1,0 +1,804 @@
+{
+  "name": "WordpressCompleteBlogPostAutomation",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "79162ce6-8568-4f50-ae9c-3d255f062311",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        64,
+        496
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "title": "={{ $('MergeSetPrompt').item.json.prompt }}",
+        "additionalFields": {
+          "content": "={{ $('AI Agent').item.json.output }}",
+          "status": "draft"
+        }
+      },
+      "id": "78ccd292-dec0-420d-b79b-14fee5e64ff4",
+      "name": "Create post on Wordpress",
+      "type": "n8n-nodes-base.wordpress",
+      "position": [
+        1936,
+        960
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://aioktopus.com//wp-json/wp/v2/media",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "wordpressApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Disposition",
+              "value": "=attachment; filename=\"copertina-{{ $('Create post on Wordpress').item.json.id }}.jpg\""
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "id": "3d9c41f6-469b-4567-bcfb-ea1be50562ad",
+      "name": "Upload image",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        2528,
+        960
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://aioktopus.com/wp-json/wp/v2/posts/{{ $('Create post on Wordpress').item.json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "wordpressApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "featured_media",
+              "value": "={{ $json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "65f60492-bc8c-4e5a-9d01-bffffc4c8ccd",
+      "name": "Set Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        2720,
+        960
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "content": "## Start here \n\nCreate a google sheet / Airtable / Notion database with the following columns:\n- Date\n- Prompt\n- Title\n- Post ID\n\nFill in only the \"Prompt\" column with basic ideas ",
+        "height": 252,
+        "width": 608,
+        "color": 3
+      },
+      "id": "31765d53-a121-4eca-b4ab-395104bf7936",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -16,
+        16
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "Get ideas from Airtable\n",
+        "height": 276,
+        "width": 432
+      },
+      "id": "89323796-5a1e-4eea-b71e-d8263b4964dd",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        400
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "Add your DeepSeek API credential. If you want you can change the model with \"deepseek-chat\"",
+        "height": 276,
+        "width": 548
+      },
+      "id": "cc164852-c3ff-4600-8ca2-ce207a418b48",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        496,
+        400
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "Add your WordPress API credential \n\nFollow that docs: https://docs.n8n.io/integrations/builtin/credentials/wordpress/\n1. Go to Wordpress Dashboard\n2. From menu choose 'Users' -> edit user account\n3. Scroll to 'Application Passwords' section\n4. Set there the password - then copy generated string/key, and save it immediately.\n5. As user use the Wordpress username, \nand as password - that you've already created \n6. As Wordpress url, just use wordpress main page url. ",
+        "height": 260,
+        "width": 592
+      },
+      "id": "12d7cb6c-6198-40d3-a8ee-aa55b1024447",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        608,
+        16
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "Generate feature image for post",
+        "height": 292,
+        "width": 212
+      },
+      "id": "52187d00-a9ce-4da3-af04-a4723c9326f8",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2080,
+        880
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "Set the uploaded image with the newly created article\n",
+        "height": 292,
+        "width": 196
+      },
+      "id": "3a44dc5d-874b-4156-9769-0e01df4fdc05",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2688,
+        880
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        2976,
+        960
+      ],
+      "id": "8d652221-e9fd-4c51-8d14-e1aed999855e",
+      "name": "Update record",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appNYyuo8Ee48uuZB",
+          "mode": "list",
+          "cachedResultName": "SocialMediaHub",
+          "cachedResultUrl": "https://airtable.com/appNYyuo8Ee48uuZB"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblO0IWvHRiDkDyth",
+          "mode": "list",
+          "cachedResultName": "ContentIdeas",
+          "cachedResultUrl": "https://airtable.com/appNYyuo8Ee48uuZB/tblO0IWvHRiDkDyth"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        304,
+        496
+      ],
+      "id": "2691fe0e-7141-4517-bb1c-bbd241664c5d",
+      "name": "Search records"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.Idea1 }}",
+        "options": {
+          "systemMessage": "=You are world class content writer. \n\nChoose the most popular and best topic for creating the article from that list: \n1. {{ $json.Idea1 }}\n2. {{ $json.Idea2 }}\n3. {{ $json.Idea3 }}\n4. {{ $json.Idea4 }}\n5. {{ $json.Idea5 }}\n\n# TASK 1\nOutput choosen one topic, creating based on that perfect descriptive long tail-styled Title for article, which will be also brief for another agent to creating article. \n\n# Output \nOutput only clean text content - descriptive Title of choosen article idea."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        560,
+        512
+      ],
+      "id": "c480a68e-c1e6-482f-80f3-1036fbe74235",
+      "name": "ChooseArticle"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        528,
+        672
+      ],
+      "id": "250a1b17-c244-4afc-abd6-c60dccafd881",
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Here's article title and brief: {{ $json.prompt }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Based on that provided title and description for new blog post:\n- title (should be 2-4 words)\n- description (should be up to 15 words)\n\nOutput it in json format where title and description are separete objects"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        480
+      ],
+      "id": "6936cc1c-a657-4323-b918-ffb4b7c0c4af",
+      "name": "ImagePromptGenerator"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1312,
+        608
+      ],
+      "id": "b4529be1-d7c4-4145-b7f8-448f8fdaf101",
+      "name": "OpenAI Chat Model1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Title of article: {{ $('MergeSetPrompt').item.json.prompt }}",
+        "options": {
+          "systemMessage": "=You are an SEO expert, write an article based on this topic:\n{{ $('MergeSetPrompt').item.json.prompt }}\n\nInstructions:\n- In the introduction, introduce the topic that will be explored in the rest of the text\n- The introduction should be about 120 words\n- The conclusions should be about 120 words\n- Use the conclusions to summarize everything said in the article and offer a conclusion to the reader\n- Write a maximum of 4-5 chapters and argue them.\n- The chapters should follow a logical flow and not repeat the same concepts.\n- The chapters should be related to each other and not isolated blocks of text. The text should flow and follow a linear logic.\n- Do not start chapters with \"Chapter 1\", \"Chapter 2\", \"Chapter 3\" ... write only the chapter title\n- For the text, use HTML for formatting, but limit yourself to bold, italics, paragraphs and lists.\n- Don't put the output in ```html but only text\n- Don't use markdown for formatting.\n- Go deeper into the topic you're talking about, don't just throw superficial information there\n- In output I want only the HTML format "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        960
+      ],
+      "id": "0c2552d3-666d-4b17-a955-4c473badea8f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1408,
+        1104
+      ],
+      "id": "eb3172cc-9fbb-4d2f-853e-8cbcfbdea9e9",
+      "name": "OpenAI Chat Model2"
+    },
+    {
+      "parameters": {
+        "messages": {
+          "message": [
+            {}
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexityTool",
+      "typeVersion": 1,
+      "position": [
+        1744,
+        1152
+      ],
+      "id": "78aceb13-b3de-4351-8a18-b36f3e8e0bf9",
+      "name": "Message a model in Perplexity"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTimeTool",
+      "typeVersion": 2,
+      "position": [
+        1584,
+        1168
+      ],
+      "id": "11e97637-e211-448f-bd17-ee4c09f23c32",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "formTitle": "Set Post Title ",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Title of post ",
+              "placeholder": "Type-in descriptive title of post your want to create ",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Post Image",
+              "fieldType": "file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        544,
+        912
+      ],
+      "id": "baa7080f-6fdd-4f04-9a8e-a0ef5dd6246a",
+      "name": "On form submission",
+      "webhookId": "c64ef161-9aa7-4b8b-8277-72d41e4d4c6f"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3e8d2523-66aa-46fe-adcc-39dc78b9161e",
+              "name": "prompt",
+              "type": "string",
+              "value": "={{ $('ChooseArticle').item.json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "425a6533-52b2-4bf4-9e6e-7e65a74ce973",
+      "name": "SetPromptSchudeled",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        896,
+        512
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3e8d2523-66aa-46fe-adcc-39dc78b9161e",
+              "name": "prompt",
+              "type": "string",
+              "value": "={{ $json['Title of post '] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "de1a867d-181b-4c36-8318-34966b474557",
+      "name": "SetPromptForm",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        768,
+        912
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "template": {
+          "__rl": true,
+          "value": "10cd926d-85ad-454b-a9ec-f6b7c29344cf",
+          "mode": "list",
+          "cachedResultName": "Unnamed Template"
+        },
+        "layers": {
+          "layer": [
+            {
+              "layerName": "text-1",
+              "text": "={{ $('ImagePromptGenerator').item.json.output.title }}",
+              "color": "#2D2B2B"
+            },
+            {
+              "layerName": "text-2",
+              "text": "={{ $('ImagePromptGenerator').item.json.output.description }}",
+              "color": "#4B4343"
+            }
+          ]
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-templated.templated",
+      "typeVersion": 1,
+      "position": [
+        2128,
+        960
+      ],
+      "id": "317c2b49-d5cc-45f2-a8fb-dd3c7d08d5b5",
+      "name": "Templated"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"title\": {\n      \"type\": \"string\"\n    },\n    \"description\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\"title\", \"description\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1616,
+        592
+      ],
+      "id": "6aacc31f-ad4f-405b-b559-2ee539acfd53",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1088,
+        704
+      ],
+      "id": "7fecc2b5-b8ff-4eeb-b03f-402a4e84078a",
+      "name": "MergeSetPrompt"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.render_url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2336,
+        960
+      ],
+      "id": "36423a98-0e25-4658-a63d-2e0063b0157c",
+      "name": "DownloadImage"
+    },
+    {
+      "parameters": {
+        "content": "Generate Title and Description / Prompt for Image ",
+        "height": 340,
+        "width": 548,
+        "color": 5
+      },
+      "id": "b29b6654-f736-4614-b8cf-4720c0df0aad",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1216,
+        400
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "Post Content Generation Agent",
+        "height": 436,
+        "width": 580,
+        "color": 5
+      },
+      "id": "b26e80c1-9e35-455d-9305-b577cefe3ff1",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1328,
+        880
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "Get ideas from Airtable\n",
+        "height": 276,
+        "width": 432
+      },
+      "id": "935d40fa-e5c7-47a0-8322-1fef94592fe5",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        512,
+        816
+      ],
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Set Image": {
+      "main": [
+        [
+          {
+            "node": "Update record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload image": {
+      "main": [
+        [
+          {
+            "node": "Set Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create post on Wordpress": {
+      "main": [
+        [
+          {
+            "node": "Templated",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "ChooseArticle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ChooseArticle": {
+      "main": [
+        [
+          {
+            "node": "SetPromptSchudeled",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "ChooseArticle",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ImagePromptGenerator": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "ImagePromptGenerator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Create post on Wordpress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model in Perplexity": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "SetPromptForm",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetPromptSchudeled": {
+      "main": [
+        [
+          {
+            "node": "MergeSetPrompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetPromptForm": {
+      "main": [
+        [
+          {
+            "node": "MergeSetPrompt",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Templated": {
+      "main": [
+        [
+          {
+            "node": "DownloadImage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "ImagePromptGenerator",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MergeSetPrompt": {
+      "main": [
+        [
+          {
+            "node": "ImagePromptGenerator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DownloadImage": {
+      "main": [
+        [
+          {
+            "node": "Upload image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "700ac8e8-e335-4939-9a0e-39308f1ec895",
+  "meta": {
+    "instanceId": "35c3bab04ab87ea2ca6bbe49bcb1b2cc8ce415fb68f8cad2aadfb099f67b8237"
+  },
+  "id": "4C6zkO6VW62cQFWp",
+  "tags": []
+}
