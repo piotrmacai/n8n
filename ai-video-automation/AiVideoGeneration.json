@@ -1,0 +1,1833 @@
+{
+  "name": "Youtube16:9VideoGeneration",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# Create Video Using AI\n",
+        "height": 884,
+        "width": 2992
+      },
+      "id": "a8edd06f-1e4c-40e9-9af8-7fc349e81d3a",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3040,
+        -2144
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# Add Voice-Over to Video",
+        "height": 516,
+        "width": 1744
+      },
+      "id": "87022435-6340-457a-a9ef-3fcd2e1e0fdf",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3232,
+        240
+      ],
+      "typeVersion": 1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# Publish\n",
+        "height": 588,
+        "width": 1152,
+        "color": 5
+      },
+      "id": "385e4359-fbf4-4c8e-a794-fdb10d0ddb96",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1056,
+        -688
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# GENERATE YOUTUBE TITLE AND DESCRIPTION",
+        "height": 596,
+        "width": 1456
+      },
+      "id": "d9a8dcae-3d0f-48a7-be85-f24be80518db",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -448,
+        -672
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# 🟫 Captions",
+        "height": 260,
+        "width": 1568
+      },
+      "id": "86c31826-e3b5-4d27-a631-fc0a5417987d",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2384,
+        816
+      ],
+      "typeVersion": 1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o",
+          "cachedResultName": "GPT-4O"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Task:\nCraft a short-form voice-over script that perfectly fits a 8-second video duration. \n\nUse polish language.  \n\nThis is script dialog to say: {{ $json.texttosay }}\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "53a46891-d322-44c5-a908-328e3bb4863d",
+      "name": "Generate Voice-Over Script",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        -3088,
+        352
+      ],
+      "typeVersion": 1.8,
+      "credentials": {
+        "openAiApi": {
+          "id": "pi475hntKGcTruBG",
+          "name": "OpenAi1"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://api.cloudinary.com/v1_1/dc5wapno3/auto/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "upload_preset",
+              "value": "n8n_video"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "30a82d67-b670-445c-acf0-f825fd963e55",
+      "name": "Upload Audio to Cloudinary",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -2304,
+        352
+      ],
+      "typeVersion": 4.2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.json2video.com/v2/movies",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"resolution\": \"custom\",\n\"width\": 720,\n\"height\": 1280,\n\"scenes\": [\n{\n\"elements\": [\n{\n\"type\": \"video\",\n\"src\": \"{{ $('Get Generated Video URL').item.json.data.output.video_url }}\",\n\"resize\": \"cover\"\n},\n{\n\"type\": \"audio\",\n\"src\": \"{{ $json.url }}\"\n}\n]\n}\n]\n}",
+        "options": {}
+      },
+      "id": "9be0dcdb-a2fe-4422-af1c-0ba7090dd865",
+      "name": "Merge Audio + Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -2112,
+        352
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "pJfttVTEGlLqEwqU",
+          "name": "openwebuiauth"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "id": "adab0278-259d-4679-83e1-0ae7ccd81a37",
+      "name": "Wait for Audio/Video Fusion",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        -1872,
+        352
+      ],
+      "webhookId": "1b83a679-cdfc-4fd7-9bd0-598033b71d79",
+      "typeVersion": 1.1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "=https://api.json2video.com/v2/movies?id={{ $json.project }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "4030fa51-78f0-4aa1-86c3-c232ac0f7699",
+      "name": "Get Video URL with Audio",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -1648,
+        336
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "pJfttVTEGlLqEwqU",
+          "name": "openwebuiauth"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "id": "b23cbb48-8edb-4cff-9a45-12f9b88dbfd0",
+      "name": "Wait Before Captioning",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        -2080,
+        832
+      ],
+      "webhookId": "bbd0a4f7-875a-48d3-8f45-fec22727bd28",
+      "typeVersion": 1.1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.json2video.com/v2/movies",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"id\": \"qbaasr7s\",\n\"resolution\": \"custom\",\n\"quality\": \"high\",\n\"scenes\": [\n{\n\"id\": \"qyjh9lwj\",\n\"comment\": \"Scene 1\",\n\"elements\": []\n}\n],\n\"elements\": [\n{\n\"id\": \"q6dznzcv\",\n\"type\": \"video\",\n\"src\": \"{{ $json.movie.url }}\"\n},\n{\n\"id\": \"q41n9kxp\",\n\"type\": \"subtitles\",\n\"settings\": {\n\"style\": \"classic-progressive\",\n\"position\": \"center-center\",\n\"font-family\": \"Oswald\",\n\"font-size\": 140,\n\"word-color\": \"#ffd700\",\n\"shadow-color\": \"#260B1B\",\n\"line-color\": \"#F1E7F4\",\n\"shadow-offset\": 0,\n\"box-color\": \"#260B1B\",\n\"outline-color\": \"#000000\",\n\"outline-width\": 8\n},\n\"language\": \"en\"\n}\n],\n\"width\": 720,\n\"height\": 1280\n}",
+        "options": {}
+      },
+      "id": "57aae30a-821c-4b69-a925-76f1c7d80272",
+      "name": "Add Captions/Subtitles to Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -1808,
+        832
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "pJfttVTEGlLqEwqU",
+          "name": "openwebuiauth"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "id": "392b3c68-c83f-43d0-b974-196ee16ee4c6",
+      "name": "Wait for Caption Render",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        -1568,
+        832
+      ],
+      "webhookId": "1caff818-b4ef-4470-9848-4c68675b87d8",
+      "typeVersion": 1.1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "=https://api.json2video.com/v2/movies?id={{ $json.project }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "10fe0e8d-b293-434d-a102-a2658015e302",
+      "name": "Get Final Video URL (Audio + Captions)",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -1312,
+        832
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "pJfttVTEGlLqEwqU",
+          "name": "openwebuiauth"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create text prompt for Google Veo 3 AI Video generator.\nfollowing that input fields from user: scenario: {{ $json.scenario }}\nshowing the person from image: {{ $json.imageUrl }} \n\nVery inportant that person from image must tell as voice that that dialog: {{ $json.texttosay }} in polish language, for polish audience.\n\nReturn ready-to-use, clean text prompt for JSON fields to veo. ",
+        "options": {
+          "systemMessage": "=# ROLE\nYou are Veo 3 AI Video model prompt engineer.\n\n# TASK\nTransform brief user inputs into text prompt for Veo 3 video to generate, which should be advertisement type high-quality video prompts rich in sensory details, spatial context, and dynamic motion—perfectly tuned for Veo3.\n\nInclude that all videos - incuding generated voiceovers - dialog from specified input field, will be in english language for polish audience.\n\n# GENERAL SCENARIO \nAlways include that general overall scenario: \nThe character (from image), in construction engineering clothes is walking into the house or specified building construction site and that character is talking marketing/ad slogan (text from input field) into the direction of camera.\n\n\n# OUTPUT\nReturn ONLY the clean text value of prompt for Veo3."
+        }
+      },
+      "id": "8a1b4557-b8de-494f-a5ec-feeb056970ce",
+      "name": "Create Prompt For Video",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        -2208,
+        -1600
+      ],
+      "typeVersion": 1.8
+    },
+    {
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/veo3/requests/{{ $json.request_id }}/status",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "8c21d103-3c27-427f-97ea-6aed753a3dd5",
+      "name": "🔍 Check Video Generation Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -1296,
+        -1680
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "DcBuqPay4v8h5OvH",
+          "name": "fal-ai-client1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "571d2dfe-8a0c-416a-8780-3f47b17286b3",
+              "operator": {
+                "name": "filter.operator.equals",
+                "type": "string",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "COMPLETED"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "40173842-c727-4bbd-bba1-c9dfed5b19a4",
+      "name": "✅ Is Video Generation Complete?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -1056,
+        -1680
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "id": "d795a317-0423-4915-b400-b016d1be7c6f",
+      "name": "⏰ Wait Before Retry",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        -864,
+        -1504
+      ],
+      "webhookId": "0f8d1d66-fe7e-4ab2-88ac-a5f3985e0c2d",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "content": "## 🎬 Video Generation \n\n\n",
+        "height": 772,
+        "width": 1396,
+        "color": 6
+      },
+      "id": "7bf81da0-26a6-440d-929d-bdfa938eb146",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1904,
+        -2064
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.elevenlabs.io/v1/text-to-speech/onwK4e9ZLuTAKqWW03F9",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "xi-api-key",
+              "value": "={{ $('Set API Keys').item.json['ElevenLabs API Key'] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ $json.choices[0].message.content }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a0acd8b2-1db3-493d-8be3-06a5f717e97f",
+      "name": "Generate voice",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -3248,
+        -96
+      ],
+      "retryOnFail": false,
+      "typeVersion": 4.2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    sound_urls: items.map(item => $('Upload Voice Audio').first().json.webContentLink)\n  }\n];"
+      },
+      "id": "39e0c6cd-7f27-4916-8022-bfa5bfaf8f3a",
+      "name": "List Elements1",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -2720,
+        -96
+      ],
+      "typeVersion": 2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are an unhinged and hilarious TikTok influencer who's like a mix of Andrew Tate and Charlie Sheen. The user is going to provide you with a topic, and then 5 different parts of a story. Your task is to narrate the story as this hilarious character, who isn't afraid to be edgy or curse or use sexual innuendos. However keep each of the 5 talking points brief, as you only have about 5 seconds to speak during each. The entire length of your narration should be around 15 seconds.\n\nEach line item of the users message represents 1 5 second clip, so your response needs to be able to quickly and easily be spoken in those time constraints. Don't say extra things you don't need to. Just quickly tell the story, in order, and make it unhinged, funny, entertaining, and potentially controversially viral. Don't worry about offendeding anyone. Andrew Tate style it.\n\nDo not include any emojis, as your response will be converted from text to speech, so anything but text and punctuation isn't neccesary. Also, don't make your jokes overly corny, speak in a witty, edgy, funny way, but no corny dad jokes or anything cringe.",
+              "role": "system"
+            },
+            {
+              "content": "={{ $('Generate Video Captions').item.json.choices[0].message.content }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "options": {}
+      },
+      "id": "20102192-e81f-4f97-9012-92e067606b21",
+      "name": "Generate Script",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        -3600,
+        -96
+      ],
+      "executeOnce": true,
+      "typeVersion": 1.8,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "name": "={{ $('Load Google Sheet').item.json.id }}-voiceover.mp3",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1w1EQ8xyth6w7AbX2wpDI3vInfYeRy8vH",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1w1EQ8xyth6w7AbX2wpDI3vInfYeRy8vH",
+          "cachedResultName": "Resume Studio"
+        },
+        "options": {}
+      },
+      "id": "4dead39a-81b7-4d49-bd43-bcdfc020ec25",
+      "name": "Upload Voice Audio",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        -3056,
+        -96
+      ],
+      "typeVersion": 3,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "writer",
+            "type": "anyone",
+            "allowFileDiscovery": true
+          }
+        },
+        "options": {}
+      },
+      "id": "43c6b94a-ec76-4863-8f46-258363055069",
+      "name": "Set Access Permissions",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        -2880,
+        -96
+      ],
+      "typeVersion": 3,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "Generate voice overs with [Eleven Labs](https://try.elevenlabs.io/n8n)\n\n\nTo replace the voice, find the voice ID of the voice you want to use in [Eleven Labs](https://try.elevenlabs.io/n8n), then change the URL in the Generate Voice node to: https://api.elevenlabs.io/v1/text-to-speech/{voice ID here}\n\nFor full list of API settings, see the [Eleven Labs API Documentation](https://elevenlabs.io/docs/api-reference/text-to-speech/convert)\n",
+        "height": 400,
+        "width": 1040,
+        "color": 4
+      },
+      "id": "7e35f450-0c0f-4100-9fb2-fba166f0c46f",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3648,
+        -304
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.elevenlabs.io/v1/text-to-speech/onwK4e9ZLuTAKqWW03F9",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "xi-api-key",
+              "value": "={{ $('Set API Keys').item.json['ElevenLabs API Key'] }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ $json.choices[0].message.content }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ca71db6d-7253-45e7-a8db-35468e90be23",
+      "name": "Generate voice1",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -2704,
+        352
+      ],
+      "retryOnFail": false,
+      "typeVersion": 4.2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5d50b83a-9ae3-48bc-96b3-561bf69139b2",
+              "name": "scenario",
+              "value": "={{ $json.Scenario }}",
+              "type": "string"
+            },
+            {
+              "id": "f86dbb8e-50f1-4c24-a9f6-dbd48b9b9203",
+              "name": "texttosay",
+              "value": "={{ $json.Dialog }}",
+              "type": "string"
+            },
+            {
+              "id": "b756cd1a-bc6b-4dc9-b088-2c6e06682204",
+              "name": "imageUrl",
+              "value": "={{ $json.ImageURL }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2432,
+        -1600
+      ],
+      "id": "5f668495-2337-44d4-8a1f-3b26e2b788af",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2480,
+        352
+      ],
+      "id": "65754087-536b-451e-a2e8-e03f15f67950",
+      "name": "Upload file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "SsdDXXKrltw3TeYf",
+          "name": "Google Drive account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "=Veo Video: {{ $now }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "14abkucLmN0kxhPo1u-NosUQnGDqbJ1J9",
+          "mode": "list",
+          "cachedResultName": "n8nVideoAutomation",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/14abkucLmN0kxhPo1u-NosUQnGDqbJ1J9"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -448,
+        -1696
+      ],
+      "id": "7919c4a4-fa36-4f04-aec3-fcd169c8a648",
+      "name": "Create folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "SsdDXXKrltw3TeYf",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1712,
+        528
+      ],
+      "id": "01eae660-ff4d-4d55-a44b-c7de963c14ab",
+      "name": "Upload file2",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "SsdDXXKrltw3TeYf",
+          "name": "Google Drive account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1120,
+        848
+      ],
+      "id": "f9952b60-74bb-4454-95c3-16e8ef620e17",
+      "name": "Upload file3",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "SsdDXXKrltw3TeYf",
+          "name": "Google Drive account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -2224,
+        -1424
+      ],
+      "id": "17af6de6-9c9c-487a-bf9d-b272cd12b0ec",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "aU7p7ZVUJ2o3jZR5",
+          "name": "GoogleGemini-ainsidercompany@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Fal AI Auth\nSettings → Credentials → Add Credential\tType: \nHeader Auth\nName:\tKey fal-ai-key (or anything you like)\nHeader Name:\tAuthorization\nHeader Value:\tKey <YOUR_FAL_KEY>\n",
+        "height": 272,
+        "width": 480,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1808,
+        -2000
+      ],
+      "typeVersion": 1,
+      "id": "fc21a3d3-d9ee-4ab7-9286-f337c2e4eba7",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "resource": "spreadsheet",
+        "title": "SocialMediaVideos",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        576,
+        -480
+      ],
+      "id": "2249ee77-29b5-42d0-9d37-035bf551ae3e",
+      "name": "Create spreadsheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VaMa1WnIQ2Z9Kr8E",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1nbOSsE7dp3z2C9PJkjtlqZAoOP8W59A8FoozpBpVMD0",
+          "mode": "list",
+          "cachedResultName": "n8nVideoAutomation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nbOSsE7dp3z2C9PJkjtlqZAoOP8W59A8FoozpBpVMD0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Arkusz1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nbOSsE7dp3z2C9PJkjtlqZAoOP8W59A8FoozpBpVMD0/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -2656,
+        -1600
+      ],
+      "id": "91bda7d9-c1ae-4936-a1b5-65acea9446dd",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VaMa1WnIQ2Z9Kr8E",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "regionCode": "PL",
+        "categoryId": "10",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        -304
+      ],
+      "id": "949cdbed-4a8f-4e36-a5ac-01ab8fa35e34",
+      "name": "Upload a video",
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "qbZ9at81l148k9dj",
+          "name": "YouTube account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "network": "youtube",
+        "media": {
+          "mediaItem": [
+            {}
+          ]
+        },
+        "youtube": {
+          "postType": "video"
+        }
+      },
+      "type": "n8n-nodes-simplified.simplified",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        -464
+      ],
+      "id": "9435eff0-bb23-4593-8b1f-9795ca903f55",
+      "name": "Create a new post1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2848,
+        -1600
+      ],
+      "id": "81b5387d-b070-4f77-9416-b2d2b8aedf7d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/veo3/fast",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "={{ $json.output }}"
+            },
+            {
+              "name": "resolution",
+              "value": "1080p"
+            },
+            {
+              "name": "aspect_ratio",
+              "value": "16:9"
+            },
+            {
+              "name": "generate_audio",
+              "value": "true"
+            },
+            {
+              "name": "duration",
+              "value": "8s"
+            },
+            {
+              "name": "image_url",
+              "value": "={{ $('Get row(s) in sheet').item.json.ImageURL }}"
+            },
+            {
+              "name": "auto_fix",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "184ead29-a8c4-4d96-af90-fd5e7f98612d",
+      "name": "🎬 Create Video with VEO3 (Fal AI)1",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -1680,
+        -1680
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "DcBuqPay4v8h5OvH",
+          "name": "fal-ai-client1"
+        },
+        "httpBearerAuth": {
+          "id": "L1DJzX9w0HcCn8gl",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/veo3/fast",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "={{ $json.output }}"
+            },
+            {
+              "name": "resolution",
+              "value": "1080p"
+            },
+            {
+              "name": "aspect_ratio",
+              "value": "16:9"
+            },
+            {
+              "name": "generate_audio",
+              "value": "true"
+            },
+            {
+              "name": "duration",
+              "value": "5s"
+            },
+            {
+              "name": "auto_fix",
+              "value": "true"
+            },
+            {
+              "name": "image_url",
+              "value": "={{ $('Edit Fields').item.json.imageUrl }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7e9561d6-4336-4d00-8f99-195a52df66b8",
+      "name": "🎬 Create Video with VEO3 (Fal AI)",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -1664,
+        -1424
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "DcBuqPay4v8h5OvH",
+          "name": "fal-ai-client1"
+        },
+        "httpBearerAuth": {
+          "id": "L1DJzX9w0HcCn8gl",
+          "name": "Bearer Auth account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/veo3/requests/{{ $json.request_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Key d6b52dd6-ea6e-4146-bab3-c02188169ea9:b824a1453234c9ed79fbe35c0b9e749f"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "7bb02b27-74b3-42a3-9850-e2a4a9141dc0",
+      "name": "DownloadGeneratedVideo",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -752,
+        -1696
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "facebook": {}
+      },
+      "type": "n8n-nodes-simplified.simplified",
+      "typeVersion": 1,
+      "position": [
+        -976,
+        576
+      ],
+      "id": "ba3ce497-d383-4a78-b4a4-3418aab3862b",
+      "name": "Create a new post",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -576,
+        -912
+      ],
+      "id": "2088efc0-cc8e-4abd-b953-feed7b310bde",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "aU7p7ZVUJ2o3jZR5",
+          "name": "GoogleGemini-ainsidercompany@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=That are inputs and guideline:\n{{ $json.scenario }}\nand {{ $json.image }} ",
+        "options": {
+          "systemMessage": "You're world class prompt engineer. \n\nBased on video guideline, generate text-to-image prompt (for GPT-Image-1 model) which will generate the perfect Youtube Video thumbnail image in professional but modern business style."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -528,
+        -1072
+      ],
+      "id": "aeac15b6-42c2-47a4-acea-329c3f285789",
+      "name": "ThumbnailImagePromptEngineer"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "model": "gpt-image-1",
+        "options": {
+          "size": "1536x1024"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -176,
+        -1072
+      ],
+      "id": "200a0fb1-51a5-4e05-9821-dd588c504b94",
+      "name": "Generate an image",
+      "credentials": {
+        "openAiApi": {
+          "id": "pi475hntKGcTruBG",
+          "name": "OpenAi1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        48,
+        -1072
+      ],
+      "id": "a7d27844-5b48-4569-8144-82aa21800b0f",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "=",
+        "name": "=Video - {{ $now }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        256,
+        -992
+      ],
+      "id": "5b764cb8-db9b-4279-8ae4-d90eb5f89548",
+      "name": "UploadThumbnailImage",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "SsdDXXKrltw3TeYf",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "=data",
+        "name": "=Video - {{ $now }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -256,
+        -1552
+      ],
+      "id": "05dee64d-cfff-47ff-a2c1-dbf7dfb34fb5",
+      "name": "UploadVideo",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "SsdDXXKrltw3TeYf",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1nbOSsE7dp3z2C9PJkjtlqZAoOP8W59A8FoozpBpVMD0",
+          "mode": "list",
+          "cachedResultName": "n8nVideoAutomation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nbOSsE7dp3z2C9PJkjtlqZAoOP8W59A8FoozpBpVMD0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 968318739,
+          "mode": "list",
+          "cachedResultName": "GeneratedVideosMetadata",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nbOSsE7dp3z2C9PJkjtlqZAoOP8W59A8FoozpBpVMD0/edit#gid=968318739"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        768,
+        -480
+      ],
+      "id": "a1477afa-89de-43db-a87e-4aea2f1b5c63",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VaMa1WnIQ2Z9Kr8E",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=That are inputs and guideline:\n{{ $json.scenario }}\nand {{ $json.image }} ",
+        "options": {
+          "systemMessage": "Caption Generator for Voiceover-Based Social Posts\n\n# Role:\nCreate a concise and engaging social media caption that builds directly on the voiceover script below:\n{{ $json.scenario }}\nIncluding the {{ $json.image }} \n\n# Caption Guidelines:\nKeep it short, compelling, and value-driven.\n\nAvoid generic motivational fluff — focus on real, actionable insight or highlight a problem/solution pattern.\n\n#Structure:\n\nOne sentence per line.\n\nNote: Do not use this character: \" in the result.\nReturn a single short paragraph with no line breaks and no special characters.\nNote: Do not use this character: \" in the result."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -224,
+        -464
+      ],
+      "id": "6437150e-0f31-46f6-9323-2fcb65b7db7d",
+      "name": "SocialCaptionsEngineer"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        -240
+      ],
+      "id": "d3c9130b-0e8b-4247-b532-578a8cc3eec7",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "aU7p7ZVUJ2o3jZR5",
+          "name": "GoogleGemini-ainsidercompany@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=That are inputs and guideline:\n{{ $json.scenario }}\nand {{ $json.image }} ",
+        "options": {
+          "systemMessage": "Act as a YouTube Expert.\nBased on the following video description \nfollowing that video scenario {{ $json.scenario }}\nshowing the person from image: {{ $json.image }} \n\nYour task is to:\n\n1). Generate a short, punchy, and curiosity-driven YouTube video title that makes people want to click.\n\n2) Generate Video description, in similar style/\n\n#REQUIREMENTS\nMake it feel professional fur business, but also urgent, valuable, or surprising — and avoid generic or boring phrases.\n\nKeep title under 70 characters, and the description under the 300 characters.\n\nReturn only the video title and video description, no explanations.\n\n\nNote: The title must be free of special characters and the character \". Return only a plain text title."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        176,
+        -464
+      ],
+      "id": "4e04fcce-8f0e-41b8-a6cf-5582f763de70",
+      "name": "SocialCaptionsEngineer1"
+    },
+    {
+      "parameters": {
+        "content": "# Generate Thumbnail",
+        "height": 512,
+        "width": 1488
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -896,
+        -1216
+      ],
+      "typeVersion": 1,
+      "id": "ad1268df-5fec-4b7e-b5b0-1bddb326101f",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "# Start Database\n\n1. Create Google Sheet 'Scenarios' with column headers:\nId\nScenario\nDialog\nImageURL\n\n2. In the same Google Folder create folder for images. Copy url of uploaded to drive image, and paste at field ImageURL\n\nHere's link to sheet template: https://docs.google.com/spreadsheets/d/1nbOSsE7dp3z2C9PJkjtlqZAoOP8W59A8FoozpBpVMD0/edit?usp=sharing",
+        "height": 368,
+        "width": 704,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2848,
+        -2048
+      ],
+      "typeVersion": 1,
+      "id": "c5d40764-2733-4b13-8a20-b95a9fcd5b80",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "content": "# Metadata Database\n\n1. Create Google Sheet 'GeneratedVideosMetadata' sheet with column headers:\nId\t\nVideoTitle\t\nVideoDesc\t\nVideoUrl\t\nHashtags\t\nnotes\n\nHere's link to sheet template: https://docs.google.com/spreadsheets/d/1nbOSsE7dp3z2C9PJkjtlqZAoOP8W59A8FoozpBpVMD0/edit?usp=sharing",
+        "height": 368,
+        "width": 512,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        480,
+        -288
+      ],
+      "typeVersion": 1,
+      "id": "fad57772-5b22-4e40-ac34-4c5784b0826e",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "content": "# Integracje\n\n1. Google Sheet: One click / wg. instrukcji: aktywowac Drive API i pozyskac Google Client Id oraz Client Secret: \nhttps://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/?utm_source=n8n_app&utm_medium=credential_settings&utm_campaign=create_new_credentials_modal\n\n2. Google Drive: One click / wg. instrukcji: aktywowac Drive API i pozyskac Google Client Id oraz Client Secret: \nhttps://docs.n8n.io/integrations/builtin/credentials/google/oauth-single-service/?utm_source=n8n_app&utm_medium=credential_settings&utm_campaign=create_new_credentials_modal\n\n\n3. OpenAI API: https://platform.openai.com/api-keys -> Create new secret key\n\n4. Google Gemini API: https://aistudio.google.com/apikey -> Create Api Key",
+        "height": 528,
+        "width": 704,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3792,
+        -2144
+      ],
+      "typeVersion": 1,
+      "id": "e0cea840-2793-48a2-b174-362380402560",
+      "name": "Sticky Note12"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Merge Audio + Video": {
+      "main": [
+        [
+          {
+            "node": "Wait for Audio/Video Fusion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Before Captioning": {
+      "main": [
+        [
+          {
+            "node": "Add Captions/Subtitles to Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Caption Render": {
+      "main": [
+        [
+          {
+            "node": "Get Final Video URL (Audio + Captions)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Video URL with Audio": {
+      "main": [
+        [
+          {
+            "node": "Upload file2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Voice-Over Script": {
+      "main": [
+        [
+          {
+            "node": "Generate voice1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Audio to Cloudinary": {
+      "main": [
+        [
+          {
+            "node": "Merge Audio + Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Audio/Video Fusion": {
+      "main": [
+        [
+          {
+            "node": "Get Video URL with Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Captions/Subtitles to Video": {
+      "main": [
+        [
+          {
+            "node": "Wait for Caption Render",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Final Video URL (Audio + Captions)": {
+      "main": [
+        [
+          {
+            "node": "Upload file3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Prompt For Video": {
+      "main": [
+        [
+          {
+            "node": "🎬 Create Video with VEO3 (Fal AI)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Check Video Generation Status": {
+      "main": [
+        [
+          {
+            "node": "✅ Is Video Generation Complete?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ Is Video Generation Complete?": {
+      "main": [
+        [
+          {
+            "node": "DownloadGeneratedVideo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "⏰ Wait Before Retry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⏰ Wait Before Retry": {
+      "main": [
+        [
+          {
+            "node": "🔍 Check Video Generation Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate voice": {
+      "main": [
+        [
+          {
+            "node": "Upload Voice Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Script": {
+      "main": [
+        [
+          {
+            "node": "Generate voice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Voice Audio": {
+      "main": [
+        [
+          {
+            "node": "Set Access Permissions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Access Permissions": {
+      "main": [
+        [
+          {
+            "node": "List Elements1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate voice1": {
+      "main": [
+        [
+          {
+            "node": "Upload file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Create Prompt For Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file1": {
+      "main": [
+        [
+          {
+            "node": "Upload Audio to Cloudinary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create folder": {
+      "main": [
+        [
+          {
+            "node": "UploadVideo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file2": {
+      "main": [
+        [
+          {
+            "node": "Wait Before Captioning",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file3": {
+      "main": [
+        []
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Create Prompt For Video",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create spreadsheet": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🎬 Create Video with VEO3 (Fal AI)1": {
+      "main": [
+        [
+          {
+            "node": "🔍 Check Video Generation Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DownloadGeneratedVideo": {
+      "main": [
+        [
+          {
+            "node": "Create folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "ThumbnailImagePromptEngineer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ThumbnailImagePromptEngineer": {
+      "main": [
+        [
+          {
+            "node": "Generate an image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate an image": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "UploadThumbnailImage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UploadVideo": {
+      "main": [
+        [
+          {
+            "node": "ThumbnailImagePromptEngineer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UploadThumbnailImage": {
+      "main": [
+        [
+          {
+            "node": "SocialCaptionsEngineer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "SocialCaptionsEngineer",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "SocialCaptionsEngineer1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SocialCaptionsEngineer": {
+      "main": [
+        [
+          {
+            "node": "SocialCaptionsEngineer1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SocialCaptionsEngineer1": {
+      "main": [
+        [
+          {
+            "node": "Create spreadsheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Create a new post1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload a video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a1ec909a-21f4-47c2-9e24-d2bda734bad4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "35c3bab04ab87ea2ca6bbe49bcb1b2cc8ce415fb68f8cad2aadfb099f67b8237"
+  },
+  "id": "3XqUVEmVq86CCaQg",
+  "tags": [
+    {
+      "createdAt": "2025-08-20T01:17:22.912Z",
+      "updatedAt": "2025-08-20T01:17:22.912Z",
+      "id": "OlWso6gfdV7P8c10",
+      "name": "Clients"
+    }
+  ]
+}
