@@ -1,0 +1,1619 @@
+{
+  "name": "WebsiteCompleteSeoAudit",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Conversion Rate Optimizer",
+        "formDescription": "Your Landing Page is Leaking Sales—Fix It Now",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Website URL",
+              "placeholder": "https://yourwebsite.com",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a4d6ccb6-aa4e-4aed-bb31-50bd91af30cb",
+      "name": "Landing Page Url",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        -1376,
+        688
+      ],
+      "webhookId": "016be2ef-34cf-47e4-a20c-ea602e417226",
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.website_url }}",
+        "options": {}
+      },
+      "id": "1cb567d4-ad9b-43d3-8448-3022171e8a3a",
+      "name": "Scrape Website",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -320,
+        544
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "content": "## AEO\n",
+        "height": 228,
+        "width": 328,
+        "color": 3
+      },
+      "id": "309f5abb-1dd9-4ba7-a812-e1af8b82ab0f",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        224,
+        736
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Open AI Setup\n- Add your credentials\n- Select o1 model for (way) better results. \n- One run = one page audit = around $0.3 with o1",
+        "width": 420,
+        "color": 3
+      },
+      "id": "f56d92de-15b3-4240-932d-b2091444613c",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        -224
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the main keyword data (Global Keyword Data)\nconst mainKeywordData = $input.first().json['Global Keyword Data']?.[0] || {};\n\n// Get the related keywords array\nconst relatedKeywords = $input.first().json['Related Keyword Data (Global)'] || [];\n\n// Create an output array that includes the main keyword data first\nconst output = [\n  {\n    keyword: mainKeywordData.keyword || 'N/A',\n    avg_monthly_searches: mainKeywordData.avg_monthly_searches || 'N/A',\n    competition_index: mainKeywordData.competition_index || 'N/A',\n    competition_value: mainKeywordData.competition_value || 'N/A',\n    high_cpc: mainKeywordData['High CPC'] || 'N/A',\n    low_cpc: mainKeywordData['Low CPC'] || 'N/A'\n  },\n  // Map up to 10 related keywords with selected fields\n  ...relatedKeywords.slice(0, 10).map(item => ({\n    keyword: item.keyword,\n    avg_monthly_searches: item.avg_monthly_searches,\n    competition_index: item.competition_index,\n    competition_value: item.competition_value,\n    high_cpc: item['High CPC'],\n    low_cpc: item['Low CPC']\n  }))\n];\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        2160
+      ],
+      "id": "1c16a4b2-e75e-43e2-9d42-53a8003876fd",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        2160
+      ],
+      "id": "185f23c7-5c83-4d2c-9301-d273c813a189",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "system_message:\n  description: |\n    Your role is to format and output the keyword data into a clean, readable text format. The input data consists of two main parts: **Main Keyword Data** and **Related Keywords Data**. Your task is to process and output this data in a way that is easy to read for the user. Each keyword and its associated details should be displayed clearly.\n\n  Data:\n    - **Main Keyword Data✨**:\n        - **Keyword**: \"{{ $json.data[0].keyword }}\"\n        - **Average Monthly Searches**: \"{{ $json.data[0].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[0].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[0].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[0].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[0].low_cpc }}\"\n\n    - **Related Keywords🧰**:\n              \n    \n        - **1. Keyword**: \"{{ $json.data[1].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[1].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[1].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[1].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[1].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[1].low_cpc }}\"\n        \n        - **2. Keyword**: \"{{ $json.data[2].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[2].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[2].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[2].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[2].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[2].low_cpc }}\"\n        \n        - **3. Keyword**: \"{{ $json.data[3].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[3].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[3].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[3].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[3].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[3].low_cpc }}\"\n        \n        - **4. Keyword**: \"{{ $json.data[4].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[4].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[4].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[4].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[4].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[4].low_cpc }}\"\n        \n        - **5. Keyword**: \"{{ $json.data[5].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[5].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[5].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[5].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[5].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[5].low_cpc }}\"\n        \n        - **6. Keyword**: \"{{ $json.data[6].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[6].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[6].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[6].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[6].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[6].low_cpc }}\"\n        \n        - **7. Keyword**: \"{{ $json.data[7].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[7].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[7].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[7].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[7].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[7].low_cpc }}\"\n        \n        - **8. Keyword**: \"{{ $json.data[8].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[8].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[8].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[8].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[8].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[8].low_cpc }}\"\n        \n        - **9. Keyword**: \"{{ $json.data[9].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[9].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[9].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[9].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[9].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[9].low_cpc }}\"\n\n        - **10. Keyword**: \"{{ $json.data[10].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[10].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[10].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[10].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[10].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[10].low_cpc }}\"\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        208,
+        2160
+      ],
+      "id": "be0f8b5b-c608-46de-9604-81d949009f81",
+      "name": "AI Agent",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\nConduct a high-precision Technical Infrastructure Audit of the provided HTML of provided website url: \n\n# STRICT BOUNDARIES (To save tokens & avoid duplication)\n- IGNORE Content Quality/EEAT (Handled by Content Agent).\n- IGNORE Keyword Strategy (Handled by Keyword Agent).\n- IGNORE Schema.org/JSON-LD (Handled by AEO Agent).\n- FOCUS ONLY on the \"HTML Skeleton\" and \"Metadata layer.\"\n\n# AUDIT DOMAINS:\n1. **Crawl & Index Directives:** Meta robots tags, canonical consistency, and URL status signals.\n2. **Metadata Health:** Title & Description length, uniqueness, and presence.\n3. **Semantic Hierarchy:** Logical H1-H6 nesting (exactly one H1, no skipped levels).\n4. **Social & Preview Layer:** OpenGraph and Twitter Card validation for link rendering.\n5. **Technical Accessibility:** Image Alt-text presence and viewport configuration.\n\n# OUTPUT STRUCTURE:\nPresent findings as a concise \"Developer Action Plan.\" No fluff. No intros.\n\n## 1. CRITICAL BLOCKERS (Immediate Fix Required)\n* [Priority 1 Issue] -> [Technical Fix]\n* [Priority 2 Issue] -> [Technical Fix]\n\n## 2. STRUCTURAL OPTIMIZATIONS (High Impact)\n* Identify specific HTML improvements (e.g., \"Move H3 to H2 for hierarchy\", \"Fix duplicate Title tags\").\n\n## 3. ASSET & LINK INTEGRITY\n* Identify technical issues with image tags, anchor attributes (nofollow/sponsored), and script placement.\n\n# INPUT DATA (HTML):\n{{ $json.data }}\n\n# FINAL INSTRUCTION:\nBe precise. Use technical jargon (e.g., \"Self-referencing canonical,\" \"Hydration issues\"). If a section is perfect, do not mention it.",
+        "options": {
+          "systemMessage": "ROLE: You are a Senior Technical SEO Architect and Full-Stack Developer. Your specialty is \"Bot-First Optimization\" and Technical Fingerprinting. You analyze the HTML \"skeleton\" to ensure search engines can parse the site and to identify the underlying technology stack that powers it.\n\nTASK: Conduct a high-precision Technical Infrastructure Audit and Technology Identification of the provided HTML.\n\n1. TECHNOLOGY STACK FINGERPRINTING\nBefore the audit, identify the technology used by analyzing <script> src tags, meta name=\"generator\", and CSS class naming conventions:\n\nCMS/Framework: (e.g., WordPress, Shopify, Webflow, Next.js, React, Wix).\n\nKey Plugins/Libraries: (e.g., Yoast, GTM, jQuery, Tailwind, Hotjar).\n\nHosting/CDN Signals: (e.g., Cloudflare, WP Engine, Shopify CDN).\n\n2. AUDIT DOMAINS (Strict Boundaries)\nCrawl & Index Directives: Meta robots tags, canonical consistency, and URL status signals.\n\nMetadata Health: Title & Description (length, presence, uniqueness).\n\nSemantic Hierarchy: Logical H1-H6 nesting (exactly one H1, no skipped levels).\n\nSocial & Preview Layer: OpenGraph and Twitter Card validation.\n\nTechnical Accessibility: Image alt attributes and viewport configuration.\n\nSTRICT RULES: * IGNORE Content/Keywords (Handled by Content/Keyword Agent).\n\nIGNORE JSON-LD Schema (Handled by AEO Agent).\n\n3. OUTPUT STRUCTURE\nPresent findings as a concise \"Developer Action Plan.\" No introductory fluff.\n\n## [TECH STACK IDENTIFIED]\nCore: [e.g., WordPress 6.4 + Elementor]\n\nTracking: [e.g., GTM Detected, Facebook Pixel Missing]\n\n## 1. CRITICAL BLOCKERS (Immediate Fix Required)\n[Issue Name] -> [Technical Fix / Code Snippet]\n\n## 2. STRUCTURAL OPTIMIZATIONS (High Impact)\n[e.g., \"Non-semantic div usage for headers detected in the footer.\"]\n\n[e.g., \"Title tag exceeds 60 characters (currently 85).\"]\n\n## 3. ASSET & SCRIPT INTEGRITY\nIdentify render-blocking scripts, missing alt tags, or nofollow attribute misuse.\n\n4. FINAL INSTRUCTIONS\nBe Precise: Use technical jargon (e.g., \"DOM depth,\" \"FCP-impacting scripts,\" \"Self-referencing canonical\").\n\nTech-Specific Advice: If you detect WordPress, mention specific database or plugin optimizations. If Next.js, mention hydration or SSR.\n\nShort & Sweet: If a section is perfect, do not mention it.",
+          "maxIterations": 15
+        }
+      },
+      "id": "417ebe20-a625-4999-9892-f5a0bb966f5e",
+      "name": "TechnicalHTMLAudit",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        -160,
+        544
+      ],
+      "typeVersion": 1.7
+    },
+    {
+      "parameters": {
+        "url": "https://ahrefs-keyword-tool.p.rapidapi.com/global-volume",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "keyword",
+              "value": "={{ $json.output }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-rapidapi-host",
+              "value": "ahrefs-keyword-tool.p.rapidapi.com"
+            },
+            {
+              "name": "x-rapidapi-key",
+              "value": "2b20c5cffamshe5d2225f47c2306p1f0aeajsnbaaa4d197812"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -448,
+        2160
+      ],
+      "id": "492e5a52-8cb6-43d5-b225-11b332357b72",
+      "name": "Ahrefs API HTTP Request"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze and create report for that website:  {{ $('SetFields').item.json.website_url }}\n\nInclude that HTML audit report of that website: \n{{ $('Scrape Website').item.json.data }}",
+        "options": {
+          "systemMessage": "=# ROLE \nYou are a world-renowned, hyper-focused SEO Keyword Strategist, specializing in competitive organic search. \n\n# TASK\nYour sole mission is to analyze the provided scraped website content and identify the absolute highest-impact, most relevant, and strategically valuable SEO keywords, meta title, meta description, HTML content, copy, and all related properties, including the business/organization domain, type and the country or region where they are operating. \n\nThese keywords must be brand overview and brief for creating context for content creation, which allow to achieving top Google rankings, driving qualified organic traffic to this specific website, and rank the social media channels to top in their niche.\n\n---\n\n# OUTPUT\nCreate complete report about the brand - based on HTML content, and keywords, meta title and meta description.\n\n---\n  \n\n# Input \n{{ $json.data }}\n\nBusiness type: {{ $('Landing Page Url').item.json['Business Type'] }}\n\nLocation: {{ $('Landing Page Url').item.json.Location }}\n\n---\n\n#Output\nCreate the report with list of brand/website:\n- Name\n- Meta Title\n- Meta Description\n\nKeywords[]:\n- Kewyword1\n- Keyword2, etc...\n\nContent Overview & Summary (as reference to future content)\n\n---\n\n# Output\n\nCreate complete report in text, well-structured format. \n\nKeep it as short and precise as possible.",
+          "maxIterations": 15
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        2864
+      ],
+      "id": "53363386-77b4-40ba-8bd9-627f7f5436e8",
+      "name": "Keyword Agent",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        560,
+        1008
+      ],
+      "id": "eb2bd901-e925-4e47-a5f1-9bf4d707f4a0",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "lumSp9bfirbMB8Vi",
+          "name": "GeminiAPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "for (const item of items) {\n    // Assuming the HTML content is directly in item.json.data\n    const htmlContent = item.json.data; \n\n    if (htmlContent && typeof htmlContent === 'string') {\n        // Regular expression to remove HTML tags\n        let plainText = htmlContent.replace(/<[^>]*>/g, '');\n        // You might also want to remove extra whitespace and newlines for cleaner text\n        plainText = plainText.replace(/\\s+/g, ' ').trim(); \n        item.json.plainTextContent = plainText; \n    } else {\n        item.json.plainTextContent = ''; // Handle cases where htmlContent might be missing or not a string\n    }\n}\nreturn items;"
+      },
+      "id": "45c2bb05-8c58-4e26-8de4-3e246f0e8de8",
+      "name": "HTMLContentCleanup1",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        144,
+        3344
+      ],
+      "typeVersion": 2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://semrush8.p.rapidapi.com/url_traffic",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{ $json['Landing Page Url'] }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-rapidapi-host",
+              "value": "semrush8.p.rapidapi.com"
+            },
+            {
+              "name": "x-rapidapi-key",
+              "value": "2b20c5cffamshe5d2225f47c2306p1f0aeajsnbaaa4d197812"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -384,
+        2448
+      ],
+      "id": "269a7df4-06e8-466d-a44a-66c7fae53d8c",
+      "name": "SemRushAPI-Request",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Data from Semrush report: \nDomain: {{ $json.srDomain }}\nseRank: {{ $json.srRank }}\nsetraffic: {{ $json.srTraffic }}\nsrCosts: {{ $json.srCosts }}\nseUrlLinks:{{ $json.srUrlLinks }}\nseHostLinks:{{ $json.srHostLinks }}\nseDomainLinks:{{ $json.srDomainLinks }}\nseKeywords: {{ $json.srKeywords }}",
+        "options": {
+          "systemMessage": "=You are world class SEO Specialist. You job is to check provided Semrush report about domain:\n {{ $json.srDomain }}\n\nYour task is to analyze that report and create advance technical SEO report based on it for non-technical user, owner of domain which will tell with details and all insights about that report.\nUse data from Semrush report."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        2448
+      ],
+      "id": "a4b99db0-64ca-46cc-ba36-d3ae8b274d44",
+      "name": "SemrushAgent",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.data }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1696,
+        2672
+      ],
+      "id": "6317eecf-1122-42c6-95f9-44e53c3748ed",
+      "name": "Analytics Agent",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.brightdata.com/request",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "format",
+              "value": "raw"
+            },
+            {
+              "name": "data_format",
+              "value": "markdown"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d0d0039c-4d4f-4361-9373-f63a99be7769",
+      "name": "Perform Bright Data Web Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -352,
+        1760
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "KSwXBlQ2Qh8j0Eb0",
+          "name": "HeaderAuthBrightData"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        208,
+        1984
+      ],
+      "id": "25086d72-14d0-4266-9258-c6491068214f",
+      "name": "Google Gemini Chat Model6",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "lumSp9bfirbMB8Vi",
+          "name": "GeminiAPI"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=This is BrightData data about the website and brand:  {{ $json.data }}",
+        "options": {
+          "systemMessage": "You are an expert AI assistant tasked with analyzing data retrieved from BrightData about a business website. Your goal is to extract key insights that provide a comprehensive overview of the business, its branding, and its online presence. Use the following guidelines to structure your response:\n\n1. **Business Overview:**\n   - Summarize the main purpose and offerings of the business based on the website content.\n   - Identify the target audience and any specific demographics mentioned.\n\n2. **Keywords and Topics:**\n   - Extract the most frequently used keywords and topics on the website.\n   - Highlight any unique selling propositions (USPs) or value propositions.\n\n3. **Branding Elements:**\n   - Describe the visual branding (e.g., logo, color scheme, typography).\n   - Analyze the tone and style of the website's messaging.\n\n4. **Content Analysis:**\n   - Identify the types of content present (e.g., blog posts, product descriptions, case studies).\n   - Summarize the most prominent themes or categories of content.\n\n5. **Competitor Insights (if available):**\n   - If competitor mentions or links are found, briefly summarize their relevance.\n   - Compare the business's positioning with potential competitors.\n\n6. **Trends and Patterns:**\n   - Identify any emerging trends or patterns in the website's content or design.\n   - Note any calls-to-action (CTAs) and their effectiveness.\n\n7. **Output Format:**\n   - Provide your analysis in a structured format, including headings for each section.\n   - Use bullet points or lists where appropriate for clarity.\n\nYour task is to process the input data from BrightData and generate a detailed report that captures the essence of the business website. Ensure your analysis is thorough but concise, focusing on actionable insights."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        144,
+        1760
+      ],
+      "id": "2032872d-0e73-46fe-8ff8-39124a5bd575",
+      "name": "Brightdata Agent"
+    },
+    {
+      "parameters": {
+        "content": "## TechnicalHTML\n",
+        "height": 296,
+        "width": 476
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -368,
+        464
+      ],
+      "typeVersion": 1,
+      "id": "db62cb70-e230-4ee1-ae8d-811a80a5eef1",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Meta data Agent\n",
+        "height": 212,
+        "width": 340,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        224,
+        224
+      ],
+      "typeVersion": 1,
+      "id": "d92dc080-896e-43c8-be45-99a9916787fd",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Content Agent\n",
+        "height": 244,
+        "width": 340,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        224,
+        464
+      ],
+      "typeVersion": 1,
+      "id": "d68b3b71-b46c-4555-b3b0-43e435056bd5",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## BrightData Agent\n",
+        "height": 336,
+        "width": 1012,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -464,
+        1632
+      ],
+      "typeVersion": 1,
+      "id": "35d7c60c-3429-4887-b585-62ff297a49c8",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## Semrush Agent\n",
+        "height": 340,
+        "width": 800,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -528,
+        2368
+      ],
+      "typeVersion": 1,
+      "id": "f94bc9e7-0cf9-481c-a646-214e7838022b",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "## Google Analytics Agent\n",
+        "height": 412,
+        "width": 1304,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -496,
+        1168
+      ],
+      "typeVersion": 1,
+      "id": "7ac5744e-5a9e-49d8-92cd-06496ce7cd5f",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "## Summary Agent\n",
+        "height": 380,
+        "width": 440,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1200,
+        464
+      ],
+      "typeVersion": 1,
+      "id": "b79f79bc-b538-4bcd-a238-0205a7fe1f8a",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "=Final Website Report: \n\n{{ $json.clean_text }}",
+        "name": "=Final HTML SEO-AEO Report: {{ $('SetFields').item.json.website_url }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Create folder').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2352,
+        496
+      ],
+      "id": "033f8ce9-b936-437c-8395-eb03613d6079",
+      "name": "Create file from text3",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "IYt9e9Ocdig5ushn",
+          "name": "Drive-macaipiotr@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "=SEO Reports: {{ $('Landing Page Url').item.json['Business Name'] }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1qfb77k6o9Kvi8wQaoYzZMed3H9sy7HYA",
+          "mode": "list",
+          "cachedResultName": "SEO-Reports",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1qfb77k6o9Kvi8wQaoYzZMed3H9sy7HYA"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1152,
+        544
+      ],
+      "id": "25fdfb39-587b-4a9d-9afa-f9091fa05e7f",
+      "name": "Create folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "IYt9e9Ocdig5ushn",
+          "name": "Drive-macaipiotr@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Scrape Website').item.json.data }}",
+        "options": {
+          "systemMessage": "=Role: You are a Senior AEO (Answer Engine Optimization) & GEO (Generative Engine Optimization) Specialist. Your mission is to analyze the provided HTML, technical data, and page content to determine how likely a website is to be cited as a \"Source of Truth\" by Large Language Models (LLMs) and Answer Engines.\n\nObjective: Evaluate the page for \"Machine Readability,\" \"Information Density,\" and \"Entity Authority.\" Provide a score and actionable technical/content suggestions to improve the site's visibility in AI-generated responses.\n\n1. Analysis Framework\nEvaluate the input based on these four pillars:\n\nDirectness (The \"Snippet\" Test): Does the content provide a clear, concise answer to a specific user intent within the first 100 words?\n\nStructured Data (Technical Clarity): Is there valid JSON-LD? Does it use FAQPage, HowTo, or Article schema to define entities and relationships?\n\nFormatting for Extraction: Are there clear H2/H3 headers phrased as questions? Is information organized in tables, bullet points, or numbered lists that LLMs can easily parse?\n\nEEAT & Citability: Are there expert bios, citations to external data, and unique \"human-only\" insights (case studies, original data) that an AI cannot hallucinate?\n\n2. Output Requirements\nYour response must be structured as follows:\n\nAEO Readiness Score: (0-100) Based on how \"ingestible\" the content is for an LLM.\n\nContent Analysis:\n\nIdentify \"Answer Gaps\" (Questions the page should answer but doesn't).\n\nIdentify \"Clarity Issues\" (Areas where the language is too promotional or vague).\n\nTechnical & HTML Suggestions:\n\nSpecific Schema.org recommendations (e.g., \"Add Organization schema with a defined @id\").\n\nStructural HTML changes (e.g., \"Change div wrappers to section tags for better semantic chunking\").\n\nSpecific Recommendations for AI Search:\n\nSuggest 3-5 \"Target Prompts\" the page should try to win.\n\nProvide a 50-word \"Answer Summary\" the user should place at the top of the page.\n\n3. Constraints & Tone\nTone: Analytical, technical, and forward-thinking.\n\nAvoid: Generic SEO advice like \"use more keywords.\" Focus on Entities, Relationships, and Intent.\n\nFormat: Use Markdown with clear headings and bullet points.",
+          "maxIterations": 15
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        240,
+        544
+      ],
+      "id": "42ac0820-4a3c-415e-b7b9-cc5119e035d5",
+      "name": "AEO_Agent"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1fd6501-1ab6-44d9-b66d-ca56f66253f0",
+              "name": "website_url",
+              "value": "={{ $('Landing Page Url').item.json['Website URL'] }}",
+              "type": "string"
+            },
+            {
+              "id": "88addcd8-77bb-4889-be74-d30271f096a6",
+              "name": "drive_url",
+              "value": "=https://drive.google.com/drive/folders/{{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -576,
+        544
+      ],
+      "id": "63e6574c-6068-4521-be27-cd7da137e493",
+      "name": "SetFields"
+    },
+    {
+      "parameters": {},
+      "id": "b0888e9f-f054-4578-8b5b-d5168e3a3d80",
+      "name": "Calculator",
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "position": [
+        144,
+        1472
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "propertyId": {
+          "__rl": true,
+          "value": "496500444",
+          "mode": "id"
+        },
+        "metricsGA4": {
+          "metricValues": [
+            {
+              "listName": "screenPageViews"
+            },
+            {},
+            {
+              "listName": "sessions"
+            },
+            {
+              "listName": "sessionsPerUser"
+            },
+            {
+              "listName": "eventCount"
+            },
+            {
+              "listName": "active7DayUsers"
+            }
+          ]
+        },
+        "dimensionsGA4": {
+          "dimensionValues": [
+            {}
+          ]
+        },
+        "additionalFields": {}
+      },
+      "id": "fe2534df-43a3-4cd7-9e9d-d651ea3f57b8",
+      "name": "Call Google Analytics data: Last 7 days",
+      "type": "n8n-nodes-base.googleAnalytics",
+      "position": [
+        -384,
+        1280
+      ],
+      "typeVersion": 2,
+      "credentials": {
+        "googleAnalyticsOAuth2": {
+          "id": "nDVnksBtyvj6OfR3",
+          "name": "GA_macaipiotr@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o",
+          "cachedResultName": "GPT-4O"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Please analyze the following data and output the results in table form:\n| Metric                        | Last 7 Days | Previous Year | Percentage Change |\n|-------------------------------|-------------|---------------|-------------------|\n| Total Page Views              | {{ $('Summarize Google Analytics input (current year)').item.json.sum_Page_views }} | {{ $json.sum_Page_views }} | Percentage Change |\n| Total Users                   | {{ $('Summarize Google Analytics input (current year)').item.json.sum_Users }} | {{ $json.sum_Users }} | Percentage Change |\n| Total Sessions                | {{ $('Summarize Google Analytics input (current year)').item.json.sum_Sessions }} | {{ $json.sum_Sessions }} | Percentage Change |\n| Average Sessions per User     | {{ $('Summarize Google Analytics input (current year)').item.json.average_Sessions_per_user }} | {{ $json.average_Sessions_per_user }} | Percentage Change |\n| Average Session Duration      | {{ $('Summarize Google Analytics input (current year)').item.json.average_Session_duration }} | {{ $json.average_Session_duration }} | Percentage Change |\n| Total Purchases               | {{ $('Summarize Google Analytics input (current year)').item.json.sum_Conversions }} | {{ $json.sum_Conversions }} | Percentage Change |\n| Average Revenue per Purchase  | {{ $('Summarize Google Analytics input (current year)').item.json.average_Value_per_Conversion }} | {{ $json.average_Value_per_conversion }} | Percentage Change |\n| Total Revenue                 | {{ $('Summarize Google Analytics input (current year)').item.json.sum_Revenue }} | {{ $('Summarize Google Analytics input (previous year)').item.json.sum_Revenue }} | Percentage Change |\n\nNumber format:\n- Period (.) for thousands (e.g. 4.000)\n- Comma (,) for decimal numbers (e.g. 3,4)\n- Convert Average Session Duration to minutes instead of seconds\n- Average Revenue per Purchase and Total Revenue in €\n\nPlease write a brief summary of the analyzed data above the table (in max 3 sentences!)\n\nIMPORTANT:\nWrite nothing except the summary and the table below it!\nNO INTRODUCTION, NO CONCLUSION!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c5a71380-2cb1-4cc8-be4f-02fb60e21d45",
+      "name": "Processing for Google Analytics Report",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        1776,
+        2944
+      ],
+      "typeVersion": 1.7,
+      "credentials": {
+        "openAiApi": {
+          "id": "8zt0lkXSJzfIV1lh",
+          "name": "OpenAi account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "={{ $json.output }}",
+        "name": "=GA-Report:  {{ $('Call Google Analytics data: Last 7 days').item.json.date }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1Q_vTLR8y7InyYxtLjY9isS7VdOqC8hdB",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        592,
+        1424
+      ],
+      "id": "1b087ab0-0b7f-4285-99a5-7c113f2394b1",
+      "name": "Create file from text",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "IYt9e9Ocdig5ushn",
+          "name": "Drive-macaipiotr@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\nAnalyze the following Google Analytics data from the last 7 days and create a comprehensive performance report.\n\n## DATA TO ANALYZE:\n{{ $('Call Google Analytics data: Last 7 days').item.json.date }} - Analysis Period\n{{ $('Call Google Analytics data: Last 7 days').item.json.screenPageViews }} - Screen/Page Views\n{{ $('Call Google Analytics data: Last 7 days').item.json.totalUsers }} - Total Users\n{{ $('Call Google Analytics data: Last 7 days').item.json.sessions }} - Sessions\n{{ $('Call Google Analytics data: Last 7 days').item.json.sessionsPerUser }} - Sessions Per User\n{{ $('Call Google Analytics data: Last 7 days').item.json.eventCount }} - Event Count\n{{ $('Call Google Analytics data: Last 7 days').item.json.active7DayUsers }} - Active 7-Day Users\n\n## YOUR TASK:\nCreate a professional analytics report following your system instructions. Focus on delivering actionable insights that help the client understand their digital performance and make informed marketing decisions.\n\nIMPORTANT:\n- Write the complete report in Polish language\n- Include all required sections from your framework\n- Provide specific, data-driven recommendations\n- Maintain professional tone throughout\n- NO INTRODUCTION, NO CONCLUSION outside the report structure!",
+        "options": {
+          "systemMessage": "You are a professional Marketing Analytics Consultant working for a digital marketing agency. Your role is to analyze Google Analytics data and create comprehensive, actionable reports for clients.\n\n## YOUR CORE RESPONSIBILITIES:\n1. Analyze GA4 metrics with business context and marketing expertise\n2. Identify trends, patterns, and anomalies in the data\n3. Provide actionable insights and strategic recommendations\n4. Present data in a clear, professional manner suitable for business decision-makers\n5. Focus on ROI and business impact, not just vanity metrics\n\n## ANALYSIS FRAMEWORK:\nWhen analyzing data, always consider:\n- **Performance Trends**: Are metrics improving or declining? By how much?\n- **User Behavior**: What do session and engagement patterns reveal?\n- **Traffic Quality**: Evaluate sessions per user and engagement depth\n- **Retention Signals**: Active 7-day users indicate audience loyalty\n- **Business Context**: Relate metrics to business goals and KPIs\n\n## REPORT STRUCTURE REQUIREMENTS:\nYour report MUST include these sections:\n\n### 1. EXECUTIVE SUMMARY (2-3 sentences)\n- High-level overview of performance\n- Key takeaway or most important finding\n- Overall sentiment: positive, neutral, or needs attention\n\n### 2. KEY METRICS OVERVIEW\nPresent each metric with:\n- Current value\n- Context (what it means for the business)\n- Performance indicator (good/concerning/neutral)\n\n### 3. TRAFFIC & ENGAGEMENT ANALYSIS\n- Total reach and user acquisition effectiveness\n- Engagement depth (sessions per user, events per session)\n- User behavior patterns and quality signals\n\n### 4. CRITICAL INSIGHTS (3-5 bullet points)\n- Most important findings that require attention\n- Trends or patterns discovered in the data\n- Potential opportunities or risks identified\n\n### 5. STRATEGIC RECOMMENDATIONS (3-5 actionable items)\n- Specific actions to improve performance\n- Prioritized by potential impact\n- Realistic and implementable suggestions\n- Tied directly to the data analyzed\n\n### 6. NEXT STEPS\n- What to monitor in the coming period\n- Suggested follow-up analyses or tests\n\n## WRITING STYLE GUIDELINES:\n- Professional but accessible language\n- Avoid jargon unless necessary (explain when used)\n- Use active voice and confident statements\n- Be specific with numbers and percentages\n- Balance positive framing with honest assessment\n- Write as an expert advisor, not just a data reporter\n\n## IMPORTANT CONSTRAINTS:\n- Write ONLY the report content - no introductions or conclusions outside the structure\n- NO meta-commentary about the report itself\n- Base ALL statements on the provided data\n- If data seems unusual or limited, note it professionally within the analysis\n- Use Polish language for the entire report\n- Format in clean, readable Markdown\n\n## METRIC DEFINITIONS FOR CONTEXT:\n- **screenPageViews**: Total page/screen views - indicates content consumption\n- **totalUsers**: Unique visitors - measures audience reach\n- **sessions**: Total visit sessions - shows engagement frequency\n- **sessionsPerUser**: Average visits per user - loyalty/return rate indicator\n- **eventCount**: Total interactions tracked - engagement depth measure\n- **active7DayUsers**: Users active in last 7 days - retention indicator"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        0,
+        1280
+      ],
+      "id": "9ac1901d-be03-4326-91b6-3216d5cb5007",
+      "name": "GA_Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        1456
+      ],
+      "id": "36842f28-e6a8-4cc7-8692-9c9075535349",
+      "name": "Google Gemini Chat Model3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "OAc1dXJytNwb1o7V",
+          "name": "GoogleApi2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze and create report for that website:  {{ $('SetFields').item.json.website_url }}",
+        "options": {
+          "systemMessage": "Role: You are a Technical SEO Audit Specialist. Your focus is strictly on indexability, crawlability, and structural integrity. You analyze the \"skeleton\" of the website to ensure search engines and AI crawlers can access, understand, and rank the page effectively.\n\nObjective: Analyze the provided HTML and metadata. Identify technical blockers that prevent the site from reaching its full potential. Provide actionable, developer-ready fixes.\n\n1. Analysis Framework\nFocus exclusively on these technical domains:\n\nIndexability & Meta Instructions: Check for noindex, nofollow, and canonical tags. Ensure the canonical points to the correct version of the page.\n\nStructural Hierarchy: Audit the H1-H6 tag sequence. There must be exactly one H1. Verify that headers are nested logically (e.g., no H3 before an H2).\n\nMedia Optimization: Check <img> tags for descriptive alt text and evaluate if image filenames are SEO-friendly.\n\nSocial & Rich Snippets Preview: Inspect OpenGraph (og:) and Twitter card tags to ensure the page looks professional when shared.\n\nResource Efficiency: Identify heavy 3rd-party scripts or CSS files that might be bloating the HTML source code.\n\n2. Output Requirements\nStructure your findings into these categories:\n\nTechnical Health Score: (0-100) A reflection of how \"clean\" the code is for search engines.\n\nCritical Blockers: List any issues that prevent indexing (e.g., \"Missing Canonical Tag\" or \"Multiple H1 tags\").\n\nHTML Structure Improvements:\n\nExample: \"H1 is currently 'Welcome Home'; change to 'Expert SEO Consulting Services' to match intent.\"\n\nTag Audit Table:\n\nTitle Tag: [Current Value] → [Recommended Value] (Keep under 60 chars)\n\nMeta Description: [Current Value] → [Recommended Value] (Keep under 155 chars)\n\n3. Agent Coordination (Internal Rules)\nDo Not analyze keyword density (The Keyword Agent handles this).\n\nDo Not analyze writing style or E-E-A-T (The Content Agent handles this).\n\nDo Not suggest Schema.org JSON-LD (The AEO Agent handles this).\n\nFocus on the raw HTML code and metadata headers."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        256,
+        288
+      ],
+      "id": "df66cfc0-19de-4484-b425-893d807a1103",
+      "name": "SEO_Agent"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1200,
+        528
+      ],
+      "id": "d5ceedcf-3f10-469c-9dac-83807f597038",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "sendTo": "=macaipiotr@gmail.com",
+        "subject": "=On-Page SEO Audit - Website Audit",
+        "emailType": "text",
+        "message": "=Here's your report about: {{ $('Landing Page Url').item.json['Landing Page Url'] }}\n\n# SEO Audit Main Agent\n{{ $('SummaryAgent').item.json.output }}\n\n# Keyword Agent\n{{ $('Keyword Agent').item.json.output }}\n\n# Content HTML Agent\n{{ $('KeywordContentAudit').item.json.output }}\n\n# Technical HTML Audit\n{{ $('TechnicalHTMLAudit').item.json.output }}\n",
+        "options": {}
+      },
+      "id": "cd9c0d03-b289-4938-98ab-d6daa1d2a93f",
+      "name": "Send a message",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        2560,
+        496
+      ],
+      "webhookId": "c0db59ed-b03f-4891-8fbc-b53eac75e5c7",
+      "typeVersion": 2.1,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hWqbyZCsj2P1YGwf",
+          "name": "Gmail_macai"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Here's all audits:\n1. Meta Keyword and Content Audit\n2.SEO Audit\n3. AEO audit\n\nHere's summary, merged reports: {{ $json.id }}",
+        "options": {
+          "systemMessage": "=# ROLE\nYou are the ultimate SEO and AEO (Answer Engine Optimization) Maestro, a revered global authority whose comprehensive strategies deliver unparalleled organic growth and dominate competitive niches. Your expertise lies in synthesizing complex SEO data into crystal-clear, beginner-friendly, yet technically profound action plans that empower anyone to achieve world-class SEO.\n\n---\n\n#TASK\nYour critical mission is to synthesize the provided:\n- Technical HTML SEO Audit,\n- Content HTML Audit,\n- Keyword agent,\ninto one cohesive, advanced professional report. \nThis report will not merely summarize, but will provide an overarching strategic overview and, crucially, a step-by-step, beginner-friendly guide with explicit solutions for every identified improvement area.\n\n---\n\n## Report Structure:\n\n**I. Executive Summary & Website Audit Overview (Strategic Synthesis)**\n* **Overall SEO Health Score:** Provide a high-level qualitative assessment (e.g., \"Good, but with critical areas for improvement,\" \"Strong foundation, needs strategic enhancements\").\n* **Key Strengths:** Highlight the positive aspects identified in the audits.\n* **Primary Challenges:** Summarize the most significant overarching issues impacting SEO performance (across both technical and content).\n* **Core Keywords Opportunity:** Briefly mention the most promising keyword opportunities identified.\n* **Overall Strategic Imperative:** A concise statement on the overarching goal for the website's SEO.\n\n**II. Detailed Action Guide: Technical HTML SEO Improvement**\n* **Introduction:** Briefly set the stage for the technical section, emphasizing its importance.\n* For each \"Critical Issue,\" \"Quick Win,\" and \"Opportunity for Improvement\" identified in the Technical HTML Audit:\n    * **Problem:** Clearly state the identified technical issue (e.g., \"Missing H1 Tag\").\n    * **Impact:** Briefly explain why this is important for SEO and user experience.\n    * **Solution (Step-by-Step Guide):** Provide precise, actionable, and beginner-friendly instructions on *how* to fix or implement the improvement. Use bullet points or numbered lists for clarity. Assume the reader may have basic website access but not necessarily coding expertise (e.g., \"Log into your CMS (WordPress, Shopify, etc.), navigate to the page editor, locate the title field, and enter a unique, keyword-rich title.\").\n    * **Example (If applicable):** Provide a hypothetical corrected code snippet or a clear illustration of the desired outcome (e.g., `<title>Your Target Keyword - Brand Name</title>`).\n\n**III. Detailed Action Guide: Content SEO Improvement**\n* **Introduction:** Briefly set the stage for the content section, emphasizing its importance for engagement and rankings.\n* For each \"Analysis\" finding and \"Recommendation\" identified in the Content SEO Audit:\n    * **Issue/Opportunity:** Clearly state the content-related point (e.g., \"Low Readability Score\").\n    * **Impact:** Briefly explain why this matters for SEO and user engagement.\n    * **Solution (Step-by-Step Guide):** Provide precise, actionable, and beginner-friendly instructions on *how* to improve the content. Use bullet points or numbered lists (e.g., \"Break long paragraphs into shorter ones (3-5 sentences maximum). Use transition words to improve flow. Aim for a Flesch-Kincaid score above 60.\").\n    * **Example (If applicable):** Provide a hypothetical improved sentence structure or a suggestion for keyword integration.\n\n**IV. Conclusion & Next Steps**\n* **Reinforce Value:** Briefly reiterate the transformative potential of implementing these recommendations.\n* **Prioritization Reminder:** Advise on tackling Critical Issues first, then Quick Wins, then Opportunities.\n* **Ongoing SEO:** Suggest continuous monitoring, content refreshing, and adapting to algorithm changes.\n\n---\n\n## Key Requirements for Output:\n* **Beginner-Friendly Language:** Avoid overly technical jargon where possible, or explain it clearly.\n* **Professional & Authoritative Tone:** Maintain the persona of a world-class expert.\n* **Actionable Solutions:** Every recommendation must have a clear \"how-to\" guide.\n* **Highly Structured & Readable:** Use headings, subheadings, bullet points, and white space effectively.\n* **No Redundant Information:** Focus solely on the synthesis and solutions, avoiding repetition of audit findings without solutions.\n\n---\n\n# Additional Info\nInclude context about website: {{ $('SetFields').item.json.website_url }}\n* Clean HTML Audit Report: {{ $('TechnicalHTMLAudit').item.json.output }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        624
+      ],
+      "id": "7a47b918-a372-45ea-828b-e143fff97175",
+      "name": "SummaryAgent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze and create report for that website:  {{ $('SetFields').item.json.website_url }}",
+        "options": {
+          "systemMessage": "ROLE: You are the world’s leading SEO Content & Keyword Strategist. Your expertise lies in the intersection of Search Intent and Narrative Authority. You don’t just find keywords; you architect content experiences that dominate rankings by being both \"Bot-Friendly\" and \"Human-Centric.\"\n\nTASK: Perform a comprehensive Strategic Content & Keyword Audit of the provided website data. You must analyze the brand's metadata, identify high-value keyword opportunities, and evaluate the actual content quality for E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness) and user conversion.\n\nPART 1: Brand & Metadata Baseline\nAnalyze the core identity of the business based on the HTML and provided context.\n\nEntity Identification: Define the Brand Name, Business Type, and Geographic Service Area.\n\nMetadata Audit: Evaluate the current Meta Title and Meta Description.\n\nAction: Provide the current version vs. a \"Strategist Recommended\" version optimized for CTR (Click-Through Rate).\n\nPART 2: Semantic Keyword Intelligence\nIdentify the \"Winning Keywords\" based on the content and business type.\n\nPrimary Target: The single most important phrase this page must rank for.\n\nSecondary & LSI Clusters: A list of 5-10 semantic terms that build topical authority.\n\nIntent Analysis: Categorize the keywords by intent (Informational, Navigational, or Transactional).\n\nPART 3: Content Quality & UX Audit\nEvaluate the provided text content (Markdown) against industry-leading standards.\n\nStrategic Alignment: Does the content actually solve the user's problem? Identify \"Content Gaps.\"\n\nReadability & Engagement: Evaluate flow, paragraph length, and scannability.\n\nE-E-A-T Score: Assess how well the content demonstrates trust and topical expertise.\n\nPART 4: The Action Plan (Executive Summary)\nProvide a short, prioritized list of recommendations:\n\nContent Expansion: What missing sections or FAQs would improve the \"Answer Potential\"?\n\nOn-Page Optimization: Specific advice on natural keyword integration.\n\nConversion Path: How to improve CTAs (Calls to Action) to turn readers into leads.\n\nSTRICT BOUNDARIES (To Avoid Duplication):\n\nIGNORE Technical HTML errors like 404s or Canonical tags (Handled by Technical SEO Agent).\n\nIGNORE JSON-LD Schema scripts (Handled by AEO Agent).\n\nFOCUS purely on the words on the page and the intent behind them.\n\nINPUT DATA:\n\nHTML/Markdown Content: {{ $json.markdown }}\n\nBusiness Type: {{ $('Landing Page Url').item.json['Business Type'] }}\n\nLocation: {{ $('Landing Page Url').item.json.Location }}\n\nOUTPUT REQUIREMENTS:\n\nUse a professional, executive tone.\n\nUse Markdown for clear hierarchy (Headings, Bold text, Tables).\n\nKeep it as short and precise as possible. Avoid introductory fluff."
+        }
+      },
+      "id": "b296fa52-a474-487d-930c-13077a93a2d5",
+      "name": "KeywordContentAudit",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        240,
+        784
+      ],
+      "typeVersion": 1.7
+    },
+    {
+      "parameters": {
+        "jsCode": "// Simple regex to remove Markdown symbols\nlet text = items[0].json.output;\n\ntext = text.replace(/#+\\s/g, ''); // Removes # headers\ntext = text.replace(/\\*\\*/g, ''); // Removes ** bolding\ntext = text.replace(/---\\n/g, ''); // Removes horizontal lines\n\nreturn { clean_text: text };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        608,
+        288
+      ],
+      "id": "afb123e7-a0c1-482e-b6da-ee50f1822340",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "={{ $json.clean_text }}",
+        "name": "=SEO Raport: {{ $('SetFields').item.json.website_url }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Create folder').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        864,
+        288
+      ],
+      "id": "66b9a006-3b86-4b7c-a43c-a27e8ca69251",
+      "name": "Create file from text1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "IYt9e9Ocdig5ushn",
+          "name": "Drive-macaipiotr@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "webScrapper",
+        "operation": "deliverSnapshot",
+        "requestOptions": {}
+      },
+      "type": "@brightdata/n8n-nodes-brightdata.brightData",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        1760
+      ],
+      "id": "4281d170-465c-4e0b-8e5c-edba8b7d96e6",
+      "name": "Deliver a snapshot to specified storage",
+      "credentials": {
+        "brightdataApi": {
+          "id": "GQOmKorUYpHNwGDf",
+          "name": "BrightData account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Simple regex to remove Markdown symbols\nlet text = items[0].json.output;\n\ntext = text.replace(/#+\\s/g, ''); // Removes # headers\ntext = text.replace(/\\*\\*/g, ''); // Removes ** bolding\ntext = text.replace(/---\\n/g, ''); // Removes horizontal lines\n\nreturn { clean_text: text };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        608,
+        544
+      ],
+      "id": "8c643aff-3e4a-4dd6-9b0e-abf4ae3256fc",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Simple regex to remove Markdown symbols\nlet text = items[0].json.output;\n\ntext = text.replace(/#+\\s/g, ''); // Removes # headers\ntext = text.replace(/\\*\\*/g, ''); // Removes ** bolding\ntext = text.replace(/---\\n/g, ''); // Removes horizontal lines\n\nreturn { clean_text: text };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        608,
+        800
+      ],
+      "id": "3a692759-e8ba-4321-8375-1962cd8308bf",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "=AEO Raport: {{ $('SetFields').item.json.website_url }}:\n\n{{ $json.clean_text }}",
+        "name": "=AEO Raport: {{ $('SetFields').item.json.website_url }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Create folder').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        864,
+        544
+      ],
+      "id": "eb887c98-2b3b-4b94-86f4-57dfb3148a36",
+      "name": "Create file from text2",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "IYt9e9Ocdig5ushn",
+          "name": "Drive-macaipiotr@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "=Meta-Content Audit: {{ $('SetFields').item.json.website_url }}\n\n{{ $json.clean_text }}",
+        "name": "=Meta-Content Audit: {{ $('SetFields').item.json.website_url }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Create folder').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        864,
+        800
+      ],
+      "id": "1717753b-e0bc-4d7e-b59e-0f3faca70095",
+      "name": "Create file from text4",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "IYt9e9Ocdig5ushn",
+          "name": "Drive-macaipiotr@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Używamy map, aby przetworzyć każdy element przychodzący do noda\nreturn items.map(item => {\n  let text = item.json.output || \"\"; // Pobieramy tekst (dodajemy fallback na pusty string)\n\n  // Usuwanie symboli Markdown\n  text = text.replace(/#+\\s/g, ''); // Nagłówki #\n  text = text.replace(/\\*\\*/g, ''); // Pogrubienia **\n  text = text.replace(/---\\n/g, ''); // Linie poziome\n  text = text.replace(/[*_~`]/g, ''); // Opcjonalnie: inne znaki markdown jak kursywa czy kod\n\n  // Zwracamy obiekt w formacie n8n, zachowując powiązanie (pairedItem)\n  return {\n    json: {\n      clean_text: text.trim()\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1808,
+        624
+      ],
+      "id": "1b31f220-1278-4b53-8a64-cd9c7a04f150",
+      "name": "CodeSummary"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Simple regex to remove Markdown symbols\nlet text = items[0].json.output;\n\ntext = text.replace(/#+\\s/g, ''); // Removes # headers\ntext = text.replace(/\\*\\*/g, ''); // Removes ** bolding\ntext = text.replace(/---\\n/g, ''); // Removes horizontal lines\n\nreturn { clean_text: text };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
+        1280
+      ],
+      "id": "f37deeac-4c7f-47a0-8f6b-3fc667ee68ef",
+      "name": "JSCode_GAAgent"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1632,
+        1072
+      ],
+      "id": "b7d55c73-66c4-4e8b-baf2-d56fc77cf5aa",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "seo-audit",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1376,
+        464
+      ],
+      "id": "c7b5d9fb-14e2-41a1-b20d-6ccab5ae0e61",
+      "name": "Webhook",
+      "webhookId": "f2b95ce9-7771-4446-89cf-ab40c5edb2fc"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6cee5495-bd39-46b4-b2c0-ab7ca243f5df",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2016,
+        624
+      ],
+      "id": "9ef1111f-e8b4-4920-b4bb-da97372bc31d",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2320,
+        752
+      ],
+      "id": "d0281b12-d6d3-4198-889c-6b6d453d57c3",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Your task is extract and return the clean value of website from that message:\n\nReturn ONLY that value ",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -944,
+        544
+      ],
+      "id": "eaa3ce9c-efe6-494c-9ff2-13998b414985",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1088,
+        752
+      ],
+      "id": "5854536a-0d3c-4b05-b655-31a5f409eee7",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "lumSp9bfirbMB8Vi",
+          "name": "GeminiAPI"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Scrape Website": {
+      "main": [
+        [
+          {
+            "node": "TechnicalHTMLAudit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Landing Page Url": {
+      "main": [
+        [
+          {
+            "node": "Create folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TechnicalHTMLAudit": {
+      "main": [
+        [
+          {
+            "node": "SEO_Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AEO_Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "KeywordContentAudit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ahrefs API HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Keyword Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "TechnicalHTMLAudit",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AEO_Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "KeywordContentAudit",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "SEO_Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "SummaryAgent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SemRushAPI-Request": {
+      "main": [
+        [
+          {
+            "node": "SemrushAgent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Perform Bright Data Web Request": {
+      "main": [
+        [
+          {
+            "node": "Deliver a snapshot to specified storage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model6": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Brightdata Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brightdata Agent": {
+      "main": [
+        []
+      ]
+    },
+    "SemrushAgent": {
+      "main": [
+        []
+      ]
+    },
+    "Analytics Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Create file from text3": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create folder": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetFields": {
+      "main": [
+        [
+          {
+            "node": "Scrape Website",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "GA_Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Google Analytics data: Last 7 days": {
+      "main": [
+        [
+          {
+            "node": "GA_Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GA_Agent": {
+      "main": [
+        [
+          {
+            "node": "JSCode_GAAgent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "GA_Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AEO_Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create file from text": {
+      "main": [
+        []
+      ]
+    },
+    "SEO_Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "SummaryAgent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SummaryAgent": {
+      "main": [
+        [
+          {
+            "node": "CodeSummary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "KeywordContentAudit": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Create file from text1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create file from text1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deliver a snapshot to specified storage": {
+      "main": [
+        [
+          {
+            "node": "Brightdata Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Create file from text2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Create file from text4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create file from text2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Create file from text4": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "CodeSummary": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSCode_GAAgent": {
+      "main": [
+        [
+          {
+            "node": "Create file from text",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Create folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Create file from text3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "SetFields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6c79dc4a-d81c-4202-b457-8af135cf8a29",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "deb32046025f576b53b1858e537ecf62a52c205ff0a3afb4cc0768bfc2e55c02"
+  },
+  "id": "iZnlJlg7jUUDtMU6",
+  "tags": [
+    {
+      "updatedAt": "2025-12-15T19:13:13.072Z",
+      "createdAt": "2025-12-15T19:13:13.072Z",
+      "id": "86DLRBzTAdn0ro3p",
+      "name": "SEO"
+    },
+    {
+      "updatedAt": "2025-12-15T19:13:13.062Z",
+      "createdAt": "2025-12-15T19:13:13.062Z",
+      "id": "A0MJlsp0uRcLx42x",
+      "name": "websites"
+    }
+  ]
+}
