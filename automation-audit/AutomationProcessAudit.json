@@ -1,0 +1,907 @@
+{
+  "name": "AutomationProcessAudit",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "={{ $json.WebsiteURL }}",
+        "options": {}
+      },
+      "id": "d104ac14-6c20-4ea8-b175-379532b7c117",
+      "name": "Scrape Website",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        256,
+        48
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "={{ $json.output }}",
+              "renameField": true,
+              "outputFieldName": "HTML"
+            },
+            {
+              "fieldToAggregate": "={{ $json.output }}",
+              "renameField": true,
+              "outputFieldName": "Content"
+            },
+            {
+              "fieldToAggregate": "={{ $json.output }}",
+              "renameField": true,
+              "outputFieldName": "Keywords"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7997ebf9-4453-4eaf-b897-0303da5d3708",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        2672,
+        2224
+      ],
+      "typeVersion": 1,
+      "alwaysOutputData": false,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Create Report & Send",
+        "height": 560,
+        "width": 1124,
+        "color": 3
+      },
+      "id": "9ed96f43-b110-48d0-85e8-d89428e41694",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1696,
+        16
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the main keyword data (Global Keyword Data)\nconst mainKeywordData = $input.first().json['Global Keyword Data']?.[0] || {};\n\n// Get the related keywords array\nconst relatedKeywords = $input.first().json['Related Keyword Data (Global)'] || [];\n\n// Create an output array that includes the main keyword data first\nconst output = [\n  {\n    keyword: mainKeywordData.keyword || 'N/A',\n    avg_monthly_searches: mainKeywordData.avg_monthly_searches || 'N/A',\n    competition_index: mainKeywordData.competition_index || 'N/A',\n    competition_value: mainKeywordData.competition_value || 'N/A',\n    high_cpc: mainKeywordData['High CPC'] || 'N/A',\n    low_cpc: mainKeywordData['Low CPC'] || 'N/A'\n  },\n  // Map up to 10 related keywords with selected fields\n  ...relatedKeywords.slice(0, 10).map(item => ({\n    keyword: item.keyword,\n    avg_monthly_searches: item.avg_monthly_searches,\n    competition_index: item.competition_index,\n    competition_value: item.competition_value,\n    high_cpc: item['High CPC'],\n    low_cpc: item['Low CPC']\n  }))\n];\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2480,
+        2400
+      ],
+      "id": "730292a8-0c74-477f-8c75-ebc63800e459",
+      "name": "Code",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2656,
+        2400
+      ],
+      "id": "fdf9d8c7-e8e8-4f55-99f9-263dd5fe7ebc",
+      "name": "Aggregate1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "system_message:\n  description: |\n    Your role is to format and output the keyword data into a clean, readable text format. The input data consists of two main parts: **Main Keyword Data** and **Related Keywords Data**. Your task is to process and output this data in a way that is easy to read for the user. Each keyword and its associated details should be displayed clearly.\n\n  Data:\n    - **Main Keyword Data✨**:\n        - **Keyword**: \"{{ $json.data[0].keyword }}\"\n        - **Average Monthly Searches**: \"{{ $json.data[0].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[0].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[0].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[0].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[0].low_cpc }}\"\n\n    - **Related Keywords🧰**:\n              \n    \n        - **1. Keyword**: \"{{ $json.data[1].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[1].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[1].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[1].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[1].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[1].low_cpc }}\"\n        \n        - **2. Keyword**: \"{{ $json.data[2].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[2].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[2].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[2].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[2].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[2].low_cpc }}\"\n        \n        - **3. Keyword**: \"{{ $json.data[3].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[3].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[3].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[3].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[3].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[3].low_cpc }}\"\n        \n        - **4. Keyword**: \"{{ $json.data[4].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[4].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[4].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[4].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[4].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[4].low_cpc }}\"\n        \n        - **5. Keyword**: \"{{ $json.data[5].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[5].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[5].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[5].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[5].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[5].low_cpc }}\"\n        \n        - **6. Keyword**: \"{{ $json.data[6].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[6].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[6].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[6].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[6].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[6].low_cpc }}\"\n        \n        - **7. Keyword**: \"{{ $json.data[7].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[7].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[7].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[7].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[7].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[7].low_cpc }}\"\n        \n        - **8. Keyword**: \"{{ $json.data[8].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[8].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[8].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[8].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[8].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[8].low_cpc }}\"\n        \n        - **9. Keyword**: \"{{ $json.data[9].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[9].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[9].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[9].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[9].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[9].low_cpc }}\"\n\n        - **10. Keyword**: \"{{ $json.data[10].keyword }}\"\n          - **Average Monthly Searches**: \"{{ $json.data[10].avg_monthly_searches }}\"\n          - **Competition Index**: \"{{ $json.data[10].competition_index }}\"\n          - **Competition Value**: \"{{ $json.data[10].competition_value }}\"\n          - **High CPC**: \"{{ $json.data[10].high_cpc }}\"\n          - **Low CPC**: \"{{ $json.data[10].low_cpc }}\"\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        2896,
+        2416
+      ],
+      "id": "2006370d-2369-4f36-aed9-c106e50d7c58",
+      "name": "AI Agent",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://ahrefs-keyword-tool.p.rapidapi.com/global-volume",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "keyword",
+              "value": "={{ $json.output }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-rapidapi-host",
+              "value": "ahrefs-keyword-tool.p.rapidapi.com"
+            },
+            {
+              "name": "x-rapidapi-key",
+              "value": "2b20c5cffamshe5d2225f47c2306p1f0aeajsnbaaa4d197812"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2256,
+        2384
+      ],
+      "id": "f93cb48a-f5bb-4488-bd64-e0328171b01f",
+      "name": "Ahrefs API HTTP Request",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "sendTo": "=ainsidercompany@gmail.com",
+        "subject": "=Automation Possibilities Report",
+        "emailType": "text",
+        "message": "=Here's your automation report: \n{{ $json.output }}",
+        "options": {}
+      },
+      "id": "3ec788b2-85d1-48db-a071-0d79027641ca",
+      "name": "Send a message",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        3568,
+        192
+      ],
+      "webhookId": "c56c6b1d-3512-44ef-aaea-14aca9730e9d",
+      "typeVersion": 2.1,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hWqbyZCsj2P1YGwf",
+          "name": "Gmail_macai"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "for (const item of items) {\n    // Assuming the HTML content is directly in item.json.data\n    const htmlContent = item.json.data; \n\n    if (htmlContent && typeof htmlContent === 'string') {\n        // Regular expression to remove HTML tags\n        let plainText = htmlContent.replace(/<[^>]*>/g, '');\n        // You might also want to remove extra whitespace and newlines for cleaner text\n        plainText = plainText.replace(/\\s+/g, ' ').trim(); \n        item.json.plainTextContent = plainText; \n    } else {\n        item.json.plainTextContent = ''; // Handle cases where htmlContent might be missing or not a string\n    }\n}\nreturn items;"
+      },
+      "id": "7dafbbeb-2a10-4a57-89fb-5e05cb481d61",
+      "name": "HTMLContentCleanup1",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        736,
+        2880
+      ],
+      "typeVersion": 2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Website Audit\n",
+        "height": 360,
+        "width": 1324
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "ed97df99-85e4-435b-9b0d-b71cfe86e526",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## AutomationAgent\n",
+        "height": 340,
+        "width": 884,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        448,
+        400
+      ],
+      "typeVersion": 1,
+      "id": "520e7453-6130-4661-8201-4a15af44fa6f",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Summary Agent\n",
+        "height": 316,
+        "width": 440,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1808,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "134244a2-f13f-4b20-9894-eee59c7e8d13",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "=Automation Report: {{ $('Set').item.json.WebsiteURL }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1OnwYWzR5gZrRhxF4tb-m5EFPEvTQTjee",
+          "mode": "list",
+          "cachedResultName": "n8n-automation-process",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1OnwYWzR5gZrRhxF4tb-m5EFPEvTQTjee"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        896,
+        48
+      ],
+      "id": "cdc2a3d3-8922-4850-80bd-14e332eaf2d3",
+      "name": "Create folder",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "IYt9e9Ocdig5ushn",
+          "name": "Drive-macaipiotr@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1456,
+        720
+      ],
+      "id": "d307160c-8e71-4277-84be-2babdad76526",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "lumSp9bfirbMB8Vi",
+          "name": "GeminiAPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Scrape Website').item.json.data }}",
+        "options": {
+          "systemMessage": "=# ROLE\nYou are an expert business automation consultant specializing in streamlining operations for various industries.\n\n\n# TASK\nYour task is to analyze the provided form data from a client and generate a comprehensive automation strategy report. This report should be professional, well-structured, and actionable.\n\nThis audit should be definitive roadmap for automation and ai solutions architects and developers and to get detailed insights and step by step guide about automation and implementation of AI possibilites at their company.\n\nImprove, that at background automations will be created with platforms like n8n, make.com, gumloop, langchain, or some python scripts for most advance dcases - that all you always need to had that in mind to create the solutions fully compatible with that platformss.\n\n# BUSINESS DATA TO ANALYZE \n\nHere is data about business:\nName: {{ $('Set').item.json.WebsiteURL }}\nIndustry: {{ $('Set').item.json.Industry }}\nWebsite(optional): {{ $('Set').item.json.WebsiteURL }}\nNumber of employess: {{ $('Set').item.json.Emplyess }}\nGoal of Business for 6-12 months: {{ $('Set').item.json['businessGoal '] }}\nCurrent challenges at business: {{ $('Set').item.json.currentChallenges }}\nCurrently used platforms: {{ $('Set').item.json.currentPlatforms }}\nMain sections/aspects needed to be automated: {{ $('Set').item.json.mainNeeds }}\nMain Reasons to achieve from automation: {{ $('Set').item.json.mainReason }}\n\n\n# REQUIREMENTS\n\nThe report must include the following sections:\n\n1. Executive Summary\nProvide a brief overview of the company's current challenges and a high-level summary of the key automation opportunities identified.\n\n2. Business Profile & Initial Analysis\nCompany Overview: State the company's name, industry, size, and current software/tools.\n\nIdentified Challenges & Goals: Based on the form data, summarize the primary pain points, such as time-consuming tasks, high error rates, or a lack of scalability. Clearly state the client's main objective for pursuing automation.\n\n3. Detailed Automation Opportunities\nThis is the core of the report. Go through each business area analyzed in the form (e.g., Finance, Marketing, HR, E-commerce) and identify specific processes that are ripe for automation.\n\nFor each area, propose a solution and explain its potential benefits. Use a clear format like this:\n\nArea: [e.g., Marketing & Sales Automation]\n\nProblem: [e.g., Manual lead follow-up and data entry]\n\nProposed Solution: [e.g., Implement an automated workflow using Zapier to connect the CRM with a lead-generation tool and email marketing platform.]\n\nExpected Benefits: [e.g., Reduce response time for new leads, improve data accuracy in the CRM, and free up sales team capacity for closing deals.]\n\nTools: Suggest specific tools or technologies for specific domain and use cases,e.g.:\n(examples:\nRunwayML or Veo3 for Ads Video Generation,\nGoogle Nano Banana for product photographies,\nGoogle Gemini Gems for fast AI customized assistants,\nMake.com, Zapier for Automation,\nKlayvio for email marketing,\nHubsport as cheaper and GoHighLevel as full but more expensive for CRM,\nAirtable for data, \netc, etc. but with deeper analysis and insights).\n\nAlways assume that if possible, that can be used traditional non-AI tools.\n\nIf company dont have website, or social media profiles linked for niche/industry, include that in report with benefits of having it. \n\n4. AI and Advanced Solutions\nBased on the client's interest in AI, propose specific applications. This could include:\n\nChatbots: For customer service or internal support.\n\nAI-powered data analysis: To find insights in complex datasets.\n\nCustom GPT/Gemini models: For content generation or specialized tasks.\n\nAI integrations: Suggest ways to integrate AI into their existing systems.\n\n5. Recommended Action Plan & Next Steps\nPresent a phased, high-level plan for implementing the recommended solutions. Start with quick wins or foundational automations before moving to more complex integrations.\n\nProvide a clear call to action, such as scheduling a follow-up consultation to discuss the report and refine the strategy.\n\n6. Closing Statement\nEnd the report with a professional and encouraging message, emphasizing your commitment to helping the client achieve their business goals through automation.\n\n# Constraints & Guidelines:\n\nAnalyze the provided data thoroughly and avoid making assumptions.\n\nWrite in a clear, professional tone.\n\nStructure the output using Markdown headings and bullet points for readability.\n\nBe criticial and assume that everything in real world is just a little bit harder that is seems from theoretical external perspective.\n\nThe output must be a complete report, ready to be shared with the client.",
+          "maxIterations": 15
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        816,
+        480
+      ],
+      "id": "a27bd3b4-2bb1-4c02-89f6-cf419d70fbb4",
+      "name": "AutomationAgent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Here's developer-perspecite automation report:\n{{ $('AutomationAgent').item.json.output }}\n\n# ROLE\nYou are an expert business automation consultant specializing in streamlining operations for various industries whose comprehensive strategies deliver unparalleled organic growth and dominate competitive niches. Your expertise lies in synthesizing complex SEO data into crystal-clear, beginner-friendly, yet technically profound action plans that empower anyone to achieve world-class automation possibilites in business.\n\n\n# TASK\nYour task is to analyze the provided report from a automation-developers perspevite, and and generate a comprehensive automation strategy report for business owner. This report should be professional, well-structured, and actionable.\n\nImprove, that at background automations will be created with platforms like n8n, make.com, gumloop, langchain, or some python scripts for most advance dcases - that all you always need to had that in mind to create the solutions fully compatible with that platformss.\n\n# CONTEXT ABOUT BUSINESS\n\nHere is data about business:\nName: {{ $('Set').item.json.WebsiteURL }}\nIndustry: {{ $('Set').item.json.Industry }}\nWebsite(optional): {{ $('Set').item.json.WebsiteURL }}\nNumber of employess: {{ $('Set').item.json.Emplyess }}\nGoal of Business for 6-12 months: {{ $('Set').item.json['businessGoal '] }}\nCurrent challenges at business: {{ $('Set').item.json.currentChallenges }}\nCurrently used platforms: {{ $('Set').item.json.currentPlatforms }}\nMain sections/aspects needed to be automated: {{ $('Set').item.json.mainNeeds }}\nMain Reasons to achieve from automation: {{ $('Set').item.json.mainReason }}\n\n\n# REQUIREMENTS\n\nThis audit should be definitive roadmap for business owner get detailed insights about automation and implementation of AI possibilites at their company.\n\nThe report must include the following sections:\n\n1. Executive Summary\nProvide a brief overview of the company's current challenges and a high-level summary of the key automation opportunities identified.\n\n2. Business Profile & Initial Analysis\nCompany Overview: State the company's name, industry, size, and current software/tools.\n\nIdentified Challenges & Goals: Based on the form data, summarize the primary pain points, such as time-consuming tasks, high error rates, or a lack of scalability. Clearly state the client's main objective for pursuing automation.\n\n3. Detailed Automation Opportunities\nThis is the core of the report. Go through each business area analyzed in the form (e.g., Finance, Marketing, HR, E-commerce) and identify specific processes that are ripe for automation.\n\nFor each area, propose a solution and explain its potential benefits. Use a clear format like this:\n\nArea: [e.g., Marketing & Sales Automation]\n\nProblem: [e.g., Manual lead follow-up and data entry]\n\nProposed Solution: [e.g., Implement an automated workflow using Zapier to connect the CRM with a lead-generation tool and email marketing platform.]\n\nExpected Benefits: [e.g., Reduce response time for new leads, improve data accuracy in the CRM, and free up sales team capacity for closing deals.]\n\nTools: Suggest specific tools or technologies for specific domain and use cases,e.g.:\n(examples:\nRunwayML or Veo3 for Ads Video Generation,\nGoogle Nano Banana for product photographies,\nGoogle Gemini Gems for fast AI customized assistants,\nMake.com, Zapier for Automation,\nKlayvio for email marketing,\nHubsport as cheaper and GoHighLevel as full but more expensive for CRM,\nAirtable for data, \netc, etc. but with deeper analysis and insights).\n\nAlways assume that if possible, that can be used traditional non-AI tools.\n\nIf company dont have website, or social media profiles linked for niche/industry, include that in report with benefits of having it. \n\n4. AI and Advanced Solutions\nBased on the client's interest in AI, propose specific applications. This could include:\n\nChatbots: For customer service or internal support.\n\nAI-powered data analysis: To find insights in complex datasets.\n\nCustom GPT/Gemini models: For content generation or specialized tasks.\n\nAI integrations: Suggest ways to integrate AI into their existing systems.\n\n5. Recommended Action Plan & Next Steps\nPresent a phased, high-level plan for implementing the recommended solutions. Start with quick wins or foundational automations before moving to more complex integrations.\n\nProvide a clear call to action, such as scheduling a follow-up consultation to discuss the report and refine the strategy.\n\n6. Closing Statement\nEnd the report with a professional and encouraging message, emphasizing your commitment to helping the client achieve their business goals through automation.\n\n# Constraints & Guidelines:\n\nAnalyze the provided data thoroughly and avoid making assumptions.\n\nWrite in a clear, professional tone.\n\nStructure the output using Markdown headings and bullet points for readability.\n\nBe criticial and assume that everything in real world is just a little bit harder that is seems from theoretical external perspective.\n\nThe output must be a complete report, ready to be shared with the client.",
+        "options": {
+          "systemMessage": "=# ROLE\nYou are an expert business automation consultant specializing in streamlining operations for various industries whose comprehensive strategies deliver unparalleled organic growth and dominate competitive niches. Your expertise lies in synthesizing complex SEO data into crystal-clear, beginner-friendly, yet technically profound action plans that empower anyone to achieve world-class automation possibilites in business.\n\n\n# TASK\nYour task is to analyze the provided report from a automation-developers perspevite, and and generate a comprehensive automation strategy report for business owner. This report should be professional, well-structured, and actionable.\n\n# BUSINESS DATA TO ANALYZE \n\nHere is data about business:\nName: {{ $('Set').item.json.WebsiteURL }}\nIndustry: {{ $('Set').item.json.Industry }}\nWebsite(optional): {{ $('Set').item.json.WebsiteURL }}\nNumber of employess: {{ $('Set').item.json.Emplyess }}\nGoal of Business for 6-12 months: {{ $('Set').item.json['businessGoal '] }}\nCurrent challenges at business: {{ $('Set').item.json.currentChallenges }}\nCurrently used platforms: {{ $('Set').item.json.currentPlatforms }}\nMain sections/aspects needed to be automated: {{ $('Set').item.json.mainNeeds }}\nMain Reasons to achieve from automation: {{ $('Set').item.json.mainReason }}\n\n\n# REQUIREMENTS\n\nThis audit should be definitive roadmap for business owner get detailed insights about automation and implementation of AI possibilites at their company.\n\nThe report must include the following sections:\n\n1. Executive Summary\nProvide a brief overview of the company's current challenges and a high-level summary of the key automation opportunities identified.\n\n2. Business Profile & Initial Analysis\nCompany Overview: State the company's name, industry, size, and current software/tools.\n\nIdentified Challenges & Goals: Based on the form data, summarize the primary pain points, such as time-consuming tasks, high error rates, or a lack of scalability. Clearly state the client's main objective for pursuing automation.\n\n3. Detailed Automation Opportunities\nThis is the core of the report. Go through each business area analyzed in the form (e.g., Finance, Marketing, HR, E-commerce) and identify specific processes that are ripe for automation.\n\nFor each area, propose a solution and explain its potential benefits. Use a clear format like this:\n\nArea: [e.g., Marketing & Sales Automation]\n\nProblem: [e.g., Manual lead follow-up and data entry]\n\nProposed Solution: [e.g., Implement an automated workflow using Zapier to connect the CRM with a lead-generation tool and email marketing platform.]\n\nExpected Benefits: [e.g., Reduce response time for new leads, improve data accuracy in the CRM, and free up sales team capacity for closing deals.]\n\nTools: Suggest specific tools or technologies for specific domain and use cases,e.g.:\n(examples:\nRunwayML or Veo3 for Ads Video Generation,\nGoogle Nano Banana for product photographies,\nGoogle Gemini Gems for fast AI customized assistants,\nMake.com, Zapier for Automation,\nKlayvio for email marketing,\nHubsport as cheaper and GoHighLevel as full but more expensive for CRM,\nAirtable for data, \netc, etc. but with deeper analysis and insights).\n\nAlways assume that if possible, that can be used traditional non-AI tools.\n\nIf company dont have website, or social media profiles linked for niche/industry, include that in report with benefits of having it. \n\n4. AI and Advanced Solutions\nBased on the client's interest in AI, propose specific applications. This could include:\n\nChatbots: For customer service or internal support.\n\nAI-powered data analysis: To find insights in complex datasets.\n\nCustom GPT/Gemini models: For content generation or specialized tasks.\n\nAI integrations: Suggest ways to integrate AI into their existing systems.\n\n5. Recommended Action Plan & Next Steps\nPresent a phased, high-level plan for implementing the recommended solutions. Start with quick wins or foundational automations before moving to more complex integrations.\n\nProvide a clear call to action, such as scheduling a follow-up consultation to discuss the report and refine the strategy.\n\n6. Closing Statement\nEnd the report with a professional and encouraging message, emphasizing your commitment to helping the client achieve their business goals through automation.\n\n# Constraints & Guidelines:\n\nAnalyze the provided data thoroughly and avoid making assumptions.\n\nWrite in a clear, professional tone.\n\nStructure the output using Markdown headings and bullet points for readability.\n\nBe criticial and assume that everything in real world is just a little bit harder that is seems from theoretical external perspective.\n\nThe output must be a complete report, ready to be shared with the client."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1936,
+        272
+      ],
+      "id": "9db206a4-bb03-442e-9fca-b6e81aae92d2",
+      "name": "SummaryAgent"
+    },
+    {
+      "parameters": {
+        "formTitle": "Automation Process",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Business Name"
+            },
+            {
+              "fieldLabel": "Landing Page Url",
+              "placeholder": "https://yuzuu.co",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Business Industry"
+            },
+            {
+              "fieldLabel": "Number of Emplyees"
+            },
+            {
+              "fieldLabel": "What is your most important business goal over the next 6–12 months?"
+            },
+            {
+              "fieldLabel": "Which platforms and systems does your business currently use?",
+              "fieldType": "textarea",
+              "placeholder": "Gmail, Google Workspace, Airtable, Google Sheets, HubSpot, etc."
+            },
+            {
+              "fieldLabel": "What are the biggest recurring challenges your company is currently facing?",
+              "fieldType": "textarea"
+            },
+            {
+              "fieldLabel": "What is the main reason you are considering automation",
+              "fieldType": "textarea",
+              "placeholder": "Like Cost reduction, Improved efficiency/time savings, Better customer experience, Desire to use the latest technologies and innovations, Budget savinbgs or others"
+            },
+            {
+              "fieldLabel": "From your perspective, what needs to be automated?",
+              "fieldType": "textarea"
+            },
+            {
+              "fieldLabel": "Your email",
+              "fieldType": "email"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "88eed061-18c4-40da-bd3c-632d381c4b4a",
+      "name": "AutomationProcessForm",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        -448,
+        336
+      ],
+      "webhookId": "d2de2e61-5780-4657-9ed0-aa3f3d23d7be",
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d8a70942-2462-4271-ab76-49e52aa82041",
+              "leftValue": "={{ $json.WebsiteURL }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        64,
+        176
+      ],
+      "id": "854996fe-dab9-41b7-939f-ba785d8feb2b",
+      "name": "IfUrlExist"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cd61e4d2-fac3-4a42-9db1-79f1244a22e9",
+              "name": "Industry",
+              "value": "={{ $json['Business Industry'] }}",
+              "type": "string"
+            },
+            {
+              "id": "741e4b4d-8de5-4e73-acb9-80e911c5a941",
+              "name": "WebsiteURL",
+              "value": "={{ $json['Landing Page Url'] }}",
+              "type": "string"
+            },
+            {
+              "id": "0106990c-b533-49f8-b9e3-c6fdde90fda1",
+              "name": "Emplyess",
+              "value": "={{ $json['Number of Emplyees'] }}",
+              "type": "string"
+            },
+            {
+              "id": "98bcb0c4-2b33-4c40-80d7-8296b2662bfd",
+              "name": "businessGoal ",
+              "value": "={{ $json['What is your most important business goal over the next 6–12 months?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "2f794d64-01c4-4258-9aff-21aa3afb6e61",
+              "name": "currentPlatforms",
+              "value": "={{ $json['Which platforms and systems does your business currently use?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "a4c52e97-ac4a-4eb9-967a-c0ec3e988ba0",
+              "name": "currentChallenges",
+              "value": "={{ $json['What are the biggest recurring challenges your company is currently facing?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "a0a16f5b-f678-4dbc-881d-3b91faa02738",
+              "name": "mainReason",
+              "value": "={{ $json['What is the main reason you are considering automation'] }}",
+              "type": "string"
+            },
+            {
+              "id": "51edf83f-241d-4e79-9a8d-56b0a92f226f",
+              "name": "mainNeeds",
+              "value": "={{ $json['From your perspective, what needs to be automated?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "a304105c-dae2-4bc7-8bc9-081cd7ac5b07",
+              "name": "email",
+              "value": "={{ $json['Your email'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -144,
+        176
+      ],
+      "id": "b223800c-84f2-49c8-969f-6213257e20e1",
+      "name": "Set"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# ROLE\nYou are the foremost web and automation developer and business intelligence solutions specialists.\n\n---\n\n# TASK\nYour task is to based on provided data about business to conduct an exhaustive, detailed, and prioritized On-Page Audit of the provided HTML code. This audit is designed to be a definitive roadmap for automation and ai solutions architects and developers and to get detailed insights about the current services, features from business sife of the company from provided url.\n\nHere is context and information about business:\nName: {{ $('Set').item.json.WebsiteURL }}\nIndustry: {{ $('Set').item.json.Industry }}\nWebsite(optional): {{ $('Set').item.json.WebsiteURL }}\nNumber of employess: {{ $('Set').item.json.Emplyess }}\nGoal of Business for 6-12 months: {{ $('Set').item.json['businessGoal '] }}\nCurrent challenges at business: {{ $('Set').item.json.currentChallenges }}\nCurrently used platforms: {{ $('Set').item.json.currentPlatforms }}\nMain sections/aspects needed to be automated: {{ $('Set').item.json.mainNeeds }}\nMain Reasons to achieve from automation: {{ $('Set').item.json.mainReason }}\n\n---\n\n# Audit Structure:\nPresent your findings as clear, actionable bullet points, categorized into three distinct, imperative sections. Maintain a highly professional tone suitable for an executive summary, but with technical precision. Do not include any introductory, explanatory, or concluding remarks—only the audit findings. This must be a world-class SEO technical report.\n\n\n---\n\n# Input HTML for Analysis:\nHere is the HTML code of the webpage for your meticulous audit:\n{{ $json.data }}\n\n---\n\n# Output\nCreate complete report in text, well-structured format. \n\nKeep it as short and precise as possible.",
+        "options": {
+          "maxIterations": 15
+        }
+      },
+      "id": "f4e26512-e05c-4d9b-8575-09c93e68d90a",
+      "name": "WebsiteAudit",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        496,
+        48
+      ],
+      "typeVersion": 1.7
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "={{ $json.output }}",
+        "name": "=Automation-Dev Report for: {{ $('Set').item.json.WebsiteURL }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Create folder').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1120,
+        480
+      ],
+      "id": "52ecf2ac-8795-4103-ac00-3794768ed26d",
+      "name": "CreateFile_ReportDev",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "IYt9e9Ocdig5ushn",
+          "name": "Drive-macaipiotr@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "createFromText",
+        "content": "={{ $json.clean_text }}",
+        "name": "=Summary of SEO Report for: {{ $('Set').item.json.WebsiteURL }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Create folder').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        3312,
+        192
+      ],
+      "id": "1cf64974-6427-4274-8896-cf1ded220914",
+      "name": "CreateFile_ReportClient",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "IYt9e9Ocdig5ushn",
+          "name": "Drive-macaipiotr@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Simple regex to remove Markdown symbols\nlet text = items[0].json.output;\n\ntext = text.replace(/#+\\s/g, ''); // Removes # headers\ntext = text.replace(/\\*\\*/g, ''); // Removes ** bolding\ntext = text.replace(/---\\n/g, ''); // Removes horizontal lines\n\nreturn { clean_text: text };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2576,
+        272
+      ],
+      "id": "c05a02a2-53e3-40d4-89f0-69bb22bfb722",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        2976,
+        688
+      ],
+      "id": "66589e8b-b22d-49fc-a5f0-1eef63b96d77",
+      "name": "Create a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "gk3kywQMHRZErWtj",
+          "name": "Google Docs account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "automation-audit",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -464,
+        96
+      ],
+      "id": "d44660d2-02ed-4d04-bbc6-f559893632a0",
+      "name": "Webhook",
+      "webhookId": "30f80bfc-e03f-434e-885f-37e8bf3d7641",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        3280,
+        -16
+      ],
+      "id": "ee165849-b116-4489-994d-18a33c381122",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "557e7a9f-9021-4cd2-9a68-0eef7c418fa6",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2784,
+        272
+      ],
+      "id": "bb28176e-42c2-4078-bf6c-c8c8d1296153",
+      "name": "If"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Scrape Website": {
+      "main": [
+        [
+          {
+            "node": "WebsiteAudit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ahrefs API HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create folder": {
+      "main": [
+        [
+          {
+            "node": "AutomationAgent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "WebsiteAudit",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AutomationAgent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "SummaryAgent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AutomationAgent": {
+      "main": [
+        [
+          {
+            "node": "CreateFile_ReportDev",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SummaryAgent": {
+      "main": [
+        [
+          {
+            "node": "Create a document",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AutomationProcessForm": {
+      "main": [
+        [
+          {
+            "node": "Set",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IfUrlExist": {
+      "main": [
+        [
+          {
+            "node": "Scrape Website",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "WebsiteAudit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set": {
+      "main": [
+        [
+          {
+            "node": "IfUrlExist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WebsiteAudit": {
+      "main": [
+        [
+          {
+            "node": "Create folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CreateFile_ReportDev": {
+      "main": [
+        [
+          {
+            "node": "SummaryAgent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Set",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "CreateFile_ReportClient",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CreateFile_ReportClient": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "dfae2746-9f3c-4336-9eba-f0322f1fe94c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "deb32046025f576b53b1858e537ecf62a52c205ff0a3afb4cc0768bfc2e55c02"
+  },
+  "id": "LIQGrWq91wgxmlRO",
+  "tags": [
+    {
+      "updatedAt": "2025-12-15T19:13:13.072Z",
+      "createdAt": "2025-12-15T19:13:13.072Z",
+      "id": "86DLRBzTAdn0ro3p",
+      "name": "SEO"
+    },
+    {
+      "updatedAt": "2025-12-15T19:13:13.062Z",
+      "createdAt": "2025-12-15T19:13:13.062Z",
+      "id": "A0MJlsp0uRcLx42x",
+      "name": "websites"
+    }
+  ]
+}
