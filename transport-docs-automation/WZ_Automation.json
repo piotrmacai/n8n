@@ -1,0 +1,1628 @@
+{
+  "name": "WZ_Automation_Machtrans",
+  "nodes": [
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"invoice_number\": \"\",\n  \"invoice_date\": \"\",\n  \"due_date\": \"\",\n  \"vendor_name\": \"\",\n  \"total_amount\": \"\",\n  \"currency\": \"\",\n  \"items\": [\n    {\n      \"description\": \"\",\n      \"amount\": \"\"\n    }\n  ],\n  \"tax\": \"\",\n  \"category\": \"\"\n}"
+      },
+      "id": "4358ee14-d332-4068-9db8-f6773090a355",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        3424,
+        2080
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1tyKJTl-VzQOOgLMgR0e6iL1Y_MjmUayuML3XsYwCzyE",
+          "mode": "list",
+          "cachedResultName": "InvoiceDatabase",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tyKJTl-VzQOOgLMgR0e6iL1Y_MjmUayuML3XsYwCzyE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ueJfN5dFTXY3_AdvnYUL5_RjV9YwSFvbxwA_ivtqnJk/edit#gid=0",
+          "cachedResultName": "Invoices"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nr": "={{ $('WZ Parser AI Agent').item.json.output.invoice_number }}",
+            "Date": "={{ $('WZ Parser AI Agent').item.json.output.invoice_date }}",
+            "PaymentDate": "={{ $('WZ Parser AI Agent').item.json.output.due_date }}",
+            "Client": "={{ $('WZ Parser AI Agent').item.json.output.vendor_name }}",
+            "Value": "={{ $('WZ Parser AI Agent').item.json.output.total_amount }}",
+            "TaxValue": "={{ $('WZ Parser AI Agent').item.json.output.tax }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Id",
+              "displayName": "Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Nr",
+              "displayName": "Nr",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "PaymentDate",
+              "displayName": "PaymentDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Client",
+              "displayName": "Client",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ClientNIP",
+              "displayName": "ClientNIP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Value",
+              "displayName": "Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "TaxValue",
+              "displayName": "TaxValue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "49606013-052d-4ed4-a44b-b19d52882879",
+      "name": "Insert Invoice Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        3152,
+        1728
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "WCtiTx5ISiIA5F4s",
+          "name": "sheets_szkolajazdymachowski"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {
+          "dataPropertyAttachmentsPrefixName": "attachment_",
+          "downloadAttachments": true
+        }
+      },
+      "id": "09e89523-b4ff-498f-bf72-0a49c863b0ee",
+      "name": "Monitor Email Attachments",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "position": [
+        176,
+        608
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hWqbyZCsj2P1YGwf",
+          "name": "Gmail_macai"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "attachment_0",
+        "options": {}
+      },
+      "id": "eefd6002-5c98-470c-80fd-7677542557c5",
+      "name": "Extract Text from Email PDF",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        368,
+        608
+      ],
+      "typeVersion": 1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1024,
+        544
+      ],
+      "id": "b0b5afec-b936-4013-876d-946fa16f2133",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "oSlri48NdawwqJRQ",
+          "name": "gemini_szkolajazdymachowski"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1tyKJTl-VzQOOgLMgR0e6iL1Y_MjmUayuML3XsYwCzyE",
+          "mode": "list",
+          "cachedResultName": "InvoiceDatabase",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tyKJTl-VzQOOgLMgR0e6iL1Y_MjmUayuML3XsYwCzyE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Arkusz1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tyKJTl-VzQOOgLMgR0e6iL1Y_MjmUayuML3XsYwCzyE/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2928,
+        1728
+      ],
+      "id": "7d85f463-2c59-458a-aab8-77c7fdeec743",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "WCtiTx5ISiIA5F4s",
+          "name": "sheets_szkolajazdymachowski"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9e7dc5ec-5818-42b9-8c6c-2823d7634143",
+              "leftValue": "={{ $('SetFinalFields').item.json.Data }}",
+              "rightValue": "=",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "5232aad3-26f1-4655-bb9e-d45825427d87",
+              "leftValue": "={{ $('SetFinalFields').item.json.Firma }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "84d724bc-dee1-45ce-8017-82dcb7b91d7a",
+              "leftValue": "={{ $('SetFinalFields').item.json['Ilość'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3056,
+        1536
+      ],
+      "id": "b6f09521-6a35-4c6b-9b30-3a4c509d4d86",
+      "name": "If1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "macaipiotr@gmail.com",
+        "subject": "Istniejąca WZ",
+        "message": "Zduplikowana WZ. \nSprawdź detale.",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        3904,
+        1280
+      ],
+      "id": "3c6110e7-74e3-4db2-8abf-eebb35a5b179",
+      "name": "Gmail_HumanInTheLoop",
+      "webhookId": "39813e58-fb99-4bd9-bb70-c965a644eee9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hWqbyZCsj2P1YGwf",
+          "name": "Gmail_macai"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an intelligent invoice parser. I will give you raw text extracted from a PDF invoice. \n\n========================\nSTART OF RAW INVOICE TEXT\n\n{{ $json.text }}\n\nEND OF RAW INVOICE TEXT\n========================\n\nYour job is to:\n\n1. Extract key information from the invoice such as:\n   - invoice_number\n   - invoice_date\n   - due_date (if available)\n   - vendor_name\n   - vender_nip_number\n   - total_amount\n   - currency (e.g., USD, IDR, etc.)\n   - items (as a list of item descriptions and their amounts)\n   - tax (if available)\n\n2. Detect the invoice **category**, such as:\n   - Utilities\n   - Office Supplies\n   - Travel\n   - Software\n   - Food & Beverage\n   - Others (if unknown)\n\n3. Return the result in this exact JSON format:\n\n```json\n{\n  \"invoice_number\": \"\",\n  \"invoice_date\": \"\",\n  \"due_date\": \"\",\n  \"vendor_name\": \"\",\n  \"vender_nip_number\":\"\",\n  \"total_amount\": \"\",\n  \"currency\": \"\",\n  \"items\": [\n    {\n      \"description\": \"\",\n      \"amount\": \"\"\n    }\n  ],\n  \"tax\": \"\",\n  \"category\": \"\"\n}\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "id": "9a455248-1ef7-4d23-879c-1587800d4ed6",
+      "name": "WZ Parser AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        2928,
+        2048
+      ],
+      "typeVersion": 1.9,
+      "disabled": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eeed86d1-a66d-408b-b944-208b761926c4",
+              "name": "text",
+              "value": "={{ $json.candidates[0].content.parts[0].text }}",
+              "type": "string"
+            },
+            {
+              "id": "28d6e932-c29e-42f9-9b29-8029dee88f02",
+              "name": "driveUrl",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "f6d80838-dc67-447c-a7d6-194adb24f3dc",
+              "name": "wzImageUrl",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        800,
+        400
+      ],
+      "id": "114ade5f-40bd-4688-baa4-01322601dba0",
+      "name": "SetWZData"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Przeanalizuj dokładnie załączoną transkrypcję, tekst z dokumentu transportowego: {{ $json.text }}\n\n i wyodrębnij określonego dane.\n\nZwróć wynik wyłącznie w następującym formacie JSON (wszystkie pola muszą występować, brak wartości = null):\n\n{\n  \"Nr\": \"numer dokumentu WZ\",\n  \"Data\": \"data wystawienia/wysyłki/wyjazdu w formacie DD.MM.YYYY\",\n  \"Firma\": \"nazwa firmy odbiorcy/zleceniodawcy (pełna ręcznie wpisana nazwa\",\n  \"ImieNazwisko\": \"imię i nazwisko kierowcy lub osoby odbierającej/wystawiającej\",\n  \"Material\": \"nazwa materiału\",\n  \"IloscMaterialu\": \"ilość materiału w m3\",\n  \"NrPojazdu\": \"numer rejestracyjny ciągnika/samochodu\",\n  \"NrNaczepy\": \"numer rejestracyjny naczepy/przyczepy lub null jeśli brak\"\n}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "\n## ROLA\nJesteś wyspecjalizowanym agentem AI odpowiedzialnym za **strukturyzację i formatowanie** danych z transkrypcji dokumentów transportowych WZ.\n\nOtrzymujesz **surowy tekst** z analizy OCR (Google Gemini Vision) zawierający niestrukturyzowane dane z dokumentu WZ.\n\nTwoim zadaniem jest **przekształcenie tego tekstu** w uporządkowany, walidowany format JSON według ściśle określonego schematu.\n\n## ZADANIE\n**NIE odczytujesz obrazu** - otrzymujesz już gotowy tekst z poprzedniego node'a.\n\nTwoim zadaniem jest:\n1. Przeanalizować otrzymany tekst\n2. Zidentyfikować kluczowe wartości (data, firma, kierowca, materiał, ilość, rejestracja)\n3. Wyekstrahować te wartości\n4. Ustrukturyzować je w formacie JSON\n5. Walidować i poprawić format (daty, liczby, separatory)\n\n## WEJŚCIE (INPUT)\nOtrzymujesz tekst w formacie:\n- Nieuporządkowany tekst z OCR\n- Może zawierać zarówno drukowane jak i ręczne elementy\n- Może zawierać błędy OCR (literówki, mylone znaki)\n- Może mieć różną strukturę (lista, akapity, fragmenty tabeli)\n\n## ZASADY EKSTRAKCJI I STRUKTURYZACJI\n\n### 1. IDENTYFIKACJA PÓL\nWyszukuj wartości po **kontekście i słowach kluczowych**, nie po pozycji:\n\n**Nr WZ:**\n- Słowa kluczowe: \"WZ NR:\", \"Numer bieżący:\", \"Nr:\", \"GAL/\"\n\n**Data:**\n- Słowa kluczowe: \"Data wysyłki:\", \"Data wystawienia:\", \"Data:\", daty w tekście\n- Format wyjściowy: **ZAWSZE DD.MM.YYYY** (z wiodącymi zerami)\n- Konwersje:\n  - \"23.7.2025\" → \"23.07.2025\"\n  - \"7.11.25\" → \"07.11.2025\" (rok 2-cyfrowy → 20XX)\n  - \"2025-07-23\" → \"23.07.2025\" (format ISO)\n\n**Firma (odbiorca):**\n- Słowa kluczowe: \"ODBIORCA:\", \"Firma:\", \"Przeznaczenie:\", nazwy firm w CAPSACH\n- Uwaga: Wyodrębnij pełną nazwę, usuń zbędne spacje\n\n**Imię i Nazwisko:**\n- Słowa kluczowe: \"Kierowca:\", \"DANE KIEROWCY:\", \"Odebrał:\", \"Wystawił:\", \"Zatwierdził:\"\n- Preferuj: Kierowca > Odebrał > Wystawił\n- Format: \"Imię Nazwisko\" lub \"Nazwisko\" (jeśli tylko jedno)\n\n**Materiał:**\n- Słowa kluczowe: \"Nazwa materiału:\", \"Materiał:\", w tabeli po \"NAZWA\"\n- Przykłady: \"ŻRĘBKA\", \"Zrębka tartaczna gruba\", \"Drewno sosnowe\"\n- Uwaga: Zachowaj pełną nazwę materiału\n\n**Ilość Materiału:**\n- Słowa kluczowe: \"Ilość:\", \"Zadysponowana:\", \"RAZEM M3:\", wartości z jednostkami\n- Format wyjściowy: **String z polskim separatorem** (przecinek)\n- Konwersje:\n  - \"8775.3 m³\" → \"8775,3\"\n  - \"28.54 m3\" → \"28,54\"\n  - \"30 m³\" → \"30,00\"\n- Uwaga: \n  - Usuń jednostkę (m³, m3, kg, t)\n  - Zamień kropkę na przecinek\n  - Dodaj \",00\" jeśli liczba całkowita\n\n**Nr Pojazdu (ciągnik):**\n- Słowa kluczowe: \"Środek transportu:\", \"NR IDENTYFIKACYJNY:\", \"Rejestracja:\", pierwszy numer rejestracyjny\n- Format: Litery + cyfry, może być z spacją lub bez\n- Przykłady: \"LBL8965\", \"TSZ 45148\", \"LB 4095T\"\n- Konwersja: Usuń nadmiarowe spacje → \"LB  4095T\" → \"LB4095T\"\n\n**Nr Naczepy:**\n- Słowa kluczowe: Drugi numer po \"/\" lub po przecinku w polu rejestracji\n- Przykłady: \"LBL8965/LBL8265\" → ciągnik: \"LBL8965\", naczepa: \"LBL8265\"\n- Jeśli tylko jeden numer → naczepa: `null`\n\n### 2. OBSŁUGA BŁĘDÓW OCR\nNapraw typowe błędy rozpoznawania:\n- O → 0 (w numerach)\n- I → 1 (w numerach)\n- l → 1 (w numerach rejestracyjnych)\n- Zle → Złe, Zrebka → Zrębka (polskie znaki)\n\n### 3. WALIDACJA DANYCH\n\n**Data:**\n- ✅ Format DD.MM.YYYY\n- ✅ Dzień: 01-31\n- ✅ Miesiąc: 01-12\n- ✅ Rok: 2020-2030\n- ❌ Jeśli nieprawidłowa → `null` + uwaga\n\n**Ilość:**\n- ✅ Liczba > 0\n- ✅ Polski separator (przecinek)\n- ✅ Maksymalnie 2 miejsca po przecinku\n- ❌ Jeśli nieprawidłowa → `null` + uwaga\n\n**Rejestracja:**\n- ✅ Zawiera litery i cyfry\n- ✅ Format XXX####  lub XX####X\n- ❌ Jeśli tylko cyfry lub tylko litery → podejrzane, dodaj uwagę\n\n**Firma:**\n- ✅ Min. 3 znaki\n- ❌ Jeśli zbyt krótka → `null`\n\n### 4. PRIORYTETYZACJA DANYCH\n\nJeśli w tekście jest **wiele dat**:\n1. \"Data wysyłki\" > \"Data wystawienia\" > pierwsza znaleziona data\n\nJeśli **wiele nazwisk**:\n1. \"Kierowca\" > \"Odebrał\" > \"Wystawił\" > \"Zatwierdził\"\n\nJeśli **wiele ilości**:\n1. \"RAZEM M3\" > \"Zadysponowana\" > największa wartość\n\n## FORMAT WYJŚCIOWY\n\nZwróć **TYLKO czysty JSON** bez:\n- Markdown (```json)\n- Komentarzy\n- Tekstu wyjaśniającego\n- Preambuły\n\n### Schemat JSON:\n\n```json\n{\n  \"Nr\": \"string|null\",\n  \"Data\": \"DD.MM.YYYY|null\",\n  \"Firma\": \"string|null\",\n  \"ImieNazwisko\": \"string|null\",\n  \"Material\": \"string|null\",\n  \"IloscMaterialu\": \"string|null\",\n  \"NrPojazdu\": \"string|null\",\n  \"NrNaczepy\": \"string|null\",\n  \"uwagi\": \"string|null\"\n}\n\n## ZASADY KOŃCOWE\n\n1. **Kontekst > Pozycja**: Szukaj po słowach kluczowych, nie po strukturze\n2. **Waliduj zawsze**: Sprawdź poprawność dat, liczb, rejestracji\n3. **Poprawiaj błędy OCR**: Automatycznie koryguj typowe pomyłki\n4. **Dokumentuj problemy**: Używaj pola \"uwagi\" dla wszystkich korekt i ostrzeżeń\n5. **Preferuj kompletność**: Lepiej `null` niż błędna wartość\n6. **Format polski**: Przecinek w liczbach, DD.MM.YYYY w datach\n7. **Bez komentarzy**: Zwróć TYLKO czysty JSON\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1120,
+        400
+      ],
+      "id": "dac38d8d-03f0-4331-87db-9e817601bea4",
+      "name": "AI Agent1",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4b37ff28-cde6-41a1-be25-2cea291b2fc6",
+              "name": "Data",
+              "value": "={{ $json.output.Data }}",
+              "type": "string"
+            },
+            {
+              "id": "248f2969-c747-4fdc-84e0-732810b2009b",
+              "name": "Firma",
+              "value": "={{ $json.output.Firma }}",
+              "type": "string"
+            },
+            {
+              "id": "eb900531-c64d-4707-a455-ce31afdfc596",
+              "name": "Materiał",
+              "value": "={{ $json.output.Material }} ",
+              "type": "string"
+            },
+            {
+              "id": "eb48b670-cca9-45d7-9505-76d37d68ccea",
+              "name": "Ilość",
+              "value": "={{ parseFloat($json.output.IloscMaterialu.toString().replace(',', '.')) }}\n",
+              "type": "number"
+            },
+            {
+              "id": "bacd469a-cfad-46d8-b437-353db2faddad",
+              "name": "ImieNazwisko",
+              "value": "={{ $json.output.ImieNazwisko }}",
+              "type": "string"
+            },
+            {
+              "id": "188e6043-46b9-4fca-82cc-f11e500ec68c",
+              "name": "NrPojazdu",
+              "value": "={{ $json.output.NrPojazdu }}",
+              "type": "string"
+            },
+            {
+              "id": "e9dcced0-0b4d-4952-81d3-2e5ee5d907e1",
+              "name": "NrNaczepy",
+              "value": "={{ $json.output.NrNaczepy }}",
+              "type": "string"
+            },
+            {
+              "id": "291d39ec-3a13-40d0-bf8c-f2075f20cf0c",
+              "name": "WzId",
+              "value": "={{ $json.output.Data }}-{{ $json.output.NrPojazdu }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": true
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1584,
+        544
+      ],
+      "id": "80731f19-b117-41d2-a4d3-a0787e9c4bc3",
+      "name": "SetFinalFields"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"Nr\": {\n      \"type\": \"string\"\n    },\n    \"Data\": {\n      \"type\": \"string\"\n    },\n    \"Firma\": {\n      \"type\": \"string\"\n    },\n    \"ImieNazwisko\": {\n      \"type\": \"string\"\n    },\n    \"Material\": {\n      \"type\": \"string\"\n    },\n    \"IloscMaterialu\": {\n      \"type\": \"string\"\n    },\n    \"NrPojazdu\": {\n      \"type\": \"string\"\n    },\n    \"NrNaczepy\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [],\n  \"additionalProperties\": false\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1264,
+        576
+      ],
+      "id": "c989db7e-f94c-4640-832b-bc34a0ed540c",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app7qjBH20o7iqhqV",
+          "mode": "list",
+          "cachedResultName": "Machtrans Fleet Management",
+          "cachedResultUrl": "https://airtable.com/app7qjBH20o7iqhqV"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblRSwZTuBDvOIlmA",
+          "mode": "list",
+          "cachedResultName": "WZ-Database",
+          "cachedResultUrl": "https://airtable.com/app7qjBH20o7iqhqV/tblRSwZTuBDvOIlmA"
+        },
+        "options": {
+          "fields": []
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        2832,
+        1552
+      ],
+      "id": "eebac12f-2cfa-4d5d-8697-2b9b469fb32e",
+      "name": "Search records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "MZhQHMpcEk5Kn7Pi",
+          "name": "Airtable_machtranspl"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "database",
+        "operation": "search",
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        3136,
+        2352
+      ],
+      "id": "73d7a096-b12b-4f84-8247-62f2225cc6a2",
+      "name": "Search a database",
+      "credentials": {
+        "notionApi": {
+          "id": "0kJeg19RZPTtZqgl",
+          "name": "MacaiNotion"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "app7qjBH20o7iqhqV",
+          "mode": "list",
+          "cachedResultName": "Machtrans Fleet Management",
+          "cachedResultUrl": "https://airtable.com/app7qjBH20o7iqhqV"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblRSwZTuBDvOIlmA",
+          "mode": "list",
+          "cachedResultName": "WZ-Database",
+          "cachedResultUrl": "https://airtable.com/app7qjBH20o7iqhqV/tblRSwZTuBDvOIlmA"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nr": "1",
+            "WzId": "={{ $json.WzId }}",
+            "Data": "={{ $json.Data }}",
+            "Firma": "={{ $json.Firma }}",
+            "Imię i nazwisko kierowcy": "={{ $json.ImieNazwisko }}",
+            "Materiał": "={{ $json['Materiał'] }}",
+            "Pojazd": "={{ $json.NrPojazdu }}",
+            "Ilość materiału": "={{ $json['Ilość'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Nr",
+              "displayName": "Nr",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "WzId",
+              "displayName": "WzId",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Data",
+              "displayName": "Data",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Firma",
+              "displayName": "Firma",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Imię i nazwisko kierowcy",
+              "displayName": "Imię i nazwisko kierowcy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Materiał",
+              "displayName": "Materiał",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Ilość materiału",
+              "displayName": "Ilość materiału",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Pojazd",
+              "displayName": "Pojazd",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Naczepa",
+              "displayName": "Naczepa",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Transport (harmonogram)",
+              "displayName": "Transport (harmonogram)",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Firmy",
+              "displayName": "Firmy",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": false
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1888,
+        416
+      ],
+      "id": "fad24264-4af2-41e7-8664-c8d6b5ee3e4c",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "MZhQHMpcEk5Kn7Pi",
+          "name": "Airtable_machtranspl"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9e7dc5ec-5818-42b9-8c6c-2823d7634143",
+              "leftValue": "={{ $json.Nr }}",
+              "rightValue": "={{ $json.Nr }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3344,
+        2368
+      ],
+      "id": "9c56a4d1-b23f-4dba-b8a9-8be61adc3322",
+      "name": "If",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "2c3904db-ac2e-8020-a788-f2aaa1ff1842",
+          "mode": "list",
+          "cachedResultName": "WZDatabase",
+          "cachedResultUrl": "https://www.notion.so/2c3904dbac2e8020a788f2aaa1ff1842"
+        },
+        "title": "={{ $json.WzId }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Data|date",
+              "includeTime": false,
+              "date": "={{ $json.Data }}",
+              "timezone": "Europe/Warsaw"
+            },
+            {
+              "key": "Firma|rich_text",
+              "textContent": "={{ $json.Firma }}"
+            },
+            {
+              "key": "Id|title",
+              "title": "1"
+            },
+            {
+              "key": "WzId|rich_text",
+              "textContent": "={{ $json.WzId }}"
+            },
+            {
+              "key": "Material|rich_text",
+              "textContent": "={{ $json['Materiał'] }}"
+            },
+            {
+              "key": "IloscMaterialu|number",
+              "numberValue": "={{ $json['Ilość'] }}"
+            },
+            {
+              "key": "NrPojazdu|rich_text",
+              "textContent": "={{ $json.NrPojazdu }}"
+            },
+            {
+              "key": "ImieNazwisko|rich_text",
+              "textContent": "={{ $json.ImieNazwisko }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1888,
+        832
+      ],
+      "id": "507565c3-393f-40f3-b864-b38091502d02",
+      "name": "Create a database page",
+      "credentials": {
+        "notionApi": {
+          "id": "jHSZcyWwwAOKol7I",
+          "name": "Notion_machtrans"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "macaipiotr@gmail.com",
+        "subject": "Istniejąca WZ",
+        "message": "Zduplikowana WZ. \nSprawdź detale.",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        3872,
+        1664
+      ],
+      "id": "37c69f98-01a9-4194-8989-2dcc7f8e4ab1",
+      "name": "Gmail_HumanInTheLoop1",
+      "webhookId": "39813e58-fb99-4bd9-bb70-c965a644eee9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hWqbyZCsj2P1YGwf",
+          "name": "Gmail_macai"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.webViewLink }}",
+          "mode": "url"
+        },
+        "options": {
+          "binaryPropertyName": "WZ"
+        }
+      },
+      "id": "5dc23d14-06bd-4739-a50b-bdbfb386b510",
+      "name": "Download WZ Image",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        352,
+        400
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "ooRzMuf8jnBhzzQy",
+          "name": "drive_szkolajazdymachowski"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1TqpaJukAWO0BO48qxNU4wAMabGaaBxxO",
+          "mode": "id"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "06092a88-d4e5-43c8-9346-90f1c60ff2e3",
+      "name": "WZFolder Monitor",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "position": [
+        160,
+        400
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "ooRzMuf8jnBhzzQy",
+          "name": "drive_szkolajazdymachowski"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "text": "Wyekstrahuj bardzo dokładnie wartości wpisane w większości przypadków ręcznie z wydrukowanej tabeli (z dokumentu transportowego WZ).\n\nMusisz wyekstrahować dokładnie te ręcznie wpisane wartości:\n- Środek Transportu (nr rejestracyjny samochowu)\n- Materiał\n- Ilość materiału (w m³ jako jednostka - metr przestrzenny)\n- Data wystawienia\n- Imię i Nazwisko\n- Nazwa Firmy (ta wartość MOŻE BYĆ WYDRUKOWANA)\n\nWyekstrahuj te wartości z ręcznie wpisanych danych na tym wydrukowanym formularzu.\n\nJeśli pole jest puste, napisz \"null\".",
+        "inputType": "binary",
+        "binaryPropertyName": "WZ",
+        "simplify": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        560,
+        400
+      ],
+      "id": "80f5d72a-923b-41e6-a1ae-cfc0014447ec",
+      "name": "Analyze image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "oSlri48NdawwqJRQ",
+          "name": "gemini_szkolajazdymachowski"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1ndJLOWaxS62AxaMBVgxBm9-uHqr3G5VYkhILKQPjv24",
+          "mode": "list",
+          "cachedResultName": "WZ-Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ndJLOWaxS62AxaMBVgxBm9-uHqr3G5VYkhILKQPjv24/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 36994861,
+          "mode": "list",
+          "cachedResultName": "Arkusz1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ndJLOWaxS62AxaMBVgxBm9-uHqr3G5VYkhILKQPjv24/edit#gid=36994861"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "WzId": "={{ $json.WzId }}",
+            "Nr": "={{ 1 }}",
+            "Data": "={{ $json.Data }}",
+            "Pojazd": "={{ $json.NrPojazdu }}",
+            "Imię i nazwisko kierowcy": "={{ $json.ImieNazwisko }}",
+            "Ilość materiału": "={{ $json['Ilość'] }}",
+            "Materiał": "={{ $json['Materiał'] }}",
+            "Firma": "={{ $json.Firma }}"
+          },
+          "matchingColumns": [
+            "WzId"
+          ],
+          "schema": [
+            {
+              "id": "Nr",
+              "displayName": "Nr",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "WzId",
+              "displayName": "WzId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Data",
+              "displayName": "Data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Firma",
+              "displayName": "Firma",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Imię i nazwisko kierowcy",
+              "displayName": "Imię i nazwisko kierowcy",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Materiał",
+              "displayName": "Materiał",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ilość materiału",
+              "displayName": "Ilość materiału",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pojazd",
+              "displayName": "Pojazd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Naczepa",
+              "displayName": "Naczepa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Transport (harmonogram)",
+              "displayName": "Transport (harmonogram)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Firmy",
+              "displayName": "Firmy",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1888,
+        608
+      ],
+      "id": "968082f9-4c02-498a-bc39-5cbd7a1f8b63",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "WCtiTx5ISiIA5F4s",
+          "name": "sheets_szkolajazdymachowski"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "text": "Wyekstrahuj bardzo dokładnie wartości wpisane w większości przypadków ręcznie z wydrukowanej tabeli (z dokumentu transportowego WZ).\n\nMusisz wyekstrahować dokładnie te ręcznie wpisane wartości:\n- Środek Transportu (nr rejestracyjny samochowu)\n- Materiał\n- Ilość materiału (w m³ jako jednostka - metr przestrzenny)\n- Data wystawienia\n- Imię i Nazwisko\n- Nazwa Firmy (ta wartość MOŻE BYĆ WYDRUKOWANA)\n\nWyekstrahuj te wartości z ręcznie wpisanych danych na tym wydrukowanym formularzu.\n\nJeśli pole jest puste, napisz \"null\".",
+        "inputType": "base64",
+        "binaryPropertyName": "WZ",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1088,
+        1568
+      ],
+      "id": "937382c8-4c6f-45c5-9467-05108a538436",
+      "name": "Analyze image1",
+      "credentials": {
+        "openAiApi": {
+          "id": "OTzr0brTsD9SA3iI",
+          "name": "OpenAi_szkolajazdymachowski"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eeed86d1-a66d-408b-b944-208b761926c4",
+              "name": "text",
+              "value": "={{ $json.candidates[0].content.parts[0].text }}",
+              "type": "string"
+            },
+            {
+              "id": "28d6e932-c29e-42f9-9b29-8029dee88f02",
+              "name": "driveUrl",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "f6d80838-dc67-447c-a7d6-194adb24f3dc",
+              "name": "wzImageUrl",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1232,
+        1568
+      ],
+      "id": "1bf70f57-b7dd-4ebd-af5e-656bb888cd7d",
+      "name": "SetWZData1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Przeanalizuj dokładnie załączoną transkrypcję, tekst z dokumentu transportowego: {{ $json.text }}\n\n i wyodrębnij określonego dane.\n\nZwróć wynik wyłącznie w następującym formacie JSON (wszystkie pola muszą występować, brak wartości = null):\n\n{\n  \"Nr\": \"numer dokumentu WZ\",\n  \"Data\": \"data wystawienia/wysyłki/wyjazdu w formacie DD.MM.YYYY\",\n  \"Firma\": \"nazwa firmy odbiorcy/zleceniodawcy (pełna ręcznie wpisana nazwa\",\n  \"ImieNazwisko\": \"imię i nazwisko kierowcy lub osoby odbierającej/wystawiającej\",\n  \"Material\": \"nazwa materiału\",\n  \"IloscMaterialu\": \"ilość materiału w m3\",\n  \"NrPojazdu\": \"numer rejestracyjny ciągnika/samochodu\",\n  \"NrNaczepy\": \"numer rejestracyjny naczepy/przyczepy lub null jeśli brak\"\n}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "\n## ROLA\nJesteś wyspecjalizowanym agentem AI odpowiedzialnym za **strukturyzację i formatowanie** danych z transkrypcji dokumentów transportowych WZ.\n\nOtrzymujesz **surowy tekst** z analizy OCR (Google Gemini Vision) zawierający niestrukturyzowane dane z dokumentu WZ.\n\nTwoim zadaniem jest **przekształcenie tego tekstu** w uporządkowany, walidowany format JSON według ściśle określonego schematu.\n\n## ZADANIE\n**NIE odczytujesz obrazu** - otrzymujesz już gotowy tekst z poprzedniego node'a.\n\nTwoim zadaniem jest:\n1. Przeanalizować otrzymany tekst\n2. Zidentyfikować kluczowe wartości (data, firma, kierowca, materiał, ilość, rejestracja)\n3. Wyekstrahować te wartości\n4. Ustrukturyzować je w formacie JSON\n5. Walidować i poprawić format (daty, liczby, separatory)\n\n## WEJŚCIE (INPUT)\nOtrzymujesz tekst w formacie:\n- Nieuporządkowany tekst z OCR\n- Może zawierać zarówno drukowane jak i ręczne elementy\n- Może zawierać błędy OCR (literówki, mylone znaki)\n- Może mieć różną strukturę (lista, akapity, fragmenty tabeli)\n\n## ZASADY EKSTRAKCJI I STRUKTURYZACJI\n\n### 1. IDENTYFIKACJA PÓL\nWyszukuj wartości po **kontekście i słowach kluczowych**, nie po pozycji:\n\n**Nr WZ:**\n- Słowa kluczowe: \"WZ NR:\", \"Numer bieżący:\", \"Nr:\", \"GAL/\"\n\n**Data:**\n- Słowa kluczowe: \"Data wysyłki:\", \"Data wystawienia:\", \"Data:\", daty w tekście\n- Format wyjściowy: **ZAWSZE DD.MM.YYYY** (z wiodącymi zerami)\n- Konwersje:\n  - \"23.7.2025\" → \"23.07.2025\"\n  - \"7.11.25\" → \"07.11.2025\" (rok 2-cyfrowy → 20XX)\n  - \"2025-07-23\" → \"23.07.2025\" (format ISO)\n\n**Firma (odbiorca):**\n- Słowa kluczowe: \"ODBIORCA:\", \"Firma:\", \"Przeznaczenie:\", nazwy firm w CAPSACH\n- Uwaga: Wyodrębnij pełną nazwę, usuń zbędne spacje\n\n**Imię i Nazwisko:**\n- Słowa kluczowe: \"Kierowca:\", \"DANE KIEROWCY:\", \"Odebrał:\", \"Wystawił:\", \"Zatwierdził:\"\n- Preferuj: Kierowca > Odebrał > Wystawił\n- Format: \"Imię Nazwisko\" lub \"Nazwisko\" (jeśli tylko jedno)\n\n**Materiał:**\n- Słowa kluczowe: \"Nazwa materiału:\", \"Materiał:\", w tabeli po \"NAZWA\"\n- Przykłady: \"ŻRĘBKA\", \"Zrębka tartaczna gruba\", \"Drewno sosnowe\"\n- Uwaga: Zachowaj pełną nazwę materiału\n\n**Ilość Materiału:**\n- Słowa kluczowe: \"Ilość:\", \"Zadysponowana:\", \"RAZEM M3:\", wartości z jednostkami\n- Format wyjściowy: **String z polskim separatorem** (przecinek)\n- Konwersje:\n  - \"8775.3 m³\" → \"8775,3\"\n  - \"28.54 m3\" → \"28,54\"\n  - \"30 m³\" → \"30,00\"\n- Uwaga: \n  - Usuń jednostkę (m³, m3, kg, t)\n  - Zamień kropkę na przecinek\n  - Dodaj \",00\" jeśli liczba całkowita\n\n**Nr Pojazdu (ciągnik):**\n- Słowa kluczowe: \"Środek transportu:\", \"NR IDENTYFIKACYJNY:\", \"Rejestracja:\", pierwszy numer rejestracyjny\n- Format: Litery + cyfry, może być z spacją lub bez\n- Przykłady: \"LBL8965\", \"TSZ 45148\", \"LB 4095T\"\n- Konwersja: Usuń nadmiarowe spacje → \"LB  4095T\" → \"LB4095T\"\n\n**Nr Naczepy:**\n- Słowa kluczowe: Drugi numer po \"/\" lub po przecinku w polu rejestracji\n- Przykłady: \"LBL8965/LBL8265\" → ciągnik: \"LBL8965\", naczepa: \"LBL8265\"\n- Jeśli tylko jeden numer → naczepa: `null`\n\n### 2. OBSŁUGA BŁĘDÓW OCR\nNapraw typowe błędy rozpoznawania:\n- O → 0 (w numerach)\n- I → 1 (w numerach)\n- l → 1 (w numerach rejestracyjnych)\n- Zle → Złe, Zrebka → Zrębka (polskie znaki)\n\n### 3. WALIDACJA DANYCH\n\n**Data:**\n- ✅ Format DD.MM.YYYY\n- ✅ Dzień: 01-31\n- ✅ Miesiąc: 01-12\n- ✅ Rok: 2020-2030\n- ❌ Jeśli nieprawidłowa → `null` + uwaga\n\n**Ilość:**\n- ✅ Liczba > 0\n- ✅ Polski separator (przecinek)\n- ✅ Maksymalnie 2 miejsca po przecinku\n- ❌ Jeśli nieprawidłowa → `null` + uwaga\n\n**Rejestracja:**\n- ✅ Zawiera litery i cyfry\n- ✅ Format XXX####  lub XX####X\n- ❌ Jeśli tylko cyfry lub tylko litery → podejrzane, dodaj uwagę\n\n**Firma:**\n- ✅ Min. 3 znaki\n- ❌ Jeśli zbyt krótka → `null`\n\n### 4. PRIORYTETYZACJA DANYCH\n\nJeśli w tekście jest **wiele dat**:\n1. \"Data wysyłki\" > \"Data wystawienia\" > pierwsza znaleziona data\n\nJeśli **wiele nazwisk**:\n1. \"Kierowca\" > \"Odebrał\" > \"Wystawił\" > \"Zatwierdził\"\n\nJeśli **wiele ilości**:\n1. \"RAZEM M3\" > \"Zadysponowana\" > największa wartość\n\n## FORMAT WYJŚCIOWY\n\nZwróć **TYLKO czysty JSON** bez:\n- Markdown (```json)\n- Komentarzy\n- Tekstu wyjaśniającego\n- Preambuły\n\n### Schemat JSON:\n\n```json\n{\n  \"Nr\": \"string|null\",\n  \"Data\": \"DD.MM.YYYY|null\",\n  \"Firma\": \"string|null\",\n  \"ImieNazwisko\": \"string|null\",\n  \"Material\": \"string|null\",\n  \"IloscMaterialu\": \"string|null\",\n  \"NrPojazdu\": \"string|null\",\n  \"NrNaczepy\": \"string|null\",\n  \"uwagi\": \"string|null\"\n}\n\n## ZASADY KOŃCOWE\n\n1. **Kontekst > Pozycja**: Szukaj po słowach kluczowych, nie po strukturze\n2. **Waliduj zawsze**: Sprawdź poprawność dat, liczb, rejestracji\n3. **Poprawiaj błędy OCR**: Automatycznie koryguj typowe pomyłki\n4. **Dokumentuj problemy**: Używaj pola \"uwagi\" dla wszystkich korekt i ostrzeżeń\n5. **Preferuj kompletność**: Lepiej `null` niż błędna wartość\n6. **Format polski**: Przecinek w liczbach, DD.MM.YYYY w datach\n7. **Bez komentarzy**: Zwróć TYLKO czysty JSON\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1392,
+        1568
+      ],
+      "id": "808022db-9655-4e94-a365-910dd3052d73",
+      "name": "AI Agent",
+      "disabled": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"Nr\": {\n      \"type\": \"string\"\n    },\n    \"Data\": {\n      \"type\": \"string\"\n    },\n    \"Firma\": {\n      \"type\": \"string\"\n    },\n    \"ImieNazwisko\": {\n      \"type\": \"string\"\n    },\n    \"Material\": {\n      \"type\": \"string\"\n    },\n    \"IloscMaterialu\": {\n      \"type\": \"string\"\n    },\n    \"NrPojazdu\": {\n      \"type\": \"string\"\n    },\n    \"NrNaczepy\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [],\n  \"additionalProperties\": false\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1536,
+        1744
+      ],
+      "id": "37f17fac-c8e5-431c-92e8-0f1fd6e6a4b2",
+      "name": "Structured Output Parser2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1344,
+        1760
+      ],
+      "id": "b869d85b-8e3a-4539-be78-fd3b8e66c33a",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "OTzr0brTsD9SA3iI",
+          "name": "OpenAi_szkolajazdymachowski"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        688
+      ],
+      "id": "d7aff9d5-05b3-4452-b340-3de6e1ec303f",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "oSlri48NdawwqJRQ",
+          "name": "gemini_szkolajazdymachowski"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1536,
+        1888
+      ],
+      "id": "66d0fa1b-b019-4eff-99e1-f2a43756f855",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "OTzr0brTsD9SA3iI",
+          "name": "OpenAi_szkolajazdymachowski"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4b37ff28-cde6-41a1-be25-2cea291b2fc6",
+              "name": "Data",
+              "value": "={{ $json.output.Data }}",
+              "type": "string"
+            },
+            {
+              "id": "248f2969-c747-4fdc-84e0-732810b2009b",
+              "name": "Firma",
+              "value": "={{ $json.output.Firma }}",
+              "type": "string"
+            },
+            {
+              "id": "eb900531-c64d-4707-a455-ce31afdfc596",
+              "name": "Materiał",
+              "value": "={{ $json.output.Material }} ",
+              "type": "string"
+            },
+            {
+              "id": "eb48b670-cca9-45d7-9505-76d37d68ccea",
+              "name": "Ilość",
+              "value": "={{ parseFloat($json.output.IloscMaterialu.toString().replace(',', '.')) }}\n",
+              "type": "number"
+            },
+            {
+              "id": "bacd469a-cfad-46d8-b437-353db2faddad",
+              "name": "ImieNazwisko",
+              "value": "={{ $json.output.ImieNazwisko }}",
+              "type": "string"
+            },
+            {
+              "id": "188e6043-46b9-4fca-82cc-f11e500ec68c",
+              "name": "NrPojazdu",
+              "value": "={{ $json.output.NrPojazdu }}",
+              "type": "string"
+            },
+            {
+              "id": "e9dcced0-0b4d-4952-81d3-2e5ee5d907e1",
+              "name": "NrNaczepy",
+              "value": "={{ $json.output.NrNaczepy }}",
+              "type": "string"
+            },
+            {
+              "id": "291d39ec-3a13-40d0-bf8c-f2075f20cf0c",
+              "name": "WzId",
+              "value": "={{ $json.output.Data }}-{{ $json.output.NrPojazdu }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": true
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1776,
+        1568
+      ],
+      "id": "c0cd7f52-5c89-4111-b3d2-82406bb62cbe",
+      "name": "SetFinalFields1",
+      "disabled": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "WZ Parser AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monitor Email Attachments": {
+      "main": [
+        [
+          {
+            "node": "Extract Text from Email PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text from Email PDF": {
+      "main": [
+        [
+          {
+            "node": "SetWZData",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        []
+      ]
+    },
+    "If1": {
+      "main": [
+        [],
+        []
+      ]
+    },
+    "Gmail_HumanInTheLoop": {
+      "main": [
+        []
+      ]
+    },
+    "WZ Parser AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "SetWZData": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "SetFinalFields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetFinalFields": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search a database": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [],
+        []
+      ]
+    },
+    "Download WZ Image": {
+      "main": [
+        [
+          {
+            "node": "Analyze image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WZFolder Monitor": {
+      "main": [
+        [
+          {
+            "node": "Download WZ Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image": {
+      "main": [
+        [
+          {
+            "node": "SetWZData",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image1": {
+      "main": [
+        [
+          {
+            "node": "SetWZData1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetWZData1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser2": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "SetFinalFields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "febb3b51-0aa7-48c0-a616-462dab5969a7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "deb32046025f576b53b1858e537ecf62a52c205ff0a3afb4cc0768bfc2e55c02"
+  },
+  "id": "1sa7bQ6ptm2XOiki",
+  "tags": [
+    {
+      "updatedAt": "2025-12-15T19:09:09.980Z",
+      "createdAt": "2025-12-15T19:09:09.980Z",
+      "id": "Kg5Isqtl6r6eK4vv",
+      "name": "my-projects"
+    }
+  ]
+}
