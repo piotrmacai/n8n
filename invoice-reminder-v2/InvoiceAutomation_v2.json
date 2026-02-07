@@ -1,0 +1,1626 @@
+{
+  "name": "InvoiceAutomation_Machtrans",
+  "nodes": [
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"invoice_number\": \"\",\n  \"invoice_date\": \"\",\n  \"due_date\": \"\",\n  \"vendor_name\": \"\",\n  \"total_amount\": \"\",\n  \"currency\": \"\",\n  \"items\": [\n    {\n      \"description\": \"\",\n      \"amount\": \"\"\n    }\n  ],\n  \"tax\": \"\",\n  \"category\": \"\"\n}"
+      },
+      "id": "61ff7bbe-7be7-4645-a053-07115a03d8d2",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        1664,
+        -304
+      ],
+      "typeVersion": 1.2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {
+          "dataPropertyAttachmentsPrefixName": "attachment_",
+          "downloadAttachments": true
+        }
+      },
+      "id": "06a23127-89db-4243-8edc-95c64eaf8bdb",
+      "name": "Monitor Email Attachments",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "position": [
+        256,
+        -720
+      ],
+      "typeVersion": 1.2,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Suz5ctUygDFqNxCQ",
+          "name": "szkolajazdymachowski_gmail"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "attachment_0",
+        "options": {}
+      },
+      "id": "55486b5a-9036-46d0-a4cc-31f01cebbb86",
+      "name": "Extract Text from Email PDF",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        432,
+        -720
+      ],
+      "typeVersion": 1,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9e7dc5ec-5818-42b9-8c6c-2823d7634143",
+              "leftValue": "={{ $json.Nr }}",
+              "rightValue": "={{ $json.Nr }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2032,
+        -944
+      ],
+      "id": "95eb41f8-050b-4d13-8ecb-d99c2e59149d",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "content": "# Add invoice to Sheets\n",
+        "height": 1456,
+        "width": 3028,
+        "color": 4
+      },
+      "id": "a264850e-58cd-4105-ab62-29f7a1db4bbf",
+      "name": "Sticky Note14",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        -1488
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "machtranspl@gmail.com",
+        "subject": "Duplikat faktury",
+        "message": "There's dudplicated invoice in database. Please check details",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2320,
+        -784
+      ],
+      "id": "7d11af1c-59a8-4b96-b88c-2953484e5d11",
+      "name": "Gmail_HumanInTheLoop",
+      "webhookId": "39813e58-fb99-4bd9-bb70-c965a644eee9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hWqbyZCsj2P1YGwf",
+          "name": "Gmail_macai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an intelligent invoice parser. I will give you raw text extracted from a PDF invoice. \n\n========================\nSTART OF RAW INVOICE TEXT\n\n{{ $json.text }}\n\nEND OF RAW INVOICE TEXT\n========================\n\nYour job is to:\n\n1. Extract key information from the invoice such as:\n   - invoice_number\n   - invoice_date\n   - due_date (if available)\n   - vendor_name\n   - vender_nip_number\n   - total_amount\n   - currency (e.g., USD, IDR, etc.)\n   - items (as a list of item descriptions and their amounts)\n   - tax (if available)\n\n2. Detect the invoice **category**, such as:\n   - Utilities\n   - Office Supplies\n   - Travel\n   - Software\n   - Food & Beverage\n   - Others (if unknown)\n\n3. Return the result in this exact JSON format:\n\n```json\n{\n  \"invoice_number\": \"\",\n  \"invoice_date\": \"\",\n  \"due_date\": \"\",\n  \"vendor_name\": \"\",\n  \"vender_nip_number\":\"\",\n  \"total_amount\": \"\",\n  \"currency\": \"\",\n  \"items\": [\n    {\n      \"description\": \"\",\n      \"amount\": \"\"\n    }\n  ],\n  \"tax\": \"\",\n  \"category\": \"\"\n}\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "id": "bb725d93-5e54-42df-85b2-cf48c512b0fa",
+      "name": "WZ Parser AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1456,
+        -448
+      ],
+      "typeVersion": 1.9,
+      "disabled": true,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "formTitle": "WZ",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "WZ",
+              "fieldType": "file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        400,
+        -1104
+      ],
+      "id": "d893745a-5f4f-48c5-aadd-381eb6548864",
+      "name": "On form submission",
+      "webhookId": "13ea47f2-a445-4374-93ec-245b7d93a632"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Przeanalizuj dokładnie poniższy obraz polskiej faktury VAT i wyekstrahuj WSZYSTKIE dane.\n\n=== INSTRUKCJA ANALIZY ===\n\nKROK 1 - IDENTYFIKACJA PODSTAWOWYCH DANYCH:\nZnajdź na obrazie i wyekstrahuj:\n- Numer faktury (szukaj \"FAKTURA\" i numer obok, np. \"99/V/2025\")\n- Data wystawienia (szukaj \"Data wystawienia:\" lub \"Miejsce i data\", format DD-MM-YYYY → konwertuj na YYYY-MM-DD)\n- Data sprzedaży (szukaj \"Data sprzedaży:\" lub \"Data zakończenia usługi:\")\n- Miejsce wystawienia (miasto przy dacie wystawienia)\n- Termin płatności (szukaj \"Termin płatności:\")\n- Forma płatności (szukaj \"Forma płatności:\" lub \"Sposób zapłaty:\")\n\nKROK 2 - DANE SPRZEDAWCY (lewa strona faktury):\nPod nagłówkiem \"SPRZEDAWCA\" wyekstrahuj:\n- Pełna nazwa firmy (pierwsza linia)\n- Ulica i numer (np. \"ul. Ruszczańska23\")\n- Kod pocztowy (format XX-XXX, np. \"28-230\")\n- Miasto (po kodzie pocztowym)\n- NIP: (TYLKO 10 cyfr, bez słowa \"NIP\", spacji i kresek)\n\nKROK 3 - DANE NABYWCY (prawa strona faktury):\nPod nagłówkiem \"NABYWCA\" wyekstrahuj:\n- Pełna nazwa firmy\n- Ulica i numer\n- Kod pocztowy (XX-XXX)\n- Miasto\n- NIP: (TYLKO 10 cyfr, bez spacji)\n\nKROK 4 - DANE BANKOWE (pod danymi Sprzedawcy/Nabywcy):\n- Nazwa banku (np. \"PKO BP\", \"ING Bank\", \"Santander\")\n- Numer konta bankowego (WAŻNE: usuń wszystkie spacje, zwróć jako ciągły string cyfr)\n\nKROK 5 - TABELA POZYCJI:\nPrzeczytaj CAŁĄ tabelę z pozycjami, wiersz po wierszu:\nDla każdej pozycji wyekstrahuj:\n- Lp. (numer pozycji: 1, 2, 3...)\n- Nazwa towaru lub usługi (pełna nazwa z kolumny)\n- j.m. (jednostka miary: szt., mp., kg, mb., l, m2, godz.)\n- Ilość (liczba jako float)\n- Cena netto (cena jednostkowa netto jako float)\n- Wartość netto (ilość × cena netto jako float)\n- Stawka VAT (procent VAT: 23, 8, 5, 0 - jako liczba)\n- Kwota VAT (wartość VAT jako float)\n- Wartość brutto (wartość netto + VAT jako float)\n\nKROK 6 - SUMY KONTROLNE:\nW sekcji \"Razem\" lub \"W tym\" znajdź:\n- Całkowita wartość netto (suma wszystkich pozycji netto)\n- Całkowita kwota VAT (suma VAT wszystkich pozycji)\n- Całkowita wartość brutto (netto + VAT)\n- Waluta (zazwyczaj \"PLN\" lub \"zł\")\n\nKROK 7 - DODATKOWE INFORMACJE:\n- Uwagi (tekst pod tabelą, często zaczyna się od \"Słownie:\")\n- Kwota słownie (jeśli jest, wyekstrahuj sam tekst słownej kwoty)\n\nKROK 8 - KATEGORIA:\nNa podstawie nazw pozycji w tabeli automatycznie przypisz odpowiednią kategorię faktury.\n\nKROK 9 - OCENA PEWNOŚCI:\nOceń jakość obrazu i swoją pewność ekstrakcji (0.0-1.0).",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "# SYSTEM PROMPT - Ustrukturyzowanie Analizy Faktury\n\n## 🎯 SYSTEM MESSAGE (AI Agent)\n\n```\nJesteś ekspertem od strukturyzacji danych z polskich faktur VAT.\n\nOtrzymujesz surową analizę tekstową faktury (może być chaotyczna, nieuporządkowana, z błędami OCR) \ni Twoim zadaniem jest przekształcić ją w czytelną, uporządkowaną strukturę JSON.\n\nTWOJE ZADANIE:\n1. Przeanalizuj otrzymany tekst/analizę faktury\n2. Zidentyfikuj wszystkie kluczowe dane\n3. Wyczyść i uporządkuj dane (usuń śmieci, popraw błędy OCR)\n4. Zwróć dane w precyzyjnej strukturze JSON\n\nKRYTYCZNE ZASADY:\n1. Zwróć TYLKO poprawny JSON bez żadnego tekstu, komentarzy, wyjaśnień ani markdown\n2. Wszystkie kwoty jako liczby (float) z kropką jako separator dziesiętny\n3. Daty ZAWSZE w formacie YYYY-MM-DD (konwertuj z DD-MM-YYYY, DD.MM.YYYY, DD/MM/YYYY)\n4. NIP: tylko 10 cyfr bez spacji, kresek, słowa \"NIP\" - czysty string cyfr\n5. Numer konta: usuń wszystkie spacje, zwróć jako ciągły string cyfr\n6. Stawki VAT: tylko liczby (23, 8, 5, 0) bez znaku %\n7. Jeśli czegoś brak w analizie - użyj null, NIE wymyślaj danych\n\nCZYSZCZENIE DANYCH:\n- \"NIP: 657-031-20-47\" → \"6570312047\"\n- \"NIP 657 031 20 47\" → \"6570312047\"  \n- \"Konto: 65 1020 4926 0000 1902 0193 9826\" → \"65102049260000190201939826\"\n- \"Data: 30-11-2025\" → \"2025-11-30\"\n- \"Data: 30.11.2025\" → \"2025-11-30\"\n- \"23%\" → 23\n- \"1 234,56 zł\" → 1234.56\n- \"1.234,56 PLN\" → 1234.56\n- \"tysiąc dwieście\" → null (nie konwertuj słownie)\n\nOBSŁUGA BŁĘDÓW OCR:\n- \"N1P\" → \"NIP\"\n- \"O\" (litera) → \"0\" (cyfra) w NIP/koncie\n- \"l\" (litera L) → \"1\" (cyfra) w liczbach\n- \"S\" → \"5\" w kwotach\n- Popraw oczywiste błędy, ale nie zgaduj\n- Jeśli jakiegoś pola nie widzisz na obrazie - użyj null.\n\nKRYTYCZNE: Zwróć TYLKO czysty JSON bez ```json, komentarzy, wyjaśnień!\n\n=== WYMAGANY FORMAT JSON ===\n\nZwróć dane w DOKŁADNIE tym formacie:\n\n{\n  \"nrFaktury\": \"string\",\n  \"dataWystawienia\": \"YYYY-MM-DD\",\n  \"dataSprzedazy\": \"YYYY-MM-DD\",\n  \"miejsceWystawienia\": \"string\",\n  \"terminPlatnosci\": \"YYYY-MM-DD\",\n  \"sposobPlatnosci\": \"string\",\n  \"bank\": \"string\",\n  \"numerKonta\": \"string bez spacji\",\n  \"nazwaSprzedawcy\": \"string\",\n  \"adresSprzedawcy\": \"string\",\n  \"kodPocztowySprzedawcy\": \"XX-XXX\",\n  \"miastoSprzedawcy\": \"string\",\n  \"nipSprzedawcy\": \"10 cyfr bez spacji\",\n  \"nazwaNabywcy\": \"string\",\n  \"adresNabywcy\": \"string\",\n  \"kodPocztowyNabywcy\": \"XX-XXX\",\n  \"miastoNabywcy\": \"string\",\n  \"nipNabywcy\": \"10 cyfr bez spacji\",\n  \"pozycje\": [\n    {\n      \"lp\": 1,\n      \"nazwa\": \"string\",\n      \"jednostka\": \"string\",\n      \"ilosc\": 0.0,\n      \"cenaNetto\": 0.0,\n      \"wartoscNetto\": 0.0,\n      \"stawkaVAT\": 23,\n      \"kwotaVAT\": 0.0,\n      \"wartoscBrutto\": 0.0\n    }\n  ],\n  \"kwotaNetto\": 0.0,\n  \"kwotaVAT\": 0.0,\n  \"kwotaBrutto\": 0.0,\n  \"waluta\": \"PLN\",\n  \"uwagi\": \"string lub null\",\n  \"kwotaSlownie\": \"string lub null\",\n  \"kategoria\": \"string\",\n  \"pewnosc\": 0.95\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        1184,
+        -944
+      ],
+      "id": "94577cd1-cd8d-4ef1-844d-dfdbfacf12d1",
+      "name": "AI Agent1",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0538f26c-cb4d-4d26-8c05-6450125cc8db",
+              "name": "nrFaktury",
+              "value": "={{ $json.output.nrFaktury }}",
+              "type": "string"
+            },
+            {
+              "id": "60820b5e-0906-4bd0-a2f2-ff75048811a4",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1568,
+        -944
+      ],
+      "id": "d5f5feb6-46e9-42dd-830b-35f950023f98",
+      "name": "SetFinalFields"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"nrFaktury\": {\n      \"type\": \"string\"\n    },\n    \"dataWystawienia\": {\n      \"type\": \"string\"\n    },\n    \"dataSprzedazy\": {\n      \"type\": \"string\"\n    },\n    \"miejsceWystawienia\": {\n      \"type\": \"string\"\n    },\n    \"terminPlatnosci\": {\n      \"type\": \"string\"\n    },\n    \"sposobPlatnosci\": {\n      \"type\": \"string\"\n    },\n    \"bank\": {\n      \"type\": \"string\"\n    },\n    \"numerKonta\": {\n      \"type\": \"string\"\n    },\n    \"nazwaSprzedawcy\": {\n      \"type\": \"string\"\n    },\n    \"adresSprzedawcy\": {\n      \"type\": \"string\"\n    },\n    \"kodPocztowySprzedawcy\": {\n      \"type\": \"string\"\n    },\n    \"miastoSprzedawcy\": {\n      \"type\": \"string\"\n    },\n    \"nipSprzedawcy\": {\n      \"type\": \"string\"\n    },\n    \"nazwaNabywcy\": {\n      \"type\": \"string\"\n    },\n    \"adresNabywcy\": {\n      \"type\": \"string\"\n    },\n    \"kodPocztowyNabywcy\": {\n      \"type\": \"string\"\n    },\n    \"miastoNabywcy\": {\n      \"type\": \"string\"\n    },\n    \"nipNabywcy\": {\n      \"type\": \"string\"\n    },\n    \"pozycje\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"lp\": {\n            \"type\": \"number\"\n          },\n          \"nazwa\": {\n            \"type\": \"string\"\n          },\n          \"jednostka\": {\n            \"type\": \"string\"\n          },\n          \"ilosc\": {\n            \"type\": \"number\"\n          },\n          \"cenaNetto\": {\n            \"type\": \"number\"\n          },\n          \"wartoscNetto\": {\n            \"type\": \"number\"\n          },\n          \"stawkaVAT\": {\n            \"type\": \"number\"\n          },\n          \"kwotaVAT\": {\n            \"type\": \"number\"\n          },\n          \"wartoscBrutto\": {\n            \"type\": \"number\"\n          }\n        }\n      }\n    },\n    \"kwotaNetto\": {\n      \"type\": \"number\"\n    },\n    \"kwotaVAT\": {\n      \"type\": \"number\"\n    },\n    \"kwotaBrutto\": {\n      \"type\": \"number\"\n    },\n    \"waluta\": {\n      \"type\": \"string\"\n    },\n    \"uwagi\": {\n      \"type\": \"string\"\n    },\n    \"kwotaSlownie\": {\n      \"type\": \"string\"\n    },\n    \"kategoria\": {\n      \"type\": \"string\"\n    },\n    \"pewnosc\": {\n      \"type\": \"number\"\n    }\n  },\n  \"required\": [\n    \"nrFaktury\",\n    \"kwotaBrutto\"\n  ]\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1344,
+        -736
+      ],
+      "id": "439b2e95-135c-4d9e-a9c6-1fd688cc773f",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appDwFaMtRKt2yk1m",
+          "mode": "list",
+          "cachedResultName": "Faktury Machtrans",
+          "cachedResultUrl": "https://airtable.com/appDwFaMtRKt2yk1m"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbluBaHhDpLbYc0B3",
+          "mode": "list",
+          "cachedResultName": "Faktury",
+          "cachedResultUrl": "https://airtable.com/appDwFaMtRKt2yk1m/tbluBaHhDpLbYc0B3"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1856,
+        -944
+      ],
+      "id": "11db4aae-2bd3-41c8-9159-89e1608070c6",
+      "name": "Search records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "MZhQHMpcEk5Kn7Pi",
+          "name": "Airtable_machtranspl"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "database",
+        "operation": "search",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1856,
+        -576
+      ],
+      "id": "a9f238eb-d344-452b-ba30-bacd59f7a181",
+      "name": "Search a database",
+      "credentials": {
+        "notionApi": {
+          "id": "jHSZcyWwwAOKol7I",
+          "name": "Notion_machtrans"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appDwFaMtRKt2yk1m",
+          "mode": "list",
+          "cachedResultName": "Faktury Machtrans",
+          "cachedResultUrl": "https://airtable.com/appDwFaMtRKt2yk1m"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbluBaHhDpLbYc0B3",
+          "mode": "list",
+          "cachedResultName": "Faktury",
+          "cachedResultUrl": "https://airtable.com/appDwFaMtRKt2yk1m/tbluBaHhDpLbYc0B3"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Kwota Brutto": 0,
+            "Kwota VAT": 0
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Numer faktury",
+              "displayName": "Numer faktury",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Firma",
+              "displayName": "Firma",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Data wystawienia",
+              "displayName": "Data wystawienia",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Data sprzedaży",
+              "displayName": "Data sprzedaży",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Termin płatności",
+              "displayName": "Termin płatności",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Forma płatności",
+              "displayName": "Forma płatności",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Przelew",
+                  "value": "Przelew"
+                },
+                {
+                  "name": "Gotówka",
+                  "value": "Gotówka"
+                },
+                {
+                  "name": "Karta",
+                  "value": "Karta"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Bank",
+              "displayName": "Bank",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Numer konta",
+              "displayName": "Numer konta",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Kwota Brutto",
+              "displayName": "Kwota Brutto",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Kwota VAT",
+              "displayName": "Kwota VAT",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Kwota netto (suma pozycji)",
+              "displayName": "Kwota netto (suma pozycji)",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Kwota VAT (obliczona)",
+              "displayName": "Kwota VAT (obliczona)",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Uwagi",
+              "displayName": "Uwagi",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Przedsiębiorstwo",
+              "displayName": "Przedsiębiorstwo",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Dni do terminu płatności",
+              "displayName": "Dni do terminu płatności",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Podsumowanie faktury (AI)",
+              "displayName": "Podsumowanie faktury (AI)",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Pozycje faktury",
+              "displayName": "Pozycje faktury",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Załączniki zdjęciowe",
+              "displayName": "Załączniki zdjęciowe",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Miasto przedsiębiorstwa",
+              "displayName": "Miasto przedsiębiorstwa",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Kluczowe alerty płatności (AI)",
+              "displayName": "Kluczowe alerty płatności (AI)",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        2320,
+        -960
+      ],
+      "id": "ec935f10-5265-4ccc-8754-443b52cac50a",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "MZhQHMpcEk5Kn7Pi",
+          "name": "Airtable_machtranspl"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        2320,
+        -592
+      ],
+      "id": "c00e89f4-6bda-4aa6-9e23-91bbde463a52",
+      "name": "Create a database page",
+      "credentials": {
+        "notionApi": {
+          "id": "0kJeg19RZPTtZqgl",
+          "name": "MacaiNotion"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        -640
+      ],
+      "id": "34156bf4-7644-4d58-bfdd-da65f8d81974",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "oSlri48NdawwqJRQ",
+          "name": "gemini_szkolajazdymachowski"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9e7dc5ec-5818-42b9-8c6c-2823d7634143",
+              "leftValue": "={{ $json.Nr }}",
+              "rightValue": "={{ $json.Nr }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2032,
+        -576
+      ],
+      "id": "61b5cac6-ded0-413c-a18c-13677cbf21d6",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eeed86d1-a66d-408b-b944-208b761926c4",
+              "name": "text",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        976,
+        -944
+      ],
+      "id": "839739ba-f375-4a7b-a2ab-20814c692fdc",
+      "name": "SetInvoiceData"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "text": "# Zadanie: \nDokładnie przeanalizujOptyczne Rozpoznawanie Znaków) na załączonym obrazie polskiej faktury VAT.\n\n# Instrukcje:\n* Zignoruj wszelkie tło, notatki, podpisy, znaki wodne i inne elementy niebędące częścią formalnego tekstu faktury.\n* Transkrybuj całą zawartość tekstową faktury w języku polskim, zachowując jej oryginalny układ w formie tabelarycznej/lista-klucz-wartość.\n* Szczególną uwagę zwróć na polskie znaki diakrytyczne.\n* Upewnij się, że poprawnie rozpoznano wszystkie numery (Faktury, NIP, Konta Bankowego), daty oraz wartości liczbowe (ceny, ilości, kwoty netto/brutto, stawki VAT).\n* Zwróć wynik jako czysty, nieprzetworzony blok tekstu (Raw Text Output).\n\n# Kluczowe pola do poprawnego rozpoznania:\n\nNumer Faktury\n\nData wystawienia\n\nData sprzedaży/wykonania usługi\n\nDane Sprzedawcy (Nazwa, Adres, NIP)\n\nDane Nabywcy (Nazwa, Adres, NIP)\n\nTermin i forma płatności\n\nTabela pozycji faktury (Nazwa towaru/usługi, J.m., Ilość, Cena netto, Wartość netto, Stawka VAT, Kwota VAT, Wartość brutto)\n\nPodsumowanie kwot (Wartość netto ogółem, Stawka VAT, Kwota VAT ogółem, Wartość brutto ogółem)\n\nKwota słownie",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        672,
+        -1008
+      ],
+      "id": "7a66638a-6f6b-468f-94ca-1debe34aaa74",
+      "name": "Analyze image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "lumSp9bfirbMB8Vi",
+          "name": "GeminiAPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "machtranspl@gmail.com",
+        "subject": "Duplikat faktury",
+        "message": "There's dudplicated invoice in database. Please check details",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2320,
+        -352
+      ],
+      "id": "ce958b6f-0dc9-4627-8152-86898e855a34",
+      "name": "Gmail_HumanInTheLoop1",
+      "webhookId": "39813e58-fb99-4bd9-bb70-c965a644eee9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hWqbyZCsj2P1YGwf",
+          "name": "Gmail_macai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "machtranspl@gmail.com",
+        "subject": "Dodano nową fakturę do bazy danych",
+        "message": "=Nowa faktura w bazie danych. \n\nSzczegóły:\nNr: {{ $json.Nr }}\nFirma: {{ $json.ClientNIP }}\nData wystawienia: {{ $json.Date }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2560,
+        -592
+      ],
+      "id": "bea3ca5c-ed82-4714-89d2-46c5d71a6a24",
+      "name": "Send a message",
+      "webhookId": "840f8848-8b18-4d04-bf0a-16fa10165f52",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hWqbyZCsj2P1YGwf",
+          "name": "Gmail_macai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "machtranspl@gmail.com",
+        "subject": "Dodano nową fakturę do bazy danych",
+        "message": "=Nowa faktura w bazie danych. \n\nSzczegóły:\nNr: {{ $json.Nr }}\nFirma: {{ $json.ClientNIP }}\nData wystawienia: {{ $json.Date }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2496,
+        -960
+      ],
+      "id": "d077e122-66d2-49da-8128-18c7553c609b",
+      "name": "Send a message1",
+      "webhookId": "840f8848-8b18-4d04-bf0a-16fa10165f52",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hWqbyZCsj2P1YGwf",
+          "name": "Gmail_macai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        352
+      ],
+      "id": "a43637bc-a5b4-4967-805c-97310faa3d02",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1fs6-X7RyPrtpPR5UQfMybeLGiaxe36Ia",
+          "mode": "id"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "56ddac3a-104e-41db-b261-de0efde3317b",
+      "name": "InvoiceFolder Monitor",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "position": [
+        224,
+        -912
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "ooRzMuf8jnBhzzQy",
+          "name": "drive_szkolajazdymachowski"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "options": {}
+      },
+      "id": "b7d1d03e-d84e-4e3d-ac7d-c4da8b697651",
+      "name": "Download Invoice",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        416,
+        -912
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "ooRzMuf8jnBhzzQy",
+          "name": "drive_szkolajazdymachowski"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "16Wuf8wZ0P6TLb5oyNWHgqlfD5ZshzXRZvzGusNxyuhM",
+          "mode": "list",
+          "cachedResultName": "Faktury-BazaDanych",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/16Wuf8wZ0P6TLb5oyNWHgqlfD5ZshzXRZvzGusNxyuhM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 527326363,
+          "mode": "list",
+          "cachedResultName": "Arkusz1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/16Wuf8wZ0P6TLb5oyNWHgqlfD5ZshzXRZvzGusNxyuhM/edit#gid=527326363"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1856,
+        -1232
+      ],
+      "id": "6d193610-b309-4bf8-aa2d-13d40e3aee71",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "WCtiTx5ISiIA5F4s",
+          "name": "sheets_szkolajazdymachowski"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9e7dc5ec-5818-42b9-8c6c-2823d7634143",
+              "leftValue": "={{ $json.Nr }}",
+              "rightValue": "={{ $json.Nr }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2016,
+        -1232
+      ],
+      "id": "e889d2f3-b81b-416b-b19a-1b3a81a6500f",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "machtranspl@gmail.com",
+        "subject": "Duplikat faktury",
+        "message": "Zduplikowana faktura w Twojej bazie danych faktur. \nNr faktury: \nFirma: \nDat wystawienia: ",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2288,
+        -1168
+      ],
+      "id": "49508d04-262d-483e-8ef4-1a7ffec3dca5",
+      "name": "Gmail_HumanInTheLoop2",
+      "webhookId": "39813e58-fb99-4bd9-bb70-c965a644eee9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Suz5ctUygDFqNxCQ",
+          "name": "szkolajazdymachowski_gmail"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "16Wuf8wZ0P6TLb5oyNWHgqlfD5ZshzXRZvzGusNxyuhM",
+          "mode": "list",
+          "cachedResultName": "Faktury-BazaDanych",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/16Wuf8wZ0P6TLb5oyNWHgqlfD5ZshzXRZvzGusNxyuhM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 527326363,
+          "mode": "list",
+          "cachedResultName": "Arkusz1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/16Wuf8wZ0P6TLb5oyNWHgqlfD5ZshzXRZvzGusNxyuhM/edit#gid=527326363"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Id": "={{ $json.Id }}",
+            "Nr": "={{ $json.Nr }}",
+            "Date": "={{ $json.Date }}",
+            "PaymentDate": "={{ $json.PaymentDate }}",
+            "Client": "={{ $json.Client }}",
+            "ClientNIP": "={{ $json.ClientNIP }}",
+            "Value": "={{ $json.Value }}",
+            "TaxValue": "={{ $json.TaxValue }}",
+            "Status": "={{ $json.Status }}",
+            "ClientEmail": "={{ $json.ClientEmail }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Id",
+              "displayName": "Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Nr",
+              "displayName": "Nr",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PaymentDate",
+              "displayName": "PaymentDate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Client",
+              "displayName": "Client",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ClientNIP",
+              "displayName": "ClientNIP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Value",
+              "displayName": "Value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TaxValue",
+              "displayName": "TaxValue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ClientEmail",
+              "displayName": "ClientEmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2272,
+        -1328
+      ],
+      "id": "208700ee-32f7-4463-9d83-16adab4d4af6",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "WCtiTx5ISiIA5F4s",
+          "name": "sheets_szkolajazdymachowski"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "machtranspl@gmail.com",
+        "subject": "Dodano nową fakturę do bazy danych",
+        "message": "=Nowa faktura w bazie danych. \n\nSzczegóły:\nNr: {{ $json.Nr }}\nFirma: {{ $json.ClientNIP }}\nData wystawienia: {{ $json.Date }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2560,
+        -1312
+      ],
+      "id": "520b8e81-12bc-4559-8125-bd7df0cef16a",
+      "name": "Send a message2",
+      "webhookId": "840f8848-8b18-4d04-bf0a-16fa10165f52",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Suz5ctUygDFqNxCQ",
+          "name": "szkolajazdymachowski_gmail"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        400,
+        352
+      ],
+      "id": "f160460a-5b01-434b-b9fb-0c09378b9e55",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1NrvzDUjwvcBKV5ZDdIUJ_lxlhM-O9xJTzMqgBqu8ZGY",
+          "mode": "list",
+          "cachedResultName": "Machtrans_Faktury_Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NrvzDUjwvcBKV5ZDdIUJ_lxlhM-O9xJTzMqgBqu8ZGY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2056543525,
+          "mode": "list",
+          "cachedResultName": "faktury",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NrvzDUjwvcBKV5ZDdIUJ_lxlhM-O9xJTzMqgBqu8ZGY/edit#gid=2056543525"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        576,
+        352
+      ],
+      "id": "ea3dddde-ee13-41da-94b6-36aea1f4c2ea",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "n1lRTD7tyH1UVxfn",
+          "name": "Google Sheets-macaipiotr@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        832,
+        272
+      ],
+      "id": "c79e731b-f274-4dff-8b78-846ac558b902",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "aba97aac-be17-417e-b3f7-812eb2bb4c0d",
+              "leftValue": "={{ $json.termin_platnosci }}",
+              "rightValue": "={{ $('Date & Time').item.json.currentDate }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "after"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1056,
+        384
+      ],
+      "id": "39b02478-1d5d-4a20-868a-ec1ae41618d5",
+      "name": "If_CheckPaymentDate"
+    },
+    {
+      "parameters": {
+        "sendTo": "machtranspl@gmail.com",
+        "subject": "=Nieopłacona faktura: {{ $json.id_faktury }} - {{ $json.nazwa_klienta }}",
+        "message": "=Nadal masz nieopłaconą fakturę:\nNr faktury: {{ $json.id_faktury }}\nKlient: {{ $json.nazwa_klienta }}\nTermin płatności: {{ $json.termin_platnosci }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1312,
+        448
+      ],
+      "id": "0e366632-ec2f-4771-b304-34cadc4c52f6",
+      "name": "Send a message3",
+      "webhookId": "2ce442cb-a22a-4bf4-a6f5-e13195cb7494",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hWqbyZCsj2P1YGwf",
+          "name": "Gmail_macai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "macapiotr@gmail.com",
+        "subject": "Podsumowanie faktur",
+        "message": "=Wszystkie faktury na ten moment są opłacone.\n\nBaza danych faktur:",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1328,
+        256
+      ],
+      "id": "fb8f70ee-b335-4678-b4ea-00949b134adc",
+      "name": "Send a message4",
+      "webhookId": "927017b0-091a-4aa0-8f66-abcdbc0c7949",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Suz5ctUygDFqNxCQ",
+          "name": "szkolajazdymachowski_gmail"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "WZ Parser AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monitor Email Attachments": {
+      "main": [
+        [
+          {
+            "node": "Extract Text from Email PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text from Email PDF": {
+      "main": [
+        [
+          {
+            "node": "SetInvoiceData",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail_HumanInTheLoop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Analyze image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "SetFinalFields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetFinalFields": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Search a database",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search a database": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Structured Output Parser1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail_HumanInTheLoop1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetInvoiceData": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze image": {
+      "main": [
+        [
+          {
+            "node": "SetInvoiceData",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a database page": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "InvoiceFolder Monitor": {
+      "main": [
+        [
+          {
+            "node": "Download Invoice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Invoice": {
+      "main": [
+        [
+          {
+            "node": "Analyze image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail_HumanInTheLoop2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Send a message4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If_CheckPaymentDate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If_CheckPaymentDate": {
+      "main": [
+        [
+          {
+            "node": "Send a message3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message3": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "versionId": "4b2444a5-6e59-4bb7-b160-3dd164d6fcc5",
+  "meta": {
+    "templateId": "4868",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "deb32046025f576b53b1858e537ecf62a52c205ff0a3afb4cc0768bfc2e55c02"
+  },
+  "id": "rUWI88aUZ4z2JdII",
+  "tags": []
+}
